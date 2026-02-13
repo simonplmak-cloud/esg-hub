@@ -11,7 +11,6 @@ email: "mary.chan@ascent-partners.com"
 
 # Build settings
 markdown: kramdown
-theme: minima
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
@@ -204,3 +203,7 @@ exclude:
   - vendor/ruby/
   - README.md
   - LICENSE
+  - TODO.md
+  - "*.log"
+  - .git
+  - .gitignore
