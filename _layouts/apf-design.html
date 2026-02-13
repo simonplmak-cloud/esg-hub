@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} | ESG Resources Hub</title>
+  <link rel="icon" href="/assets/images/apf-logo.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #ffffff;
+    }
+    
+    /* Header - Clean, No Borders */
+    header {
+      background: #ffffff;
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    
+    .logo img {
+      height: 48px;
+      width: auto;
+    }
+    
+    nav {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    nav a {
+      color: #1a1a1a;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: color 0.2s;
+    }
+    
+    nav a:hover {
+      color: #0083AB;
+    }
+    
+    /* Hero Section - Matching Ascent.Partners */
+    .hero {
+      position: relative;
+      min-height: 500px;
+      display: flex;
+      align-items: center;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to right, 
+        rgba(255,255,255,0.95) 0%,
+        rgba(255,255,255,0.85) 40%,
+        rgba(255,255,255,0.3) 70%,
+        transparent 100%);
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      width: 100%;
+    }
+    
+    .hero-label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #0083AB;
+      margin-bottom: 1rem;
+    }
+    
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #1a1a1a;
+      margin-bottom: 1.5rem;
+      max-width: 700px;
+    }
+    
+    .hero-description {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      color: #333;
+      margin-bottom: 2rem;
+      max-width: 600px;
+    }
+    
+    .hero-badges {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .badge {
+      background: #0083AB;
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    
+    .badge:hover {
+      background: #006A8E;
+    }
+    
+    /* Main Content */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 1rem;
+    }
+    
+    h2 {
+      font-size: 2.5rem;
+      margin-top: 3rem;
+      color: #0083AB;
+    }
+    
+    h3 {
+      font-size: 1.75rem;
+      margin-top: 2rem;
+    }
+    
+    p {
+      margin-bottom: 1rem;
+    }
+    
+    .section {
+      margin-bottom: 4rem;
+    }
+    
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #0083AB;
+      margin-bottom: 0.5rem;
+    }
+    
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .card {
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 2rem;
+      transition: box-shadow 0.2s;
+    }
+    
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .card h3 {
+      margin-top: 0;
+      color: #0083AB;
+    }
+    
+    .btn {
+      display: inline-block;
+      background: #0083AB;
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s;
+      margin-top: 1rem;
+    }
+    
+    .btn:hover {
+      background: #006A8E;
+    }
+    
+    /* Footer */
+    footer {
+      background: #f8f8f8;
+      border-top: 1px solid #e5e5e5;
+      padding: 3rem 0 2rem;
+      margin-top: 4rem;
+    }
+    
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .footer-section h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #0083AB;
+    }
+    
+    .footer-section ul {
+      list-style: none;
+    }
+    
+    .footer-section li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-section a {
+      color: #666;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .footer-section a:hover {
+      color: #0083AB;
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid #e5e5e5;
+      padding-top: 2rem;
+      text-align: center;
+      color: #666;
+      font-size: 0.875rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      nav {
+        gap: 1rem;
+      }
+      
+      nav a {
+        font-size: 12px;
+      }
+      
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <a href="/" class="logo">
+        <img src="/assets/images/apf-logo-real.svg" alt="Ascent Partners Foundation">
+      </a>
+      <nav>
+        <a href="/">HOME</a>
+        <a href="/books">BOOKS</a>
+        <a href="/environmental">ENVIRONMENTAL</a>
+        <a href="/social">SOCIAL</a>
+        <a href="/governance">GOVERNANCE</a>
+        <a href="/about">ABOUT APF</a>
+      </nav>
+    </div>
+  </header>
+
+  {{ content }}
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h4>About Ascent Partners Foundation</h4>
+          <p>A Hong Kong registered charity (IRD §88) fostering cross-sector collaboration to address environmental and social challenges across the Asia-Pacific.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="/books">Simon Mak's Books</a></li>
+            <li><a href="/environmental">Environmental Resources</a></li>
+            <li><a href="/social">Social Resources</a></li>
+            <li><a href="/governance">Governance Resources</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>ESG Standards</h4>
+          <ul>
+            <li><a href="https://www.ifrs.org/issued-standards/ifrs-sustainability-standards-navigator/" target="_blank">IFRS S1 & S2</a></li>
+            <li><a href="https://www.sasb.org/" target="_blank">SASB Standards</a></li>
+            <li><a href="https://www.globalreporting.org/" target="_blank">GRI Standards</a></li>
+            <li><a href="https://tnfd.global/" target="_blank">TNFD Framework</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Contact</h4>
+          <p>
+            Ascent Partners Foundation<br>
+            Hong Kong<br>
+            <a href="mailto:mary.chan@ascent-partners.com">mary.chan@ascent-partners.com</a>
+          </p>
+          <p style="margin-top: 1rem;">
+            <a href="https://simonmak.com" target="_blank">simonmak.com</a><br>
+            <a href="https://ascent-partners.com" target="_blank">ascent-partners.com</a>
+          </p>
+        </div>
+      </div>
+      
+      <div class="footer-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e5e5;">
+        <h4>Why GitHub Pages?</h4>
+        <p style="color: #666; font-size: 0.875rem;">
+          This resource hub is hosted on GitHub Pages to ensure <strong>free, unrestricted access</strong> to ESG educational materials worldwide. GitHub Pages provides fast global CDN delivery, transparent open-source collaboration, and a low environmental footprint. All content and source code are available at <a href="https://github.com/simonplmak-cloud/esg-hub" target="_blank" style="color: #0083AB;">github.com/simonplmak-cloud/esg-hub</a>.
+        </p>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Ascent Partners Foundation. All rights reserved. | IRD §88 Registered Charity</p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">Disclaimer: This resource hub is provided for educational purposes. While we strive for accuracy, ESG standards and regulations evolve rapidly. Always consult official sources and professional advisors for compliance guidance.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

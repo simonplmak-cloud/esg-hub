@@ -1,0 +1,13 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Stylized leaf/growth icon -->
+  <path d="M25 10 C25 10, 15 20, 15 30 C15 40, 20 45, 25 50 C30 45, 35 40, 35 30 C35 20, 25 10, 25 10 Z" fill="#1a5f3f"/>
+  <path d="M25 10 C25 10, 30 15, 35 20 C40 25, 42 30, 40 35 C38 40, 32 42, 25 40" stroke="#2d8659" stroke-width="2" fill="none"/>
+  
+  <!-- Text -->
+  <text x="50" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1a5f3f">
+    Ascent Partners
+  </text>
+  <text x="50" y="42" font-family="Arial, sans-serif" font-size="14" fill="#2d8659">
+    Foundation
+  </text>
+</svg>
