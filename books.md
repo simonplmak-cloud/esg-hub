@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: apf-design
 title: "Simon Mak's ESG Book Series"
 permalink: /books/
 ---

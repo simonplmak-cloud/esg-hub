@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: apf-design
 title: "Environmental (E) Resources"
 permalink: /environmental/
 ---

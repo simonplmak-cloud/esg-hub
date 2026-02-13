@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: apf-design
 title: "Governance (G) Resources"
 permalink: /governance/
 ---

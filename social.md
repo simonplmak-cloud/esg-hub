@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: apf-design
 title: "Social (S) Resources"
 permalink: /social/
 ---
