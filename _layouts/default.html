@@ -3,145 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title }} | {{ site.title }}</title>
-  <meta name="description" content="{{ page.description | default: site.description }}">
+  <title>{{ page.title }} | ESG Resources Hub</title>
+  <meta name="description" content="{{ page.description | default: 'Comprehensive ESG educational resources organized by academic frameworks. Featuring Simon Mak's 10-book series and curated materials from authoritative sources.' }}">
+  
+  <!-- Ascent Partners Foundation Design System -->
+  <link rel="stylesheet" href="{{ '/assets/css/apf-design-system.css' | relative_url }}">
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/images/apf-logo.svg' | relative_url }}">
   
-  <!-- Styles -->
-  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-  <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
-  
-  <!-- Open Graph / Social Media -->
-  <meta property="og:title" content="{{ page.title | default: site.title }}">
-  <meta property="og:description" content="{{ page.description | default: site.description }}">
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{ page.title }} | ESG Resources Hub">
+  <meta property="og:description" content="{{ page.description | default: 'Comprehensive ESG educational resources organized by academic frameworks' }}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title }} | ESG Resources Hub">
+  <meta name="twitter:description" content="{{ page.description | default: 'Comprehensive ESG educational resources organized by academic frameworks' }}">
 </head>
 <body>
   <!-- Header -->
-  <header class="site-header">
-    <div class="wrapper">
-      <div style="display: flex; align-items: center;">
-        <a href="{{ '/' | relative_url }}">
-          <img src="{{ '/assets/images/apf-logo.svg' | relative_url }}" alt="Ascent Partners Foundation" class="site-logo">
-        </a>
-      </div>
+  <header style="background-color: #ffffff; border-bottom: 1px solid #e5e5e5; position: sticky; top: 0; z-index: 100;">
+    <nav class="container" style="display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; padding-bottom: 1rem;">
+      <a href="{{ '/' | relative_url }}" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+        <img src="{{ '/assets/images/apf-logo.svg' | relative_url }}" alt="Ascent Partners Foundation" style="height: 40px; width: auto;">
+        <span style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--primary);">ESG Resources Hub</span>
+      </a>
       
-      <nav class="site-nav">
-        <a href="{{ '/' | relative_url }}">Home</a>
-        <a href="{{ '/books' | relative_url }}">Books</a>
-        <a href="{{ '/environmental' | relative_url }}">Environmental</a>
-        <a href="{{ '/social' | relative_url }}">Social</a>
-        <a href="{{ '/governance' | relative_url }}">Governance</a>
-        <a href="https://www.ascent.partners" target="_blank">About APF</a>
-      </nav>
-    </div>
+      <div style="display: flex; gap: 2rem; align-items: center;">
+        <a href="{{ '/books' | relative_url }}" style="font-size: 0.875rem; font-weight: 500; color: var(--foreground); text-decoration: none; transition: color 0.2s;">Books</a>
+        <a href="{{ '/environmental' | relative_url }}" style="font-size: 0.875rem; font-weight: 500; color: var(--foreground); text-decoration: none; transition: color 0.2s;">Environmental</a>
+        <a href="{{ '/social' | relative_url }}" style="font-size: 0.875rem; font-weight: 500; color: var(--foreground); text-decoration: none; transition: color 0.2s;">Social</a>
+        <a href="{{ '/governance' | relative_url }}" style="font-size: 0.875rem; font-weight: 500; color: var(--foreground); text-decoration: none; transition: color 0.2s;">Governance</a>
+        <a href="https://www.ascent.partners/" target="_blank" rel="noopener" style="font-size: 0.875rem; font-weight: 500; color: var(--primary); text-decoration: none; transition: color 0.2s;">About APF</a>
+      </div>
+    </nav>
   </header>
 
+  <!-- Hero Section (Only on homepage) -->
+  {% if page.url == "/" or page.url == "/index.html" %}
+  <section class="hero" role="banner">
+    <img 
+      src="{{ '/assets/images/team-meeting.jpg' | relative_url }}" 
+      alt="Ascent Partners Foundation team meeting - Making Matters Everyone's Business"
+      class="hero-image"
+    >
+    <div class="hero-gradient"></div>
+    <div class="container hero-content">
+      <span class="section-label" style="color: rgba(0, 131, 171, 0.7); margin-bottom: 0.75rem;">Ascent Partners Foundation</span>
+      <h1 class="hero-title">
+        ESG Resources Hub
+      </h1>
+      <p class="hero-subtitle">
+        Comprehensive ESG educational resources organized by academic frameworks. Featuring Simon Mak's 10-book series and curated materials from authoritative sources.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem;">
+        <span style="display: inline-flex; align-items: center; padding: 0.5rem 1rem; background-color: rgba(255, 255, 255, 0.9); border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; color: var(--primary); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">IRD §88 Registered Charity</span>
+        <span style="display: inline-flex; align-items: center; padding: 0.5rem 1rem; background-color: rgba(255, 255, 255, 0.9); border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; color: var(--primary); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">UN Partnerships</span>
+        <span style="display: inline-flex; align-items: center; padding: 0.5rem 1rem; background-color: rgba(255, 255, 255, 0.9); border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; color: var(--primary); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">Established 2017</span>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
   <!-- Main Content -->
-  <main class="page-content">
+  <main>
     {{ content }}
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer">
-    <div class="wrapper">
-      <div class="footer-content">
-        <!-- About Section -->
-        <div class="footer-section">
+  <footer>
+    <div class="container">
+      <div class="grid grid-cols-1" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+        <!-- About -->
+        <div>
           <h3>About Ascent Partners Foundation</h3>
-          <p style="color: #D1D5DB; line-height: 1.6;">
-            A Hong Kong registered charity fostering cross-sector collaboration to address environmental and social challenges across the Asia-Pacific.
+          <p style="font-size: 0.875rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); margin-bottom: 1rem;">
+            A Hong Kong registered charity (IRD Section 88) connecting philanthropic communities with conservation and sustainability initiatives across the Asia-Pacific since 2017.
           </p>
-          <div class="charity-badges" style="justify-content: flex-start; margin-top: 1rem;">
-            <span class="badge badge-teal">IRD §88 Registered Charity</span>
-            <span class="badge badge-green">Est. 2017</span>
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <img src="{{ '/assets/images/apf-logo.svg' | relative_url }}" alt="APF Logo" style="height: 32px; width: auto; opacity: 0.8;">
           </div>
         </div>
 
         <!-- Quick Links -->
-        <div class="footer-section">
+        <div>
           <h3>Quick Links</h3>
-          <a href="{{ '/books' | relative_url }}">Simon Mak's ESG Books</a>
-          <a href="{{ '/environmental' | relative_url }}">Environmental Resources</a>
-          <a href="{{ '/social' | relative_url }}">Social Resources</a>
-          <a href="{{ '/governance' | relative_url }}">Governance Resources</a>
-          <a href="https://www.ascent.partners" target="_blank">Main Website</a>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 0.5rem;"><a href="{{ '/' | relative_url }}">Home</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="{{ '/books' | relative_url }}">Books</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="{{ '/environmental' | relative_url }}">Environmental</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="{{ '/social' | relative_url }}">Social</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="{{ '/governance' | relative_url }}">Governance</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="https://www.ascent.partners/" target="_blank" rel="noopener">Ascent Partners Foundation</a></li>
+          </ul>
         </div>
 
-        <!-- Resources -->
-        <div class="footer-section">
+        <!-- ESG Standards -->
+        <div>
           <h3>ESG Standards</h3>
-          <a href="https://www.ifrs.org/issued-standards/ifrs-sustainability-standards-navigator/" target="_blank">IFRS S1 & S2</a>
-          <a href="https://www.sasb.org/" target="_blank">SASB Standards</a>
-          <a href="https://www.globalreporting.org/" target="_blank">GRI Standards</a>
-          <a href="https://tnfd.global/" target="_blank">TNFD Framework</a>
-          <a href="https://www.fsb-tcfd.org/" target="_blank">TCFD Recommendations</a>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 0.5rem;"><a href="https://www.ifrs.org/issued-standards/ifrs-sustainability-standards-navigator/" target="_blank" rel="noopener">IFRS S1 & S2</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="https://www.sasb.org/" target="_blank" rel="noopener">SASB Standards</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="https://www.globalreporting.org/" target="_blank" rel="noopener">GRI Standards</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="https://tnfd.global/" target="_blank" rel="noopener">TNFD</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="https://www.fsb-tcfd.org/" target="_blank" rel="noopener">TCFD</a></li>
+          </ul>
         </div>
 
         <!-- Contact -->
-        <div class="footer-section">
+        <div>
           <h3>Contact</h3>
-          <p style="color: #D1D5DB;">
-            <strong>Ascent Partners Technologist Limited</strong><br>
-            Room 805, 8/F, Far East Consortium Building<br>
-            121 Des Voeux Road Central<br>
+          <p style="font-size: 0.875rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem;">
+            <strong>Ascent Partners Foundation</strong><br>
+            Unit 1308, 13/F<br>
+            Nan Fung Tower<br>
+            173 Des Voeux Road Central<br>
             Hong Kong
           </p>
-          <p style="color: #D1D5DB;">
-            <strong>Email:</strong> <a href="mailto:mary.chan@ascent-partners.com">mary.chan@ascent-partners.com</a>
+          <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7);">
+            <a href="mailto:mary.chan@ascent-partners.com" style="color: var(--accent);">mary.chan@ascent-partners.com</a>
           </p>
         </div>
       </div>
 
-      <!-- GitHub Pages Section -->
-      <div class="github-section" style="background-color: #374151; border-left-color: var(--apf-teal-light); margin-top: 2rem;">
-        <h2 style="color: var(--apf-teal-light); font-size: 1.25rem;">🌐 Hosted on GitHub Pages</h2>
-        <p style="color: #D1D5DB; margin-bottom: 1rem;">
-          This resource hub is hosted on GitHub Pages to ensure:
+      <!-- GitHub Pages Info -->
+      <div style="background-color: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 0.375rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Why GitHub Pages?</h3>
+        <p style="font-size: 0.875rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); margin-bottom: 1rem;">
+          This ESG Resources Hub is hosted on GitHub Pages to ensure <strong>free, unrestricted access</strong> to educational materials worldwide. Benefits include fast global CDN delivery, transparent open-source approach, and low environmental footprint.
         </p>
-        <ul style="color: #D1D5DB; margin-bottom: 1rem;">
-          <li>Free, unrestricted access to ESG educational materials</li>
-          <li>Fast, reliable global content delivery via CDN</li>
-          <li>Transparent, open-source approach to sustainability education</li>
-          <li>Low environmental footprint (green hosting)</li>
-        </ul>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <a href="https://github.com/simonplmak-cloud/esg-hub" target="_blank" class="btn btn-secondary" style="border-color: var(--apf-teal-light); color: var(--apf-teal-light);">
-            View Source Code on GitHub
+          <a href="https://github.com/simonplmak-cloud/esg-hub" target="_blank" rel="noopener" class="btn btn-outline" style="font-size: 0.75rem; padding: 0.5rem 1rem; border-color: rgba(255, 255, 255, 0.3); color: rgba(255, 255, 255, 0.9);">
+            View Source Code
           </a>
-          <a href="https://github.com/simonplmak-cloud/esg-hub/issues" target="_blank" class="btn btn-secondary" style="border-color: var(--apf-teal-light); color: var(--apf-teal-light);">
-            Suggest Improvements
+          <a href="https://github.com/simonplmak-cloud/esg-hub/issues" target="_blank" rel="noopener" class="btn btn-outline" style="font-size: 0.75rem; padding: 0.5rem 1rem; border-color: rgba(255, 255, 255, 0.3); color: rgba(255, 255, 255, 0.9);">
+            Suggest Resources
           </a>
         </div>
       </div>
 
       <!-- Footer Bottom -->
       <div class="footer-bottom">
-        <p>
-          © {{ 'now' | date: "%Y" }} Ascent Partners Foundation. All rights reserved. |
-          Content curated by <a href="https://simonmak.com" target="_blank" style="color: var(--apf-teal-light);">Simon Mak</a> |
-          <a href="https://www.ascent.partners" target="_blank" style="color: var(--apf-teal-light);">Ascent Partners Foundation</a>
-        </p>
-        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
-          Individual resources remain the property of their respective authors and publishers. |
-          IRD §88 Registered Charity | Established 2017
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <p style="margin: 0;">
+            © 2026 Ascent Partners Foundation. All rights reserved.
+          </p>
+          <p style="margin: 0;">
+            Maintained by <a href="https://simonmak.com" target="_blank" rel="noopener" style="color: var(--accent);">Simon Mak</a>
+          </p>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.75rem;">
+          <strong>Disclaimer:</strong> This resource hub is provided for educational purposes. While we strive for accuracy, ESG standards and regulations evolve rapidly. Always consult official sources and professional advisors for compliance guidance.
         </p>
       </div>
     </div>
   </footer>
 
-  <!-- Analytics (if configured) -->
-  {% if site.google_analytics %}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+  <!-- Smooth scroll behavior -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ site.google_analytics }}');
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   </script>
-  {% endif %}
 </body>
 </html>
