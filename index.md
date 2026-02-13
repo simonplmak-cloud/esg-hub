@@ -1,11 +1,21 @@
 ---
-layout: home
+layout: default
 title: "ESG Resources Hub"
+description: "Comprehensive ESG resources organized by academic frameworks - featuring Simon Mak's book series and curated materials"
 ---
 
-# Welcome to the ESG Resources Hub
+<div class="hero">
+  <h1>ESG Resources Hub</h1>
+  <p>Comprehensive ESG educational resources organized by academic frameworks</p>
+  <p style="font-size: 1rem; margin-top: 1rem;">Featuring Simon Mak's 10-book series and curated materials from authoritative sources</p>
+  <div class="charity-badges" style="margin-top: 2rem;">
+    <span class="badge badge-green">IRD §88 Registered Charity</span>
+    <span class="badge badge-green">UN Partnerships</span>
+    <span class="badge badge-green">Established 2017</span>
+  </div>
+</div>
 
-A comprehensive collection of ESG (Environmental, Social, Governance) resources organized by academic frameworks, featuring **Simon Mak's book series** and curated materials from authoritative sources.
+<div class="wrapper" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
 
 ---
 
@@ -132,8 +142,8 @@ Subscribe to receive updates on new resources, book releases, and ESG insights.
 
 ---
 
-<small>
-**Disclaimer**: This resource hub is provided for educational purposes. While we strive for accuracy, ESG standards and regulations evolve rapidly. Always consult official sources and professional advisors for compliance guidance.
+</div>
 
-**Copyright**: Content curated and organized by Simon Mak / Ascent Partners Foundation. Individual resources remain the property of their respective authors and publishers.
+<small style="display: block; text-align: center; padding: 2rem; color: #6B7280;">
+**Disclaimer**: This resource hub is provided for educational purposes. While we strive for accuracy, ESG standards and regulations evolve rapidly. Always consult official sources and professional advisors for compliance guidance.
 </small>

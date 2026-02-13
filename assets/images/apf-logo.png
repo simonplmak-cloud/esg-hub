@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="%VITE_APP_LOGO%" />
+    <link rel="apple-touch-icon" href="%VITE_APP_LOGO%" />
+    <title>%VITE_APP_TITLE%</title>
+    <meta name="description" content="Ascent Partners Foundation fosters global leadership and collaboration to address climate change, ESG, and biodiversity challenges through strategic partnerships with UNESCAP, IOM, and IUCN." />
+    <meta name="keywords" content="climate change, ESG, biodiversity, sustainability leadership, cross-sector collaboration, UNESCAP, IOM, IUCN, sustainable development, Asia-Pacific, environmental conservation, sustainable finance, decarbonization" />
+    <meta property="og:title" content="Ascent Partners Foundation - Fostering Global Leadership & Collaboration" />
+    <meta property="og:description" content="Connecting leaders across borders and sectors to create impactful and sustainable solutions for pressing social and environmental challenges." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ascent Partners Foundation" />
+    <meta name="twitter:description" content="Fostering global leadership and collaboration for climate change, ESG, and biodiversity." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script type="module" crossorigin src="/assets/index-Cr8twhfQ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CrQ4HYZS.css">
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <!-- Analytics: Add your own analytics script here (e.g., Google Analytics, Plausible, Umami) -->
+  </body>
+
+</html>

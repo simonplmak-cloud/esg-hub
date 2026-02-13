@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <!-- Blue Mountain -->
+  <path d="M 20 60 L 50 20 L 80 60 Z" fill="#0891B2"/>
+  
+  <!-- Green Leaves -->
+  <ellipse cx="120" cy="30" rx="15" ry="25" fill="#10B981" transform="rotate(-30 120 30)"/>
+  <ellipse cx="145" cy="30" rx="15" ry="25" fill="#10B981" transform="rotate(30 145 30)"/>
+  
+  <!-- Text -->
+  <text x="20" y="75" font-family="Arial, sans-serif" font-size="10" fill="#1F2937" font-weight="600">ASCENT PARTNERS FOUNDATION</text>
+</svg>
