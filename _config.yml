@@ -1,0 +1,206 @@
+# ESG Resources Hub - GitHub Pages Configuration
+# Ascent Partners Foundation
+
+# Site settings
+title: "ESG Resources Hub"
+description: "Comprehensive ESG resources organized by academic frameworks - featuring Simon Mak's book series and curated materials"
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site
+author: "Simon Mak / Ascent Partners Foundation"
+email: "mary.chan@ascent-partners.com"
+
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Collections
+collections:
+  books:
+    output: true
+    permalink: /books/:title/
+  videos:
+    output: true
+    permalink: /videos/:title/
+  standards:
+    output: true
+    permalink: /standards/:title/
+  research:
+    output: true
+    permalink: /research/:title/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "books"
+    values:
+      layout: "book"
+  - scope:
+      path: ""
+      type: "videos"
+    values:
+      layout: "resource"
+  - scope:
+      path: ""
+      type: "standards"
+    values:
+      layout: "resource"
+  - scope:
+      path: ""
+      type: "research"
+    values:
+      layout: "resource"
+
+# Navigation
+nav_links:
+  - title: "Home"
+    url: "/"
+  - title: "Books"
+    url: "/books/"
+  - title: "Videos"
+    url: "/videos/"
+  - title: "Standards"
+    url: "/standards/"
+  - title: "Regulations"
+    url: "/regulations/"
+  - title: "Research"
+    url: "/research/"
+  - title: "Glossary"
+    url: "/glossary/"
+  - title: "About"
+    url: "/about/"
+
+# ESG Framework Structure
+frameworks:
+  environmental:
+    name: "Environmental"
+    icon: "🌍"
+    framework: "Planetary Boundaries"
+    categories:
+      - name: "Climate Change"
+        slug: "climate-change"
+        status: "transgressed"
+        icon: "🌡️"
+      - name: "Biodiversity Loss"
+        slug: "biodiversity"
+        status: "transgressed"
+        icon: "🦋"
+      - name: "Land-System Change"
+        slug: "land-system"
+        status: "transgressed"
+        icon: "🌳"
+      - name: "Freshwater Use"
+        slug: "freshwater"
+        status: "regional"
+        icon: "💧"
+      - name: "Biogeochemical Flows"
+        slug: "biogeochemical"
+        status: "transgressed"
+        icon: "🔬"
+      - name: "Ocean Acidification"
+        slug: "ocean"
+        status: "safe"
+        icon: "🌊"
+      - name: "Atmospheric Aerosol Loading"
+        slug: "aerosol"
+        status: "uncertain"
+        icon: "☁️"
+      - name: "Stratospheric Ozone Depletion"
+        slug: "ozone"
+        status: "safe"
+        icon: "🛡️"
+      - name: "Novel Entities"
+        slug: "novel-entities"
+        status: "transgressed"
+        icon: "⚗️"
+  
+  social:
+    name: "Social"
+    icon: "👥"
+    framework: "Stakeholder Theory"
+    categories:
+      - name: "Human Capital & Labor Practices"
+        slug: "human-capital"
+        icon: "👷"
+      - name: "Human Rights"
+        slug: "human-rights"
+        icon: "⚖️"
+      - name: "Product Responsibility & Customer Welfare"
+        slug: "product-responsibility"
+        icon: "🛡️"
+      - name: "Community Relations & Social Impact"
+        slug: "community"
+        icon: "🤝"
+      - name: "Supply Chain & Business Ethics"
+        slug: "supply-chain"
+        icon: "🔗"
+  
+  governance:
+    name: "Governance"
+    icon: "🏛️"
+    framework: "Agency Theory + Stakeholder Theory"
+    categories:
+      - name: "Board Structure & Composition"
+        slug: "board-structure"
+        icon: "👔"
+      - name: "Executive Leadership & Compensation"
+        slug: "executive-compensation"
+        icon: "💼"
+      - name: "Shareholder Rights & Ownership"
+        slug: "shareholder-rights"
+        icon: "📊"
+      - name: "Business Ethics & Compliance"
+        slug: "business-ethics"
+        icon: "📜"
+      - name: "Risk Management & Internal Controls"
+        slug: "risk-management"
+        icon: "🔒"
+
+# Book Series
+book_series:
+  - name: "ESG Made Simple Series"
+    slug: "esg-made-simple"
+    description: "Practical guides to understanding and implementing ESG reporting frameworks"
+    books:
+      - "ESG Reporting Made Simple"
+      - "ESG & GRI Reporting Made Simple"
+      - "Carbon Credits Made Simple"
+      - "TNFD Made Simple"
+  
+  - name: "ESG in Practice Series"
+    slug: "esg-in-practice"
+    description: "Mathematical and technical guides for sustainability professionals"
+    books:
+      - "Carbon Accounting in Practice"
+      - "Climate Risk Quantification in Practice"
+      - "Social Impact Accounting in Practice"
+      - "Biodiversity and Ecology Service Accounting"
+      - "Plastic Accounting in Practice"
+      - "Water Accounting in Practice"
+
+# SEO and Social
+twitter:
+  username: simonmak
+  card: summary_large_image
+
+social:
+  name: Simon Mak
+  links:
+    - https://www.linkedin.com/in/simonmak
+    - https://www.simonmak.com
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - README.md
+  - LICENSE

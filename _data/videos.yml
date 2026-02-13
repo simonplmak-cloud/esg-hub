@@ -1,0 +1,108 @@
+# Curated ESG Video Resources
+# Organized by framework categories
+
+environmental:
+  climate_change:
+    - title: "Johan Rockström on Navigating Planetary Boundaries"
+      url: "https://www.youtube.com/watch?v=QCFGS6z9CxM"
+      source: "Frontiers Planet Prize 2024"
+      duration: "Video"
+      description: "Prof Johan Rockström, Director of Potsdam Institute for Climate Impact Research, discusses planetary boundaries at the 2024 Frontiers Planet Prize awards ceremony"
+      
+    - title: "Katherine Richardson: Planetary Boundaries - A Tool for Sustainable Development"
+      url: "https://www.youtube.com/watch?v=0vv5awuOuJM"
+      source: "Molecular Frontiers Symposium"
+      duration: "Lecture"
+      description: "Dr Katherine Richardson presents on planetary boundaries at Lund University's Molecular Frontiers Symposium on Human Origins and the Future of Humanity"
+      
+    - title: "Planetary Boundaries: Reviewing the Science"
+      url: "https://www.stockholmresilience.org/research/research-videos/2019-10-13-planetary-boundaries-reviewing-the-science.html"
+      source: "Stockholm Resilience Centre"
+      duration: "Video"
+      description: "Scientists review the planetary boundaries framework and quantitative thresholds within which humanity can continue to develop and thrive"
+      
+    - title: "The Planetary Boundaries and What They Mean for the Future"
+      url: "https://www.youtube.com/watch?v=SieN0IrZ5wg"
+      source: "YouTube Educational"
+      duration: "12 min"
+      description: "Explains which environmental systems are at risk and the grave consequences of crossing planetary boundaries"
+      
+    - title: "Causes and Effects of Climate Change"
+      url: "https://www.youtube.com/watch?v=G4H1N_yXBiA"
+      source: "National Geographic"
+      duration: "3 min"
+      description: "Concise explanation of climate change causes and effects from National Geographic"
+      
+    - title: "At the Core of Climate Change"
+      url: "https://www.pbslearningmedia.org/resource/kqedcl11.sci.ess.atthcoreofclimatechange/at-the-core-of-climate-change/"
+      source: "PBS LearningMedia"
+      duration: "Video + Lesson"
+      description: "How increasing greenhouse gases contribute to global warming and climate change, with accompanying educational lesson"
+      
+    - title: "What is Climate Change? - Climate Change 101"
+      url: "https://www.youtube.com/watch?v=SLEenW2UiUw"
+      source: "BBC World Service - The Climate Question"
+      duration: "Video"
+      description: "Climate change basics explained by Jordan Dunbar for BBC World Service"
+      
+    - title: "Breaking Boundaries: The Science of Our Planet"
+      url: "https://www.netflix.com/title/81336476"
+      source: "Netflix Documentary"
+      duration: "75 min"
+      description: "David Attenborough and scientist Johan Rockström examine Earth's biodiversity collapse and how this crisis can still be averted"
+  
+  biodiversity:
+    - title: "Biodiversity Loss - A Documentary"
+      url: "https://www.youtube.com/watch?v=WKld7o6CISg"
+      source: "MSU-IIT IDS Student Project"
+      duration: "Documentary"
+      description: "Student-produced documentary on biodiversity loss and its implications"
+      
+    - title: "Biodiversity and Health"
+      url: "https://www.pbs.org/video/biodiversity-and-health-5uy2ia/"
+      source: "PBS Earth Focus"
+      duration: "Documentary"
+      description: "Explores the connection between biodiversity loss and human health, noting that current species loss rates are on par with historical mass extinction events"
+      
+    - title: "Untangled: Biodiversity Loss - Why Should You Care?"
+      url: "https://www.youtube.com/watch?v=KM0EZP5ijbA"
+      source: "YouTube Educational"
+      duration: "Video"
+      description: "Explains the importance of biodiversity and why its loss matters for humanity"
+
+  general:
+    - title: "Free Course on Planetary Boundaries"
+      url: "https://sdgacademy.org/course/planetary-boundaries-human-opportunities/"
+      source: "SDG Academy"
+      duration: "Full Course"
+      description: "Free online course covering planetary boundaries, the Anthropocene, unsustainable production and consumption, and sustainable development"
+
+social:
+  human_capital:
+    - title: "TBD - Human Capital Management"
+      url: "#"
+      source: "To be curated"
+      duration: "TBD"
+      description: "Educational content on human capital management and labor practices"
+  
+  human_rights:
+    - title: "TBD - Business and Human Rights"
+      url: "#"
+      source: "To be curated"
+      duration: "TBD"
+      description: "Content on UN Guiding Principles and corporate human rights responsibilities"
+
+governance:
+  board_structure:
+    - title: "TBD - Corporate Board Effectiveness"
+      url: "#"
+      source: "To be curated"
+      duration: "TBD"
+      description: "Educational content on board governance and effectiveness"
+  
+  executive_compensation:
+    - title: "TBD - Executive Compensation Best Practices"
+      url: "#"
+      source: "To be curated"
+      duration: "TBD"
+      description: "Content on pay-for-performance and ESG-linked compensation"
