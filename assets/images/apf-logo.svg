@@ -1,11 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
-  <!-- Blue Mountain -->
-  <path d="M 20 60 L 50 20 L 80 60 Z" fill="#0891B2"/>
-  
-  <!-- Green Leaves -->
-  <ellipse cx="120" cy="30" rx="15" ry="25" fill="#10B981" transform="rotate(-30 120 30)"/>
-  <ellipse cx="145" cy="30" rx="15" ry="25" fill="#10B981" transform="rotate(30 145 30)"/>
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Stylized leaf/growth icon -->
+  <path d="M25 10 C25 10, 15 20, 15 30 C15 40, 20 45, 25 50 C30 45, 35 40, 35 30 C35 20, 25 10, 25 10 Z" fill="#1a5f3f"/>
+  <path d="M25 10 C25 10, 30 15, 35 20 C40 25, 42 30, 40 35 C38 40, 32 42, 25 40" stroke="#2d8659" stroke-width="2" fill="none"/>
   
   <!-- Text -->
-  <text x="20" y="75" font-family="Arial, sans-serif" font-size="10" fill="#1F2937" font-weight="600">ASCENT PARTNERS FOUNDATION</text>
+  <text x="50" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1a5f3f">
+    Ascent Partners
+  </text>
+  <text x="50" y="42" font-family="Arial, sans-serif" font-size="14" fill="#2d8659">
+    Foundation
+  </text>
 </svg>
