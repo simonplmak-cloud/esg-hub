@@ -1,13 +1,32 @@
-<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Stylized leaf/growth icon -->
-  <path d="M25 10 C25 10, 15 20, 15 30 C15 40, 20 45, 25 50 C30 45, 35 40, 35 30 C35 20, 25 10, 25 10 Z" fill="#1a5f3f"/>
-  <path d="M25 10 C25 10, 30 15, 35 20 C40 25, 42 30, 40 35 C38 40, 32 42, 25 40" stroke="#2d8659" stroke-width="2" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 400" role="img" aria-label="Ascent Partners - Together We Flourish">
+  <title>Ascent Partners</title>
   
-  <!-- Text -->
-  <text x="50" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1a5f3f">
-    Ascent Partners
+  <!-- Gradient definitions for sail (inverted for dark mode) -->
+  <defs>
+    <linearGradient id="sailGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4d9ba7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#4294a1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dbffff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sail graphic -->
+  <g id="sail">
+    <path d="M 10 380 L 10 20 L 200 380 Z" fill="url(#sailGradientDark)" />
+    <path d="M 40 340 L 40 80 L 160 340 Z" fill="#ffffff" opacity="0.2" />
+    <path d="M 10 20 Q 120 200 200 380" stroke="#dbffff" stroke-width="3" fill="none" opacity="0.5" />
+  </g>
+  
+  <!-- Text: ASCENT PARTNERS -->
+  <text x="270" y="200" font-family="'Georgia', 'Times New Roman', serif" font-size="140" font-weight="400" fill="#ffffff" letter-spacing="8">
+    ASCENT PARTNERS
   </text>
-  <text x="50" y="42" font-family="Arial, sans-serif" font-size="14" fill="#2d8659">
-    Foundation
+  
+  <!-- Horizontal line -->
+  <line x1="270" y1="230" x2="1580" y2="230" stroke="#4d9ba7" stroke-width="3" />
+  
+  <!-- Tagline -->
+  <text x="770" y="320" font-family="'Arial', 'Helvetica', sans-serif" font-size="60" font-weight="300" fill="#e0e0e0" letter-spacing="12">
+    Together We Flourish
   </text>
 </svg>
