@@ -1,132 +1,130 @@
 ---
 layout: apf-design
-title: "Biodiversity Loss"
+title: "Biodiversity Loss (PB2)"
 permalink: /environmental/biodiversity/
 ---
 
 # Biodiversity Loss
-**Planetary Boundary 2**
 
-## Boundary Status
-
-**Status**: Boundary transgressed  
-**Control Variables**:  
-- Genetic diversity: Extinction rate >100× pre-industrial baseline  
-- Functional diversity: Biodiversity Intactness Index <90% (boundary: >90%)
-
-**Scientific Basis**: Biodiversity underpins ecosystem services worth $125-140 trillion annually. Current extinction rates are 1000× natural background rates. The IPBES 2019 Global Assessment reports 1 million species threatened with extinction.
+**Planetary Boundary 2** | Status: **Boundary Transgressed**
 
 ---
 
-## Business Relevance
+## Boundary Definition
 
-### Nature Dependency
-- **Direct Dependencies**: Agriculture, forestry, fisheries, pharmaceuticals depend on genetic resources
-- **Indirect Dependencies**: Water purification, pollination, climate regulation, flood control
-- **Revenue at Risk**: $44 trillion of economic value generation moderately to highly dependent on nature (WEF 2020)
+**Control Variable**: Extinction rate (extinctions per million species-years, E/MSY)
 
-### Nature-related Risks
-- **Physical**: Ecosystem collapse, supply chain disruption, resource scarcity
-- **Transition**: Biodiversity regulations, access restrictions, benefit-sharing requirements
-- **Systemic**: Cascading effects across interconnected ecosystems
+**Safe Operating Space**: <10 E/MSY (background extinction rate)
+
+**Current Status**: 100-1,000 E/MSY (**transgressed**)
+
+**Source**: [Richardson et al. (2023)](https://www.science.org/doi/10.1126/sciadv.adh2458)
+
+---
+
+## Why This Matters
+
+Biodiversity provides ecosystem services critical to human well-being: pollination, pest control, water purification, climate regulation, genetic resources. Current extinction rate is 100-1000x higher than background rate, comparable to past mass extinction events.
+
+**Key Frameworks**:
+- [Kunming-Montreal Global Biodiversity Framework (2022)](https://www.cbd.int/gbf/) — 30x30 target (30% land/sea protected by 2030)
+- [IPBES Global Assessment (2019)](https://www.ipbes.net/global-assessment) — 1 million species at risk of extinction
 
 ---
 
 ## Key Standards & Frameworks
 
 ### Disclosure Standards
-- **[TNFD](/standards/tnfd/)** — Taskforce on Nature-related Financial Disclosures (Sept 2023)
-- **[EU ESRS E4](/standards/esrs/)** — Biodiversity and ecosystems (double materiality)
-- **[GRI 304](/standards/gri/)** — Biodiversity
-- **[IFRS S2](/standards/ifrs-s1-s2/)** — Climate-related disclosures (includes nature dependencies)
+- **[TNFD](/standards/tnfd/)** — Taskforce on Nature-related Financial Disclosures
+- **[IFRS Biodiversity Standard](/standards/ifrs-s1-s2/)** — Expected 2027
+- **[GRI 304](/standards/gri/)** — Biodiversity reporting
 
-### Measurement & Target-Setting
+### Measurement Standards
 - **[SBTn](/standards/climate-nature/sbtn/)** — Science Based Targets for Nature
-- **[CDP Forests](/standards/climate-nature/cdp/)** — Deforestation disclosure
-- **SBTN Methods**: AR3T (Assess, Reduce, Regenerate, Restore, Transform)
+- **[CSRD ESRS E4](/standards/esrs/)** — EU biodiversity standard
 
 ---
 
 ## Primary Source Documents
 
-### Scientific Foundation
-- [IPBES Global Assessment (2019)](https://www.ipbes.net/global-assessment) — Comprehensive biodiversity status report
-- [Convention on Biological Diversity](https://www.cbd.int/doc/legal/cbd-en.pdf) — International treaty
-- [Kunming-Montreal Global Biodiversity Framework (2022)](https://www.cbd.int/doc/decisions/cop-15/cop-15-dec-04-en.pdf) — Post-2020 targets
+### Scientific Assessment
+- **[IPBES Global Assessment Report (2019)](https://www.ipbes.net/global-assessment)** — Full report + Summary for Policymakers
+- **[Living Planet Report 2024](https://www.worldwildlife.org/publications/living-planet-report-2024)** — WWF population trends
+- **[State of the World's Biodiversity for Food](https://www.fao.org/state-of-biodiversity-for-food-agriculture/en/)** — FAO report
 
-### Policy Frameworks
-- [UN Convention on Biological Diversity](https://www.cbd.int/) — International biodiversity policy
-- [Nagoya Protocol](https://www.cbd.int/abs/) — Access and benefit-sharing
-- [EU Biodiversity Strategy 2030](https://environment.ec.europa.eu/strategy/biodiversity-strategy-2030_en) — Regional policy
+### International Conventions
+- **[Convention on Biological Diversity (CBD)](https://www.cbd.int/)** — Kunming-Montreal Framework
+- **[CITES](https://cites.org/)** — Trade in endangered species
+- **[Ramsar Convention](https://www.ramsar.org/)** — Wetlands protection
 
-### Regional Standards
-- **Hong Kong**: No specific biodiversity disclosure mandate (covered under HKEX ESG KPI A3)
-- **China**: [Ecological Conservation Red Line Policy](http://www.gov.cn/zhengce/content/2017-02/07/content_5166291.htm)
-
----
-
-## Recommended Metrics
-
-### Impact Metrics
-- **Mean Species Abundance (MSA)**: % of original species abundance
-- **Potentially Disappeared Fraction (PDF)**: Species loss per area
-- **Biodiversity Intactness Index (BII)**: Average population abundance of native species
-- **Species Threat Abatement and Restoration (STAR)**: Contribution to reducing extinction risk
-
-### Dependency Metrics
-- **ENCORE Database**: Exploring Natural Capital Opportunities, Risks and Exposure
-- **Ecosystem Service Valuation**: Monetary value of nature's contributions
-
-### Footprint Metrics
-- **Land Use Impact**: ha transformed or degraded
-- **Habitat Fragmentation**: Connectivity indices
-- **Water Consumption**: Impact on aquatic biodiversity
+### Corporate Guidance
+- **[TNFD Recommendations (2023)](https://tnfd.global/publication/recommendations-of-the-taskforce-on-nature-related-financial-disclosures/)**
+- **[TNFD LEAP Approach](https://tnfd.global/publication/getting-started-with-the-leap-approach/)** — Locate, Evaluate, Assess, Prepare
 
 ---
 
-## TNFD LEAP Approach
+## Regional Initiatives
 
-**Locate**: Identify interface with nature (operations, value chain)  
-**Evaluate**: Dependencies and impacts on biodiversity  
-**Assess**: Material risks and opportunities  
-**Prepare**: Disclosures, strategy, governance
+### Hong Kong & China
+- **[China National Biodiversity Conservation Strategy (2021-2030)](http://english.mee.gov.cn/)** — Ministry of Ecology & Environment
+- **[HK Biodiversity Strategy & Action Plan](https://www.afcd.gov.hk/english/conservation/con_bsap/con_bsap.html)** — AFCD
+
+### Asia-Pacific
+- **[ASEAN Centre for Biodiversity](https://aseanbiodiversity.org/)**
+- **[Asia-Pacific Biodiversity Observation Network](https://www.esabii.biodic.go.jp/ap-bon/)**
 
 ---
 
-## Simon Mak's Books
+## Book Resources
 
-### Technical Guidance
-**Biodiversity and Ecology Service Accounting: A Mathematics Guide**  
-Rigorous methods for measuring biodiversity impacts:
+### From Simon Mak's ESG Series:
+
+**[Biodiversity and Ecosystem Services Accounting](/books/)** — Mathematical guide for sustainability professionals  
+*Download PDF: [Biodiversity_Ecosystem_Services_Accounting.pdf](/books/Biodiversity_Ecosystem_Services_Accounting_ENHANCED.pdf)*
+
+Key chapters:
 - Biodiversity metrics (MSA, PDF, BII)
 - Ecosystem service valuation
 - Natural capital accounting
-- Species richness and abundance
+- Species richness and abundance measurement
 - Habitat quality assessment
 - TNFD metrics implementation
 
-[Download PDF](/books/Biodiversity_Ecosystem_Services_Accounting_ENHANCED.pdf) | [View on Amazon](https://www.amazon.com/stores/Simon-Mak/author/)
+**[TNFD Made Simple](/books/)** — Practical guide to nature-related disclosures  
+*Download PDF: [ESG_Reporting_Made_Simple_TNFD.pdf](/books/ESG_Reporting_Made_Simple_TNFD.pdf)*
 
-### Reporting Frameworks
-**TNFD Made Simple: A Practical Guide to Nature-related Disclosures**  
-Comprehensive TNFD framework guidance:
-- LEAP approach step-by-step
-- Nature-related risks and opportunities
-- Integration with TCFD and IFRS S2
-- Sector-specific guidance
+---
 
-[Download PDF](/books/ESG_Reporting_Made_Simple_TNFD.pdf) | [View on Amazon](https://www.amazon.com/stores/Simon-Mak/author/)
+## Measurement Metrics
+
+### Biodiversity Metrics
+- **MSA (Mean Species Abundance)** — % of original species remaining
+- **PDF (Potentially Disappeared Fraction)** — Species loss per area-time
+- **BII (Biodiversity Intactness Index)** — Average abundance relative to undisturbed
+- **Species Richness** — Number of species per area
+
+### Ecosystem Service Valuation
+- **InVEST (Integrated Valuation of Ecosystem Services and Tradeoffs)** — [Natural Capital Project](https://naturalcapitalproject.stanford.edu/software/invest)
+- **TESSA (Toolkit for Ecosystem Service Site-based Assessment)** — [TESSA Toolkit](http://tessa.tools/)
+
+---
+
+## Tools & Data
+
+- **[Global Biodiversity Information Facility (GBIF)](https://www.gbif.org/)** — Species occurrence data
+- **[IUCN Red List](https://www.iucnredlist.org/)** — Species threat status
+- **[Integrated Biodiversity Assessment Tool (IBAT)](https://www.ibat-alliance.org/)** — Corporate biodiversity screening
+- **[ENCORE (Exploring Natural Capital Opportunities, Risks and Exposure)](https://encorenature.org/)** — TNFD data tool
 
 ---
 
 ## Related Pages
 
-- [Land-System Change](/environmental/land-system/) — Deforestation and habitat conversion
-- [Ocean Acidification](/environmental/ocean-acidification/) — Marine biodiversity impacts
-- [Freshwater Use](/environmental/freshwater/) — Aquatic ecosystems
-- [TNFD Standard](/standards/tnfd/)
-- [SBTn Initiative](/standards/climate-nature/sbtn/)
+- [Environmental Hub](/environmental/)
+- [Land-System Change](/environmental/land-system/) — Habitat loss driver
+- [TNFD](/standards/tnfd/)
+- [SBTn](/standards/climate-nature/sbtn/)
 
 ---
 
-<small>Planetary Boundary Status: Stockholm Resilience Centre (2023) | Scientific Basis: IPBES (2019) | Last updated: February 2026</small>
+<small>Sources: Stockholm Resilience Centre, IPBES, CBD | Last updated: February 2026</small>

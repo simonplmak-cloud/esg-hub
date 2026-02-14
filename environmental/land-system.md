@@ -1,136 +1,115 @@
 ---
 layout: apf-design
-title: "Land-System Change"
+title: "Land-System Change (PB3)"
 permalink: /environmental/land-system/
 ---
 
 # Land-System Change
-**Planetary Boundary 3**
 
-## Boundary Status
-
-**Status**: Boundary transgressed  
-**Control Variable**: Forest cover as % of original forest extent  
-- **Current**: 62% of original forest cover remaining  
-- **Boundary**: 75% for boreal and temperate forests; 85% for tropical forests
-
-**Scientific Basis**: Land-system change affects climate regulation, water cycles, biodiversity, and carbon sequestration. Deforestation accounts for ~10% of global GHG emissions. Tropical forests alone store 250 Gt of carbon.
+**Planetary Boundary 3** | Status: **Boundary Transgressed**
 
 ---
 
-## Business Relevance
+## Boundary Definition
 
-### Direct Impacts
-- **Agriculture**: Land conversion for crops and livestock
-- **Forestry**: Logging, pulp and paper production
-- **Real Estate**: Urban expansion and infrastructure
-- **Mining**: Land disturbance and habitat fragmentation
+**Control Variable**: % of global land surface converted to cropland
 
-### Supply Chain Risks
-- **Commodity Sourcing**: Palm oil, soy, beef, timber (deforestation-linked)
-- **Regulatory Risk**: EU Deforestation Regulation (EUDR), UK Due Diligence Act
-- **Reputational Risk**: NGO campaigns, consumer boycotts
-- **Operational Risk**: Indigenous land rights conflicts
+**Safe Operating Space**: Maintain 75% of original forest cover in major biomes
+
+**Current Status**: 
+- Global forest cover: 62% of original (**transgressed**)
+- Tropical forests: 85% remaining
+- Temperate forests: 50% remaining
+- Boreal forests: 85% remaining
+
+**Source**: [Richardson et al. (2023)](https://www.science.org/doi/10.1126/sciadv.adh2458)
+
+---
+
+## Why This Matters
+
+Land-system change (deforestation, agricultural expansion, urbanization) drives biodiversity loss, disrupts water cycles, reduces carbon storage, and alters regional climates. Forests store ~45% of terrestrial carbon and provide habitat for 80% of terrestrial species.
+
+**Key Drivers**:
+- Agriculture expansion (commodity crops: soy, palm oil, beef)
+- Urbanization
+- Infrastructure development
+- Logging (legal and illegal)
 
 ---
 
 ## Key Standards & Frameworks
 
-### Disclosure Standards
-- **[TNFD](/standards/tnfd/)** — Land use change in LEAP assessment
-- **[EU ESRS E4](/standards/esrs/)** — Biodiversity and ecosystems (includes land use)
-- **[GRI 304](/standards/gri/)** — Biodiversity (includes habitat protection)
-- **[CDP Forests](/standards/climate-nature/cdp/)** — Deforestation disclosure questionnaire
+### Corporate Commitments
+- **[TNFD](/standards/tnfd/)** — Land footprint disclosure
+- **[Science Based Targets for Nature (SBTn)](/standards/climate-nature/sbtn/)** — Land-use targets
+- **[Accountability Framework Initiative (AFI)](https://accountability-framework.org/)** — Deforestation-free supply chains
 
-### Regulatory Frameworks
-- **[EU Deforestation Regulation (EUDR)](https://environment.ec.europa.eu/topics/forests/deforestation/regulation-deforestation-free-products_en)** — Prohibits import of commodities linked to deforestation (effective 2024)
-- **[UK Environment Act](https://www.legislation.gov.uk/ukpga/2021/30/contents)** — Due diligence on forest-risk commodities
+### Certification Schemes
+- **[FSC (Forest Stewardship Council)](https://fsc.org/)** — Responsible forestry
+- **[RSPO (Roundtable on Sustainable Palm Oil)](https://rspo.org/)** — Deforestation-free palm oil
+- **[RTRS (Roundtable on Responsible Soy)](https://responsiblesoy.org/)** — Sustainable soy
 
 ---
 
 ## Primary Source Documents
 
-### Scientific Foundation
-- [FAO Global Forest Resources Assessment (2020)](https://www.fao.org/forest-resources-assessment/2020/en/) — Global forest cover data
-- [IPCC Land Use Report (2019)](https://www.ipcc.ch/srccl/) — Climate change and land
-- [Pendrill et al. (2022) - Disentangling the numbers behind agriculture-driven tropical deforestation](https://www.science.org/doi/10.1126/science.abm9267)
+### Scientific Reports
+- **[FAO Global Forest Resources Assessment 2024](https://www.fao.org/forest-resources-assessment/en/)** — Comprehensive forest data
+- **[IPCC Special Report on Climate Change and Land (2019)](https://www.ipcc.ch/srccl/)** — Land-use emissions
+- **[WWF Deforestation Fronts](https://wwf.panda.org/discover/our_focus/forests_practice/deforestation_fronts/)** — Hotspot mapping
 
-### Policy Frameworks
-- [UN REDD+ Programme](https://www.un-redd.org/) — Reducing emissions from deforestation and forest degradation
-- [New York Declaration on Forests](https://forestdeclaration.org/) — End natural forest loss by 2030
-- [Bonn Challenge](https://www.bonnchallenge.org/) — Restore 350M hectares by 2030
+### International Frameworks
+- **[UN Convention to Combat Desertification (UNCCD)](https://www.unccd.int/)** — Land degradation neutrality
+- **[Bonn Challenge](https://www.bonnchallenge.org/)** — 350M hectares restoration by 2030
+- **[New York Declaration on Forests](https://forestdeclaration.org/)** — Halve deforestation by 2020, end by 2030
 
-### Regional Standards
-- **China**: [National Forestry and Grassland Administration](http://www.forestry.gov.cn/) — Forest conservation policies
-- **Indonesia**: [Indonesia Sustainable Palm Oil (ISPO)](https://www.ispo-org.or.id/)
-- **Brazil**: [Brazilian Forest Code](https://www.gov.br/agricultura/pt-br/assuntos/sustentabilidade/codigo-florestal)
-
----
-
-## Recommended Metrics
-
-### Deforestation Metrics
-- **Land Conversion Rate**: Hectares per year converted from natural ecosystems
-- **Forest Cover Change**: Net change in forest area (ha)
-- **Zero-Deforestation Commitment**: % of supply chain certified deforestation-free
-
-### Restoration Metrics
-- **Land Restored**: Hectares of degraded land restored
-- **Reforestation Rate**: Trees planted or regenerated
-- **Biodiversity Recovery**: Species richness on restored land
-
-### Supply Chain Metrics
-- **Traceability**: % of high-risk commodities traceable to origin
-- **Certification**: % of sourcing from certified sustainable sources (FSC, RSPO, etc.)
+### Regional Policies
+- **[EU Deforestation Regulation (EUDR)](https://environment.ec.europa.eu/topics/forests/deforestation/regulation-deforestation-free-products_en)** — Effective 2024
+- **[Amazon Region Protected Areas (ARPA)](https://www.worldbank.org/en/results/2013/04/11/amazon-region-protected-areas-project)** — Brazil
 
 ---
 
-## High-Risk Commodities
+## Regional Initiatives
 
-**Agriculture-driven deforestation commodities**:
-- Cattle (beef and leather)
-- Soy
-- Palm oil
-- Cocoa
-- Coffee
-- Rubber
-- Timber and pulp
+### Hong Kong & China
+- **[China National Afforestation Program](http://english.mee.gov.cn/)** — Forest cover target: 26% by 2035
+- **[HK Country Parks System](https://www.afcd.gov.hk/english/country/cou_vis/cou_vis.html)** — 40% of land protected
+
+### Asia-Pacific
+- **[ASEAN Guidelines on Peatlands Management](https://asean.org/)**
+- **[Indonesia Moratorium on Forest Clearing](https://www.menlhk.go.id/site/index.php?lang=en)**
 
 ---
 
-## Simon Mak's Books
+## Measurement & Monitoring
 
-### Technical Guidance
-**Biodiversity and Ecology Service Accounting: A Mathematics Guide**  
-Includes land-use change impact assessment:
-- Habitat quality metrics
-- Ecosystem service valuation for forests
-- Land footprint calculations
+### Satellite Monitoring
+- **[Global Forest Watch](https://www.globalforestwatch.org/)** — Real-time deforestation alerts (World Resources Institute)
+- **[GLAD Alerts](https://glad.earthengine.app/view/global-forest-change)** — University of Maryland
+- **[Planet Labs](https://www.planet.com/)** — Daily satellite imagery
 
-[Download PDF](/books/Biodiversity_Ecosystem_Services_Accounting_ENHANCED.pdf) | [View on Amazon](https://www.amazon.com/stores/Simon-Mak/author/)
+### Corporate Tools
+- **[Trase](https://www.trase.earth/)** — Supply chain deforestation risk
+- **[Forest 500](https://forest500.org/)** — Company/institution deforestation commitments
 
-**Carbon Accounting in Practice**  
-Land use, land-use change, and forestry (LULUCF) emissions:
-- IPCC AFOLU guidelines
-- Carbon stock changes in forests
+---
 
-[Download PDF](/books/Carbon_Accounting_in_Practice%20ver2.pdf) | [View on Amazon](https://www.amazon.com/stores/Simon-Mak/author/)
+## Tools & Data
 
-### Reporting Frameworks
-**TNFD Made Simple**  
-Land-system change in TNFD LEAP approach.
-
-[Download PDF](/books/ESG_Reporting_Made_Simple_TNFD.pdf) | [View on Amazon](https://www.amazon.com/stores/Simon-Mak/author/)
+- **[FAO FAOSTAT](https://www.fao.org/faostat/en/)** — Land use statistics
+- **[Hansen Global Forest Change Dataset](https://glad.earthengine.app/view/global-forest-change)** — 2000-2023 forest loss
+- **[CDP Forests](https://www.cdp.net/en/forests)** — Corporate disclosure on deforestation
 
 ---
 
 ## Related Pages
 
-- [Biodiversity Loss](/environmental/biodiversity/) — Land conversion as biodiversity driver
-- [Climate Change](/environmental/climate-change/) — Deforestation emissions
-- [Supply Chain Responsibility](/social/fair-operating-practices/supply-chain-sr/) — Due diligence
-- [Indigenous Rights](/social/human-rights/indigenous-rights/) — Land rights conflicts
+- [Environmental Hub](/environmental/)
+- [Biodiversity Loss](/environmental/biodiversity/) — Driven by habitat loss
+- [Climate Change](/environmental/climate-change/) — Forests as carbon sinks
+- [TNFD](/standards/tnfd/)
 
 ---
 
-<small>Planetary Boundary Status: Stockholm Resilience Centre (2023) | Data: FAO (2020) | Last updated: February 2026</small>
+<small>Sources: Stockholm Resilience Centre, FAO, IPCC SRCCL | Last updated: February 2026</small>
