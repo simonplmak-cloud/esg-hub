@@ -1,135 +1,129 @@
 ---
 layout: apf-design
-title: "Climate Change"
+title: "Climate Change (PB1)"
 permalink: /environmental/climate-change/
 ---
 
 # Climate Change
-**Planetary Boundary 1**
 
-## Boundary Status
-
-**Status**: Boundary transgressed  
-**Control Variables**:  
-- Atmospheric CO₂ concentration: 420 ppm (boundary: 350 ppm)  
-- Energy imbalance at top of atmosphere: +2.3 W/m² (boundary: +1.0 W/m²)
-
-**Scientific Basis**: Climate change drives global temperature rise, extreme weather, sea-level rise, and ecosystem disruption. Current trajectory: 2.7°C warming by 2100 under current policies.
+**Planetary Boundary 1** | Status: **Boundary Transgressed**
 
 ---
 
-## Business Relevance
+## Boundary Definition
 
-### Physical Risks
-- **Acute**: Extreme weather (floods, hurricanes, wildfires, droughts)
-- **Chronic**: Sea-level rise, temperature shifts, precipitation pattern changes
+**Control Variables**:
+- Atmospheric CO₂ concentration
+- Energy imbalance at top-of-atmosphere (radiative forcing)
 
-### Transition Risks
-- **Policy**: Carbon pricing, emissions regulations, mandatory disclosure
-- **Technology**: Shift to renewables, EV adoption, energy efficiency
-- **Market**: Changing consumer preferences, green premiums
-- **Reputation**: Climate litigation, activist pressure, brand perception
+**Safe Operating Space**:
+- CO₂: 350 ppm (pre-industrial: 280 ppm)
+- Radiative forcing: +1.0 W/m² above pre-industrial
+
+**Current Status** (2026):
+- CO₂: ~420 ppm (**transgressed**)
+- Radiative forcing: +2.3 W/m² (**transgressed**)
+
+**Source**: [Richardson et al. (2023)](https://www.science.org/doi/10.1126/sciadv.adh2458)
+
+---
+
+## Why This Matters
+
+Climate change driven by greenhouse gas emissions affects global temperature, precipitation patterns, sea levels, and extreme weather frequency. Transgressing this boundary increases risk of crossing tipping points (ice sheet collapse, permafrost thaw, Amazon dieback).
+
+**Paris Agreement Target**: Limit warming to well below 2°C, preferably 1.5°C above pre-industrial levels.
 
 ---
 
 ## Key Standards & Frameworks
 
 ### Disclosure Standards
-- **[IFRS S2](/standards/ifrs-s1-s2/)** — Climate-related disclosures (effective 2024)
+- **[IFRS S2](/standards/ifrs-s1-s2/)** — Climate-related Disclosures (ISSB, 2024)
 - **[TCFD](/standards/tcfd/)** — Task Force on Climate-related Financial Disclosures
-- **[EU ESRS E1](/standards/esrs/)** — Climate change (double materiality)
-- **[GRI 305](/standards/gri/)** — Emissions
+- **[GRI 305](/standards/gri/)** — Emissions reporting
 
-### Measurement & Target-Setting
-- **[GHG Protocol](/standards/climate-nature/ghg-protocol/)** — Corporate Accounting and Reporting Standard (Scope 1, 2, 3)
-- **[SBTi](/standards/climate-nature/sbti/)** — Science Based Targets initiative (1.5°C pathway)
-- **[CDP Climate](/standards/climate-nature/cdp/)** — Climate disclosure questionnaire
-- **[PCAF](/standards/climate-nature/pcaf/)** — Partnership for Carbon Accounting Financials (financed emissions)
+### Accounting & Target-Setting
+- **[GHG Protocol](/standards/climate-nature/ghg-protocol/)** — Corporate Accounting Standard (Scope 1/2/3)
+- **[SBTi](/standards/climate-nature/sbti/)** — Science Based Targets initiative
+- **[CDP](/standards/climate-nature/cdp/)** — Climate disclosure platform
+- **[PCAF](/standards/climate-nature/pcaf/)** — Financed emissions accounting
 
 ---
 
 ## Primary Source Documents
 
-### Scientific Foundation
-- [IPCC Sixth Assessment Report (AR6)](https://www.ipcc.ch/report/ar6/wg1/) — Physical science basis
-- [IPCC AR6 WGII](https://www.ipcc.ch/report/ar6/wg2/) — Impacts, adaptation, vulnerability
-- [IPCC AR6 WGIII](https://www.ipcc.ch/report/ar6/wg3/) — Mitigation pathways
+### Scientific Assessment
+- **[IPCC Sixth Assessment Report (AR6)](https://www.ipcc.ch/assessment-report/ar6/)** — Full report + Synthesis
+  - [Climate Change 2021: Physical Science Basis](https://www.ipcc.ch/report/ar6/wg1/)
+  - [Climate Change 2022: Impacts, Adaptation, Vulnerability](https://www.ipcc.ch/report/ar6/wg2/)
+  - [Climate Change 2022: Mitigation](https://www.ipcc.ch/report/ar6/wg3/)
 
-### Paris Agreement Framework
-- [Paris Agreement (UNFCCC)](https://unfccc.int/sites/default/files/english_paris_agreement.pdf) — Global climate treaty
-- [Glasgow Climate Pact (COP26)](https://unfccc.int/documents/310475) — 2021 commitments
+### Global Treaties
+- **[Paris Agreement (2015)](https://unfccc.int/process-and-meetings/the-paris-agreement)** — UNFCCC
+- **[Glasgow Climate Pact (COP26)](https://unfccc.int/documents/310475)** — 2021
 
-### Regional Standards
-- **Hong Kong**: [HKEX Climate Disclosure Requirements](/hk-apac/hkex-climate/)
-- **China**: [China ETS](http://www.ets.org.cn/)
-- **Singapore**: [SGX Climate Reporting](/hk-apac/singapore-sgx/)
-
----
-
-## Recommended Metrics
-
-### GHG Emissions
-- **Scope 1**: Direct emissions (tCO₂e)
-- **Scope 2**: Purchased electricity (location-based & market-based)
-- **Scope 3**: Value chain emissions (15 categories)
-
-### Financial Metrics
-- **Carbon Intensity**: tCO₂e per $M revenue
-- **Climate VaR**: Value at risk from climate scenarios
-- **Transition Cost**: Capital expenditure for decarbonization
-
-### Scenario Analysis
-- **IEA Scenarios**: Net Zero 2050, Announced Pledges, Current Policies
-- **NGFS Scenarios**: Orderly, disorderly, hot house world
-- **IPCC SSP Scenarios**: SSP1-1.9 to SSP5-8.5
+### National Commitments
+- **[Nationally Determined Contributions (NDCs)](https://unfccc.int/NDCREG)** — UNFCCC Registry
 
 ---
 
-## Simon Mak's Books
+## Regional Regulations
 
-### Technical Guidance
-**Carbon Accounting in Practice: A Mathematics Guide for Sustainability Professionals**  
-Comprehensive technical guide covering:
-- GHG Protocol methodologies (Scope 1, 2, 3)
-- Emission factor selection and uncertainty
-- Scope 3 value chain calculations
-- Carbon footprint modeling
+### Hong Kong & China
+- **[HK Climate Action Plan 2050](https://www.climateready.gov.hk/)**
+- **[China's Dual Carbon Goals](http://english.mee.gov.cn/)** — Carbon peak by 2030, neutrality by 2060
+- **[HKEX Climate Disclosure Requirements](/hk-apac/hkex-climate/)**
 
-[Download PDF](/books/Carbon_Accounting_in_Practice%20ver2.pdf) | [View on Amazon](https://www.amazon.com/stores/Simon-Mak/author/)
+### Asia-Pacific
+- **[Japan Net-Zero by 2050](https://www.env.go.jp/en/)** — Ministry of Environment
+- **[Singapore Green Plan 2030](https://www.greenplan.gov.sg/)**
 
-### Climate Risk Quantification
-**Climate Risk Quantification in Practice: A Mathematical Guide**  
-Financial impact assessment:
-- Physical risk modeling (acute & chronic)
-- Transition risk quantification
+---
+
+## Book Resources
+
+### From Simon Mak's ESG Series:
+
+**[Carbon Accounting in Practice](/books/)** — Mathematical guide to GHG measurement  
+*Download PDF: [Carbon_Accounting_in_Practice.pdf](/books/Carbon_Accounting_in_Practice%20ver2.pdf)*
+
+Key chapters:
+- Scope 1/2/3 calculation methodologies
+- Emission factor databases
+- Uncertainty analysis
+
+**[Climate Risk Quantification in Practice](/books/)** — Financial impact of climate change  
+*Download PDF: [Climate_Financial_Impact_in_Practice.pdf](/books/Climate_Financial_Impact_in_Practice_CORRECTED.pdf)*
+
+Key chapters:
+- Physical risk modeling
+- Transition risk assessment
 - Climate Value-at-Risk (VaR)
-- Scenario analysis (NGFS, IEA, IPCC)
-- Discounted cash flow adjustments
+- Scenario analysis (NGFS, IEA)
 
-[Download PDF](/books/Climate_Financial_Impact_in_Practice_CORRECTED.pdf) | [View on Amazon](https://www.amazon.com/stores/Simon-Mak/author/)
+**[Carbon Credits Made Simple](/books/)** — Voluntary carbon markets  
+*Download PDF: [Carbon_Credits_Made_Simple.pdf](/books/Carbon_Credits_Made_Simple_Book.pdf)*
 
-### Reporting Frameworks
-**ESG Reporting Made Simple: IFRS S1, S2, and SASB Standards**  
-Includes detailed IFRS S2 climate disclosure guidance.
+---
 
-[Download PDF](/books/ESG_Reporting_Made_Simple_IFRS.pdf) | [View on Amazon](https://www.amazon.com/stores/Simon-Mak/author/)
+## Tools & Data
 
-### Carbon Markets
-**Carbon Credits Made Simple: The Essential Guide to the Voluntary Carbon Market**  
-Voluntary carbon markets, project types, verification standards.
-
-[Download PDF](/books/Carbon_Credits_Made_Simple_Book.pdf) | [View on Amazon](https://www.amazon.com/stores/Simon-Mak/author/)
+- **[IPCC Data Distribution Centre](https://www.ipcc-data.org/)** — Climate model outputs
+- **[Climate Watch](https://www.climatewatchdata.org/)** — World Resources Institute GHG data
+- **[Global Carbon Project](https://www.globalcarbonproject.org/)** — Annual emissions budgets
+- **[SBTi Target Dashboard](https://sciencebasedtargets.org/companies-taking-action)** — Corporate commitments
 
 ---
 
 ## Related Pages
 
-- [Ocean Acidification](/environmental/ocean-acidification/) — Climate change impacts on marine systems
-- [Biodiversity](/environmental/biodiversity/) — Climate-biodiversity nexus
-- [Governance: Risk Management](/governance/sustainability-resilience/risk-management/) — Enterprise risk frameworks
-- [TCFD Standard](/standards/tcfd/)
-- [IFRS S2 Standard](/standards/ifrs-s1-s2/)
+- [Environmental Hub](/environmental/)
+- [Ocean Acidification](/environmental/ocean-acidification/) — Climate change impact
+- [Standards Hub](/standards/)
+- [GHG Protocol](/standards/climate-nature/ghg-protocol/)
+- [IFRS S2](/standards/ifrs-s1-s2/)
 
 ---
 
-<small>Planetary Boundary Status: Stockholm Resilience Centre (2023) | Last updated: February 2026</small>
+<small>Sources: Stockholm Resilience Centre, IPCC AR6, UNFCCC | Last updated: February 2026</small>
