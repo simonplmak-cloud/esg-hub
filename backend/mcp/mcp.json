@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "esg-hub": {
+      "command": "python3",
+      "args": ["-m", "backend.mcp.server"],
+      "env": {
+        "SURREAL_URL": "ws://localhost:8000/rpc",
+        "SURREAL_NS": "esg_hub",
+        "SURREAL_DB": "production",
+        "SURREAL_USER": "root",
+        "SURREAL_PASS": "root"
+      }
+    }
+  }
+}
