@@ -1,0 +1,238 @@
+name: Content Validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.md'
+      - 'environmental/**'
+      - 'social/**'
+      - 'governance/**'
+      - 'standards/**'
+      - 'hk-apac/**'
+      - 'learning/**'
+      - 'sdg/**'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate-content:
+    name: Validate Markdown Content
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml markdown beautifulsoup4
+      
+      - name: Check for stub pages
+        run: |
+          echo "🔍 Checking for stub pages (< 1500 bytes)..."
+          python3 << 'EOFPY'
+import os
+import sys
+
+stub_pages = []
+quality_threshold = 1500  # bytes
+
+for root, dirs, files in os.walk('.'):
+    # Skip hidden directories and non-content directories
+    if '/.git' in root or '/_' in root or '/assets' in root or '/backend' in root:
+        continue
+    
+    for file in files:
+        if file.endswith('.md') and file not in ['README.md', 'REPOSITORY-INFO.md', 'changelog.md']:
+            path = os.path.join(root, file)
+            size = os.path.getsize(path)
+            
+            if size < quality_threshold:
+                stub_pages.append((path, size))
+
+if stub_pages:
+    print(f"\n⚠️  Found {len(stub_pages)} stub pages:\n")
+    for path, size in sorted(stub_pages, key=lambda x: x[1]):
+        print(f"  - {path}: {size} bytes")
+    print(f"\n💡 Target: {quality_threshold}+ bytes per page")
+    print(f"📊 Completion: {((131 - len(stub_pages)) / 131 * 100):.1f}%")
+else:
+    print("✅ All pages meet quality threshold!")
+EOFPY
+      
+      - name: Validate YAML front matter
+        run: |
+          echo "📝 Validating YAML front matter..."
+          python3 << 'EOFPY'
+import os
+import yaml
+import sys
+
+errors = []
+
+for root, dirs, files in os.walk('.'):
+    if '/.git' in root or '/_' in root or '/assets' in root or '/backend' in root:
+        continue
+    
+    for file in files:
+        if file.endswith('.md') and file not in ['README.md', 'REPOSITORY-INFO.md']:
+            path = os.path.join(root, file)
+            
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Check for front matter
+                if not content.startswith('---\n'):
+                    errors.append(f"{path}: Missing YAML front matter")
+                    continue
+                
+                # Extract and validate front matter
+                parts = content.split('---\n', 2)
+                if len(parts) < 3:
+                    errors.append(f"{path}: Invalid YAML front matter format")
+                    continue
+                
+                front_matter = yaml.safe_load(parts[1])
+                
+                # Check required fields
+                if 'layout' not in front_matter:
+                    errors.append(f"{path}: Missing 'layout' field")
+                if 'title' not in front_matter:
+                    errors.append(f"{path}: Missing 'title' field")
+                
+            except Exception as e:
+                errors.append(f"{path}: {str(e)}")
+
+if errors:
+    print(f"\n❌ Found {len(errors)} validation errors:\n")
+    for error in errors:
+        print(f"  - {error}")
+    sys.exit(1)
+else:
+    print("✅ All pages have valid YAML front matter!")
+EOFPY
+      
+      - name: Check for broken internal links
+        run: |
+          echo "🔗 Checking for broken internal links..."
+          python3 << 'EOFPY'
+import os
+import re
+import sys
+
+all_files = set()
+broken_links = []
+
+# Collect all markdown files
+for root, dirs, files in os.walk('.'):
+    if '/.git' in root or '/_' in root or '/assets' in root or '/backend' in root:
+        continue
+    for file in files:
+        if file.endswith('.md'):
+            path = os.path.join(root, file).replace('./', '')
+            all_files.add(path)
+            all_files.add(path.replace('.md', ''))  # Jekyll removes .md extension
+
+# Check links in each file
+for root, dirs, files in os.walk('.'):
+    if '/.git' in root or '/_' in root or '/assets' in root or '/backend' in root:
+        continue
+    
+    for file in files:
+        if file.endswith('.md'):
+            path = os.path.join(root, file)
+            
+            with open(path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Find all markdown links
+            links = re.findall(r'\[([^\]]+)\]\(([^)]+)\)', content)
+            
+            for text, link in links:
+                # Skip external links
+                if link.startswith('http://') or link.startswith('https://'):
+                    continue
+                
+                # Skip anchors
+                if link.startswith('#'):
+                    continue
+                
+                # Resolve relative path
+                if link.startswith('/'):
+                    target = link[1:]  # Remove leading /
+                else:
+                    target = os.path.normpath(os.path.join(os.path.dirname(path), link))
+                
+                # Check if target exists
+                if target not in all_files and target + '.md' not in all_files:
+                    broken_links.append(f"{path}: Broken link to '{link}'")
+
+if broken_links:
+    print(f"\n⚠️  Found {len(broken_links)} potentially broken links:\n")
+    for link in broken_links[:20]:  # Show first 20
+        print(f"  - {link}")
+    if len(broken_links) > 20:
+        print(f"  ... and {len(broken_links) - 20} more")
+else:
+    print("✅ No broken internal links found!")
+EOFPY
+      
+      - name: Generate content report
+        run: |
+          echo "📊 Generating content report..."
+          python3 << 'EOFPY'
+import os
+
+sections = {
+    'environmental': 0,
+    'social': 0,
+    'governance': 0,
+    'standards': 0,
+    'hk-apac': 0,
+    'learning': 0,
+    'sdg': 0,
+    'other': 0
+}
+
+total_size = 0
+total_pages = 0
+
+for root, dirs, files in os.walk('.'):
+    if '/.git' in root or '/_' in root or '/assets' in root or '/backend' in root:
+        continue
+    
+    for file in files:
+        if file.endswith('.md') and file not in ['README.md', 'REPOSITORY-INFO.md']:
+            path = os.path.join(root, file)
+            size = os.path.getsize(path)
+            total_size += size
+            total_pages += 1
+            
+            # Categorize by directory
+            categorized = False
+            for section in sections.keys():
+                if f'/{section}/' in path or path.startswith(f'{section}/'):
+                    sections[section] += 1
+                    categorized = True
+                    break
+            
+            if not categorized:
+                sections['other'] += 1
+
+print("\n📊 Content Statistics:\n")
+print(f"Total Pages: {total_pages}")
+print(f"Total Size: {total_size:,} bytes ({total_size / 1024:.1f} KB)")
+print(f"Average Size: {total_size / total_pages if total_pages > 0 else 0:.0f} bytes/page")
+print("\nPages by Section:")
+for section, count in sorted(sections.items(), key=lambda x: x[1], reverse=True):
+    if count > 0:
+        print(f"  - {section.title()}: {count}")
+EOFPY
