@@ -1,16 +1,16 @@
 ---
 layout: apf-design
-title: "Data Privacy & Security"
-permalink: /social/consumer-issues/data-privacy/
+title: "Supply Chain Responsibility"
+permalink: /social/fair-operating/supply-chain-responsibility/
 ---
 
-# Data Privacy & Security
+# Supply Chain Responsibility
 
 [Comprehensive content covering key aspects, regulatory requirements, best practices, and business implications]
 
 ## Overview
 
-This page covers data privacy & security as a critical component of corporate social responsibility and ESG performance.
+This page covers supply chain responsibility as a critical component of corporate social responsibility and ESG performance.
 
 ## Key Principles
 

@@ -6,24 +6,40 @@ permalink: /social/human-rights/due-diligence/
 
 # Human Rights Due Diligence
 
-**Ongoing process to identify, prevent, mitigate, and account for adverse human rights impacts**
+**Human rights due diligence (HRDD)** is the process companies use to identify, prevent, mitigate, and account for how they address actual and potential adverse human rights impacts.
 
-## Framework Context
+## UN Guiding Principles Framework
 
-UN Guiding Principles, OECD Due Diligence Guidance
+The **UN Guiding Principles on Business and Human Rights (UNGPs)** establish the corporate responsibility to respect human rights through due diligence:
 
-## Primary Source Documents
+1. **Policy Commitment** — Public statement of respect for human rights  
+2. **Impact Assessment** — Identify actual and potential impacts  
+3. **Integration** — Embed findings into business processes  
+4. **Tracking** — Monitor effectiveness of responses  
+5. **Communication** — Report publicly on how impacts are addressed  
+6. **Remediation** — Provide for or cooperate in remediation
 
-- [ISO 26000:2010](https://www.iso.org/iso-26000-social-responsibility.html)
-- [UN Guiding Principles on Business & Human Rights](/standards/social-governance/ungp/)
-- [OECD Guidelines for Multinational Enterprises](/standards/social-governance/oecd-mne-guidelines/)
+## Risk-Based Approach
 
----
+HRDD should be **proportionate to severity and likelihood** of impacts:
+
+**Severity** — Scale, scope, and irremediability of impact  
+**Likelihood** — Probability of occurrence  
+**Priority** — Focus on most severe risks first
+
+## Salient Human Rights Issues
+
+Companies should identify **salient issues** — those most at risk of severe negative impact through company activities or business relationships.
+
+## Regulatory Requirements
+
+**EU Corporate Sustainability Due Diligence Directive (CSDDD)** — Mandatory HRDD for large companies  
+**German Supply Chain Due Diligence Act** — HRDD across supply chains  
+**French Duty of Vigilance Law** — Vigilance plans for large companies
 
 ## From Simon Mak's ESG Library
 
-- **ESG & GRI Reporting Made Simple** — Social disclosures implementation
-- **Supply Chain & Business Ethics** — Due diligence and ethical conduct
+- **ESG & GRI Reporting Made Simple** — Human rights disclosure guidance
 
 [View all books →](/books/)
 

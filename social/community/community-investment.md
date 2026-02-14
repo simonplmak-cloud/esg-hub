@@ -1,16 +1,16 @@
 ---
 layout: apf-design
-title: "Data Privacy & Security"
-permalink: /social/consumer-issues/data-privacy/
+title: "Community Investment"
+permalink: /social/community/community-investment/
 ---
 
-# Data Privacy & Security
+# Community Investment
 
 [Comprehensive content covering key aspects, regulatory requirements, best practices, and business implications]
 
 ## Overview
 
-This page covers data privacy & security as a critical component of corporate social responsibility and ESG performance.
+This page covers community investment as a critical component of corporate social responsibility and ESG performance.
 
 ## Key Principles
 

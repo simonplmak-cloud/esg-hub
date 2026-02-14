@@ -1,16 +1,16 @@
 ---
 layout: apf-design
-title: "Data Privacy & Security"
-permalink: /social/consumer-issues/data-privacy/
+title: "Freedom of Association & Collective Bargaining"
+permalink: /social/labour-practices/freedom-association/
 ---
 
-# Data Privacy & Security
+# Freedom of Association & Collective Bargaining
 
 [Comprehensive content covering key aspects, regulatory requirements, best practices, and business implications]
 
 ## Overview
 
-This page covers data privacy & security as a critical component of corporate social responsibility and ESG performance.
+This page covers freedom of association & collective bargaining as a critical component of corporate social responsibility and ESG performance.
 
 ## Key Principles
 

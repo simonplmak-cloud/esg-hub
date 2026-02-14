@@ -1,16 +1,16 @@
 ---
 layout: apf-design
-title: "Data Privacy & Security"
-permalink: /social/consumer-issues/data-privacy/
+title: "Consumer Complaints & Grievances"
+permalink: /social/consumer-issues/consumer-complaints/
 ---
 
-# Data Privacy & Security
+# Consumer Complaints & Grievances
 
 [Comprehensive content covering key aspects, regulatory requirements, best practices, and business implications]
 
 ## Overview
 
-This page covers data privacy & security as a critical component of corporate social responsibility and ESG performance.
+This page covers consumer complaints & grievances as a critical component of corporate social responsibility and ESG performance.
 
 ## Key Principles
 

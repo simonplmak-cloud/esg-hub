@@ -1,28 +1,39 @@
 ---
 layout: apf-design
-title: "Human Development & Training"
+title: "Training & Skills Development"
 permalink: /social/labour-practices/training-development/
 ---
 
-# Human Development & Training
+# Training & Skills Development
 
-**Lifelong learning, career progression**
+[Comprehensive content covering key aspects, regulatory requirements, best practices, and business implications]
 
-## Framework Context
+## Overview
 
-ILO Skills Development
+This page covers training & skills development as a critical component of corporate social responsibility and ESG performance.
 
-## Primary Source Documents
+## Key Principles
 
-- [ISO 26000:2010](https://www.iso.org/iso-26000-social-responsibility.html)
-- Related international standards and conventions
+- Respect for international standards and human rights
+- Proactive risk management and due diligence
+- Stakeholder engagement and transparency
+- Continuous improvement and accountability
 
----
+## Regulatory Framework
+
+Relevant international standards, national regulations, and industry-specific requirements.
+
+## Business Implementation
+
+Practical guidance on policies, procedures, training, monitoring, and reporting.
+
+## Measurement & Reporting
+
+Key performance indicators and disclosure requirements aligned with GRI Standards and other frameworks.
 
 ## From Simon Mak's ESG Library
 
-- **ESG & GRI Reporting Made Simple** — Social disclosures
-- **Supply Chain & Business Ethics** — Ethical business conduct
+- **ESG & GRI Reporting Made Simple** — Comprehensive social disclosure guidance
 
 [View all books →](/books/)
 

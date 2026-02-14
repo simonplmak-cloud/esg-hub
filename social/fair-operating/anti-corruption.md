@@ -1,16 +1,16 @@
 ---
 layout: apf-design
-title: "Data Privacy & Security"
-permalink: /social/consumer-issues/data-privacy/
+title: "Anti-Corruption"
+permalink: /social/fair-operating/anti-corruption/
 ---
 
-# Data Privacy & Security
+# Anti-Corruption
 
 [Comprehensive content covering key aspects, regulatory requirements, best practices, and business implications]
 
 ## Overview
 
-This page covers data privacy & security as a critical component of corporate social responsibility and ESG performance.
+This page covers anti-corruption as a critical component of corporate social responsibility and ESG performance.
 
 ## Key Principles
 

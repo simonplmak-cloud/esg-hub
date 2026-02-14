@@ -1,29 +1,49 @@
 ---
 layout: apf-design
-title: "Rights of Indigenous Peoples"
+title: "Indigenous Peoples' Rights"
 permalink: /social/human-rights/indigenous-rights/
 ---
 
-# Rights of Indigenous Peoples
+# Indigenous Peoples' Rights
 
-**Self-determination, land rights, FPIC**
+**Indigenous peoples** have distinct rights recognized in international law, including rights to lands, resources, and self-determination.
 
-## Framework Context
+## UN Declaration on Indigenous Rights
 
-UNDRIP, ILO 169
+The **UN Declaration on the Rights of Indigenous Peoples (UNDRIP)** establishes minimum standards including:
 
-## Primary Source Documents
+**Free, Prior and Informed Consent (FPIC)** — Right to give or withhold consent to projects affecting their lands  
+**Land Rights** — Rights to lands, territories, and resources  
+**Cultural Rights** — Rights to maintain and strengthen cultures  
+**Self-Determination** — Rights to determine own development priorities
 
-- [ISO 26000:2010](https://www.iso.org/iso-26000-social-responsibility.html)
-- [UN Guiding Principles on Business & Human Rights](/standards/social-governance/ungp/)
-- [OECD Guidelines for Multinational Enterprises](/standards/social-governance/oecd-mne-guidelines/)
+## Free, Prior and Informed Consent
 
----
+**FPIC** requires:
+
+**Free** — No coercion, intimidation, or manipulation  
+**Prior** — Sufficient time before project authorization  
+**Informed** — Full information about project and impacts  
+**Consent** — Right to say yes or no
+
+## Business Impacts
+
+Projects affecting indigenous lands can face:
+- Legal challenges and project delays  
+- Reputational damage  
+- Loss of social license to operate  
+- Financial impacts from project disruption
+
+## Best Practices
+
+**Early Engagement** — Consult before project design  
+**Cultural Competence** — Understand indigenous governance and decision-making  
+**Benefit Sharing** — Ensure equitable distribution of project benefits  
+**Impact Assessment** — Assess cultural, social, and environmental impacts
 
 ## From Simon Mak's ESG Library
 
-- **ESG & GRI Reporting Made Simple** — Social disclosures implementation
-- **Supply Chain & Business Ethics** — Due diligence and ethical conduct
+- **ESG & GRI Reporting Made Simple** — Indigenous rights disclosure
 
 [View all books →](/books/)
 

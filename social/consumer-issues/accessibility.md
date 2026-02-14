@@ -1,16 +1,16 @@
 ---
 layout: apf-design
-title: "Data Privacy & Security"
-permalink: /social/consumer-issues/data-privacy/
+title: "Product Accessibility"
+permalink: /social/consumer-issues/accessibility/
 ---
 
-# Data Privacy & Security
+# Product Accessibility
 
 [Comprehensive content covering key aspects, regulatory requirements, best practices, and business implications]
 
 ## Overview
 
-This page covers data privacy & security as a critical component of corporate social responsibility and ESG performance.
+This page covers product accessibility as a critical component of corporate social responsibility and ESG performance.
 
 ## Key Principles
 

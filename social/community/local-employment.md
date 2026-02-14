@@ -1,16 +1,16 @@
 ---
 layout: apf-design
-title: "Data Privacy & Security"
-permalink: /social/consumer-issues/data-privacy/
+title: "Local Employment & Skills"
+permalink: /social/community/local-employment/
 ---
 
-# Data Privacy & Security
+# Local Employment & Skills
 
 [Comprehensive content covering key aspects, regulatory requirements, best practices, and business implications]
 
 ## Overview
 
-This page covers data privacy & security as a critical component of corporate social responsibility and ESG performance.
+This page covers local employment & skills as a critical component of corporate social responsibility and ESG performance.
 
 ## Key Principles
 
