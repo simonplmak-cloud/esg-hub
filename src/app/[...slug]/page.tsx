@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { getPageByPermalink, getPagesBySection } from "@/lib/pages";
 import MarkdownContent from "@/components/MarkdownContent";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import TableOfContents from "@/components/TableOfContents";
 import Link from "next/link";
 
 interface PageProps {
@@ -19,12 +20,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const page = await getPageByPermalink(permalink);
 
   if (!page) {
-    return { title: "Page Not Found" };
+    return { title: "Page Not Found — ESG Hub" };
   }
 
   return {
-    title: page.title,
-    description: page.description || `${page.title} — ESG Hub`,
+    title: `${page.title} — ESG Hub`,
+    description: page.description || `${page.title} — ESG Hub by Ascent Partners Foundation`,
     keywords: page.keywords || undefined,
   };
 }
@@ -43,7 +44,7 @@ export default async function ContentPage({ params }: PageProps) {
     redirect(page.redirect_to);
   }
 
-  // Check if this is a hub/index page — show child pages
+  // Check if this is a hub/index page
   const isHubPage =
     page.layout === "apf-design" ||
     page.slug === "index" ||
@@ -52,38 +53,69 @@ export default async function ContentPage({ params }: PageProps) {
   let childPages: Awaited<ReturnType<typeof getPagesBySection>> = [];
   if (page.section) {
     childPages = await getPagesBySection(page.section);
-    // Filter out the current page and redirect pages
     childPages = childPages.filter(
       (p) => p.permalink !== page.permalink && !p.redirect_to
     );
   }
 
+  // Extract headings for Table of Contents
+  const headings = extractHeadings(page.content);
+  const showToc = headings.length >= 3 && page.content.trim().length > 800;
+
   return (
-    <div className="content-wrapper">
+    <div className="content-wrapper" id="main-content">
       <Breadcrumbs permalink={page.permalink} title={page.title} />
 
       <article>
         <h1>{page.title}</h1>
 
+        {/* Page metadata */}
         {page.description && (
           <p
             style={{
-              fontSize: "1.05rem",
+              fontSize: "1.02rem",
               color: "var(--color-text-secondary)",
-              marginBottom: "1.5rem",
-              lineHeight: 1.6,
+              marginBottom: "1rem",
+              lineHeight: 1.65,
             }}
           >
             {page.description}
           </p>
         )}
 
-        {/* Render markdown content */}
+        {/* Section + keywords metadata */}
+        <div className="page-meta">
+          {page.section && (
+            <span className="page-meta-item">
+              <span style={{ fontWeight: 600 }}>Section:</span>{" "}
+              <Link
+                href={`/${page.section}`}
+                style={{
+                  color: "var(--color-link)",
+                  textDecoration: "none",
+                }}
+              >
+                {page.section.charAt(0).toUpperCase() + page.section.slice(1)}
+              </Link>
+            </span>
+          )}
+          {page.keywords && (
+            <span className="page-meta-item">
+              <span style={{ fontWeight: 600 }}>Topics:</span>{" "}
+              {page.keywords}
+            </span>
+          )}
+        </div>
+
+        {/* Table of Contents */}
+        {showToc && <TableOfContents headings={headings} />}
+
+        {/* Markdown content */}
         {page.content && page.content.trim().length > 0 && (
           <MarkdownContent content={page.content} />
         )}
 
-        {/* Show child pages for hub/section pages */}
+        {/* Child pages for hub/section pages */}
         {childPages.length > 0 && (
           <div style={{ marginTop: "2rem" }}>
             <h2>Topics in this section</h2>
@@ -99,14 +131,7 @@ export default async function ContentPage({ params }: PageProps) {
                 <Link
                   key={child.permalink}
                   href={child.permalink.replace(/\/$/, "") || "/"}
-                  style={{
-                    display: "block",
-                    padding: "0.8rem 1rem",
-                    border: "1px solid var(--color-border-light)",
-                    borderRadius: "6px",
-                    textDecoration: "none",
-                    color: "inherit",
-                  }}
+                  className="topic-card"
                 >
                   <div
                     style={{
@@ -124,7 +149,7 @@ export default async function ContentPage({ params }: PageProps) {
                         fontSize: "0.82rem",
                         color: "var(--color-text-muted)",
                         marginTop: "0.3rem",
-                        lineHeight: 1.4,
+                        lineHeight: 1.45,
                       }}
                     >
                       {child.description.length > 120
@@ -137,7 +162,52 @@ export default async function ContentPage({ params }: PageProps) {
             </div>
           </div>
         )}
+
+        {/* Related pages (siblings in the same section) */}
+        {!isHubPage && childPages.length > 0 && (
+          <div className="related-pages">
+            <h2>Related pages</h2>
+            <ul style={{ paddingLeft: "1.4em", margin: "0.5rem 0" }}>
+              {childPages.slice(0, 8).map((child) => (
+                <li key={child.permalink} style={{ margin: "0.3rem 0" }}>
+                  <Link
+                    href={child.permalink.replace(/\/$/, "") || "/"}
+                    style={{ fontSize: "0.92rem" }}
+                  >
+                    {child.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </article>
     </div>
   );
+}
+
+/* ── Extract h2/h3 headings from markdown for ToC ── */
+interface Heading {
+  level: number;
+  text: string;
+  id: string;
+}
+
+function extractHeadings(markdown: string): Heading[] {
+  const headings: Heading[] = [];
+  const lines = markdown.split("\n");
+  for (const line of lines) {
+    const match = line.match(/^(#{2,3})\s+(.+)$/);
+    if (match) {
+      const level = match[1].length;
+      const text = match[2].replace(/[*_`\[\]]/g, "").trim();
+      const id = text
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+      headings.push({ level, text, id });
+    }
+  }
+  return headings;
 }

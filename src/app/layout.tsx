@@ -3,13 +3,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
-// Force dynamic rendering for all pages (SurrealDB fetches at request time)
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: {
     default: "ESG Hub — Open-Access ESG Encyclopedia",
-    template: "%s | ESG Hub",
+    template: "%s — ESG Hub",
   },
   description:
     "Comprehensive, open-access ESG encyclopedia by Ascent Partners Foundation. Environmental, Social, and Governance resources for professionals, students, and researchers.",
@@ -22,6 +21,10 @@ export const metadata: Metadata = {
     "reporting",
   ],
   authors: [{ name: "Ascent Partners Foundation" }],
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -48,13 +51,15 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap"
           rel="stylesheet"
         />
       </head>
       <body>
         <Header />
-        <main id="main-content">{children}</main>
+        <main id="main-content" role="main">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

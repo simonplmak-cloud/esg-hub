@@ -2,10 +2,27 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="content-wrapper" style={{ textAlign: "center", padding: "4rem 1.5rem" }}>
-      <h1 style={{ borderBottom: "none", fontSize: "2rem" }}>Page Not Found</h1>
-      <p style={{ color: "var(--color-text-secondary)", fontSize: "1.05rem", marginBottom: "2rem" }}>
-        The page you are looking for does not exist or has been moved.
+    <div
+      className="content-wrapper"
+      id="main-content"
+      style={{
+        textAlign: "center",
+        padding: "3rem 1rem",
+      }}
+    >
+      <h1 style={{ borderBottom: "none", fontSize: "2rem" }}>
+        Page Not Found
+      </h1>
+      <p
+        style={{
+          fontSize: "1.05rem",
+          color: "var(--color-text-secondary)",
+          maxWidth: "480px",
+          margin: "0.5rem auto 1.5rem",
+          lineHeight: 1.6,
+        }}
+      >
+        The page you are looking for does not exist or may have been moved.
       </p>
       <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
         <Link
@@ -19,6 +36,7 @@ export default function NotFound() {
             textDecoration: "none",
             fontFamily: "var(--font-heading)",
             fontWeight: 600,
+            fontSize: "0.92rem",
           }}
         >
           Go to Homepage
@@ -28,12 +46,13 @@ export default function NotFound() {
           style={{
             display: "inline-block",
             padding: "0.6em 1.5em",
-            border: "1px solid var(--color-border)",
+            border: "1px solid var(--color-primary)",
+            color: "var(--color-primary)",
             borderRadius: "4px",
             textDecoration: "none",
             fontFamily: "var(--font-heading)",
             fontWeight: 600,
-            color: "var(--color-text)",
+            fontSize: "0.92rem",
           }}
         >
           Search ESG Hub

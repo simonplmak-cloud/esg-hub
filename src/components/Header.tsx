@@ -4,242 +4,250 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, Search } from "lucide-react";
 
-const PRIMARY_NAV = [
-  { label: "Home", href: "/" },
+/* ── 1st tier: ESG pillar categories ── */
+const PRIMARY_LINKS = [
   { label: "Environmental", href: "/environmental" },
   { label: "Social", href: "/social" },
   { label: "Governance", href: "/governance" },
   { label: "Standards", href: "/standards" },
   { label: "Regional", href: "/hk-apac" },
-  { label: "Learn", href: "/learning" },
+  { label: "Learning", href: "/learning" },
   { label: "SDGs", href: "/sdg" },
 ];
 
-const SECONDARY_NAV = [
+/* ── 2nd tier: knowledge-base sub-sections ── */
+const SECONDARY_LINKS = [
   { label: "Ratings", href: "/ratings" },
-  { label: "Finance", href: "/finance" },
-  { label: "Investment", href: "/investment" },
-  { label: "Frameworks", href: "/frameworks" },
-  { label: "Fundamentals", href: "/fundamentals" },
-  { label: "Emerging", href: "/emerging-topics" },
-  { label: "Books", href: "/books" },
-  { label: "Glossary", href: "/glossary" },
+  { label: "Finance", href: "/learning/esg-finance" },
+  { label: "Investment", href: "/learning/esg-investment" },
+  { label: "Frameworks", href: "/learning/esg-frameworks" },
+  { label: "Fundamentals", href: "/learning/esg-fundamentals" },
+  { label: "Emerging", href: "/learning/emerging-topics" },
+  { label: "Books", href: "/learning/books" },
+  { label: "Glossary", href: "/learning/glossary" },
 ];
 
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname() || "/";
   const router = useRouter();
 
   const isActive = (href: string) => {
-    if (!pathname) return false;
     if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
+    return pathname === href || pathname.startsWith(href + "/");
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery("");
-      setMobileMenuOpen(false);
+    const formData = new FormData(e.currentTarget);
+    const q = formData.get("q")?.toString().trim();
+    if (q) {
+      router.push(`/search?q=${encodeURIComponent(q)}`);
+      setMenuOpen(false);
     }
   };
 
   return (
-    <>
+    <header role="banner">
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
 
-      {/* Primary Navigation */}
-      <header className="primary-nav" role="banner">
-        <Link
-          href="/"
-          style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginRight: "1rem" }}
+      {/* ── Primary navigation bar ── */}
+      <nav className="primary-nav" aria-label="Main navigation">
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: "var(--wide-max-width)",
+            margin: "0 auto",
+            gap: "0.5rem",
+          }}
         >
-          <Image
-            src="/esg-hub-logo.png"
-            alt="ESG Hub"
-            width={32}
-            height={32}
-            style={{ borderRadius: "4px" }}
-          />
-          <span style={{ fontWeight: 700, fontSize: "1rem" }}>ESG Hub</span>
-        </Link>
-
-        {/* Desktop nav links */}
-        <nav
-          aria-label="Primary navigation"
-          style={{ display: "flex", gap: "0.15rem", flex: 1 }}
-          className="hidden lg:flex"
-        >
-          {PRIMARY_NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={isActive(item.href) ? "page" : undefined}
+          {/* Logo + site name */}
+          <Link
+            href="/"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              textDecoration: "none",
+              color: "#fff",
+              marginRight: "0.75rem",
+              flexShrink: 0,
+            }}
+            aria-label="ESG Hub — Home"
+          >
+            <Image
+              src="/esg-hub-logo.png"
+              alt=""
+              width={28}
+              height={28}
+              style={{ borderRadius: "4px" }}
+              aria-hidden="true"
+            />
+            <span
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontWeight: 700,
+                fontSize: "1.05rem",
+                letterSpacing: "-0.01em",
+              }}
             >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+              ESG Hub
+            </span>
+          </Link>
 
-        {/* Search form (desktop) */}
-        <form onSubmit={handleSearch} className="hidden lg:flex" style={{ marginLeft: "auto" }}>
-          <div style={{ position: "relative" }}>
+          {/* Desktop category links */}
+          <div className="desktop-only" style={{ display: "flex", alignItems: "center", gap: "0.15rem", flex: 1 }}>
+            {PRIMARY_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={isActive(link.href) ? "page" : undefined}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Desktop search */}
+          <form
+            onSubmit={handleSearch}
+            role="search"
+            aria-label="Search ESG Hub"
+            className="desktop-only"
+            style={{ flexShrink: 0, marginLeft: "auto" }}
+          >
+            <label htmlFor="nav-search" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+              Search
+            </label>
             <input
+              id="nav-search"
+              name="q"
               type="search"
               className="search-input"
               placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search ESG Hub"
             />
-            <button
-              type="submit"
-              aria-label="Submit search"
-              style={{
-                position: "absolute",
-                right: "0.4rem",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "none",
-                border: "none",
-                color: "rgba(255,255,255,0.6)",
-                cursor: "pointer",
-                padding: "0.2rem",
-              }}
-            >
-              <Search size={16} />
-            </button>
-          </div>
-        </form>
+          </form>
 
-        {/* Mobile hamburger */}
-        <button
-          className="lg:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileMenuOpen}
-          style={{
-            marginLeft: "auto",
-            background: "none",
-            border: "none",
-            color: "#fff",
-            cursor: "pointer",
-            padding: "0.4rem",
-          }}
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </header>
-
-      {/* Secondary Navigation (desktop) */}
-      <nav className="secondary-nav hidden lg:flex" aria-label="Knowledge base navigation">
-        {SECONDARY_NAV.map((item) => (
-          <Link key={item.href} href={item.href}>
-            {item.label}
-          </Link>
-        ))}
+          {/* Mobile menu toggle */}
+          <button
+            type="button"
+            className="mobile-only"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            style={{
+              display: "none",
+              background: "none",
+              border: "1px solid rgba(255,255,255,0.4)",
+              color: "#fff",
+              padding: "0.35em 0.7em",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontFamily: "var(--font-heading)",
+              fontSize: "0.85rem",
+              fontWeight: 500,
+              marginLeft: "auto",
+            }}
+          >
+            {menuOpen ? "Close" : "Menu"}
+          </button>
+        </div>
       </nav>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="mobile-menu" role="dialog" aria-label="Navigation menu">
-          {/* Close button at top */}
-          <div style={{ position: "fixed", top: "0.8rem", right: "1rem", zIndex: 210 }}>
-            <button
-              onClick={() => setMobileMenuOpen(false)}
-              aria-label="Close menu"
-              style={{
-                background: "var(--color-primary)",
-                border: "none",
-                color: "#fff",
-                cursor: "pointer",
-                padding: "0.5rem",
-                borderRadius: "4px",
-              }}
+      {/* ── Secondary navigation bar ── */}
+      <nav className="secondary-nav desktop-only" aria-label="Knowledge base navigation">
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: "var(--wide-max-width)",
+            margin: "0 auto",
+            gap: "0.15rem",
+          }}
+        >
+          {SECONDARY_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={isActive(link.href) ? "true" : undefined}
             >
-              <X size={24} />
-            </button>
-          </div>
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      </nav>
 
+      {/* ── Mobile menu (no animations) ── */}
+      {menuOpen && (
+        <div
+          id="mobile-menu"
+          className="mobile-menu"
+          role="navigation"
+          aria-label="Mobile navigation"
+        >
           {/* Search */}
-          <form onSubmit={handleSearch} style={{ marginBottom: "1rem" }}>
+          <form onSubmit={handleSearch} role="search" style={{ marginBottom: "1.5rem" }}>
+            <label htmlFor="mobile-search" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+              Search
+            </label>
             <input
+              id="mobile-search"
+              name="q"
               type="search"
               placeholder="Search ESG Hub..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search ESG Hub"
               style={{
                 width: "100%",
-                padding: "0.6em 1em",
+                padding: "0.6em 0.8em",
                 border: "1px solid var(--color-border)",
                 borderRadius: "4px",
                 fontFamily: "var(--font-heading)",
                 fontSize: "1rem",
+                background: "var(--color-bg-alt)",
+                color: "var(--color-text)",
               }}
             />
           </form>
 
-          {/* Primary links */}
-          <div style={{ marginBottom: "1.5rem" }}>
-            <div
-              style={{
-                fontFamily: "var(--font-heading)",
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                color: "var(--color-text-muted)",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                marginBottom: "0.5rem",
-              }}
-            >
-              Main Sections
-            </div>
-            {PRIMARY_NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+          {/* Section label */}
+          <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-text-muted)", marginBottom: "0.3rem" }}>
+            ESG Pillars
           </div>
+          {PRIMARY_LINKS.map((link) => (
+            <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
+              {link.label}
+            </Link>
+          ))}
 
-          {/* Secondary links */}
-          <div>
-            <div
-              style={{
-                fontFamily: "var(--font-heading)",
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                color: "var(--color-text-muted)",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                marginBottom: "0.5rem",
-              }}
-            >
-              Knowledge Base
-            </div>
-            {SECONDARY_NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+          <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-text-muted)", marginTop: "1rem", marginBottom: "0.3rem" }}>
+            Knowledge Base
           </div>
+          {SECONDARY_LINKS.map((link) => (
+            <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
+              {link.label}
+            </Link>
+          ))}
         </div>
       )}
-    </>
+
+      {/* Responsive CSS */}
+      <style jsx global>{`
+        @media (min-width: 901px) {
+          .mobile-only { display: none !important; }
+        }
+        @media (max-width: 900px) {
+          .desktop-only { display: none !important; }
+          .mobile-only { display: inline-flex !important; }
+        }
+      `}</style>
+    </header>
   );
 }
