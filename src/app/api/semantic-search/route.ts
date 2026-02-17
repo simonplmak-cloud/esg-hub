@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { queryHttp, queryHttpAll } from "@/lib/surrealdb";
+import { queryHttp } from "@/lib/surrealdb";
 
 /**
  * Semantic Search API

@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { generateEmbedding } from "@/lib/embeddings";
 
 /**
  * Embedding Generation API
  * 
- * Generates text embeddings using the fastembed Python library via a subprocess.
- * This is a server-side only endpoint that runs the embedding model locally.
+ * Generates text embeddings using @huggingface/transformers (ONNX Runtime).
+ * Uses BAAI/bge-small-en-v1.5 model (384 dimensions).
  * 
  * POST /api/embed
  * Body: { text: string }
  * Returns: { embedding: number[], dimensions: number }
  */
-
-import { execSync } from "child_process";
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,30 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Truncate to reasonable length
-    const truncated = text.slice(0, 2000);
-
-    // Generate embedding using Python fastembed
-    const escapedText = truncated
-      .replace(/\\/g, "\\\\")
-      .replace(/"/g, '\\"')
-      .replace(/\n/g, " ")
-      .replace(/\r/g, "");
-
-    const pythonScript = `
-import json
-from fastembed import TextEmbedding
-model = TextEmbedding("BAAI/bge-small-en-v1.5")
-emb = list(model.embed(["${escapedText}"]))[0]
-print(json.dumps(emb.tolist()))
-`;
-
-    const result = execSync(`python3 -c '${pythonScript.replace(/'/g, "'\\''")}'`, {
-      timeout: 30000,
-      encoding: "utf-8",
-    });
-
-    const embedding = JSON.parse(result.trim());
+    const embedding = await generateEmbedding(text);
 
     return NextResponse.json({
       embedding,

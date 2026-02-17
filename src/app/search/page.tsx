@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { keywordSearch, type SearchResult } from "@/lib/search";
 import { semanticSearch } from "@/lib/search";
+import { generateEmbedding } from "@/lib/embeddings";
 import Link from "next/link";
 
 interface SearchPageProps {
@@ -19,32 +20,7 @@ export async function generateMetadata({
   };
 }
 
-/**
- * Generate embedding server-side using fastembed Python library
- */
-async function generateEmbedding(text: string): Promise<number[] | null> {
-  try {
-    const { execSync } = await import("child_process");
-    const truncated = text.slice(0, 2000).replace(/\n/g, " ").replace(/\r/g, "");
-    const escapedText = truncated.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 
-    const result = execSync(
-      `python3 -c "
-import json
-from fastembed import TextEmbedding
-model = TextEmbedding('BAAI/bge-small-en-v1.5')
-emb = list(model.embed(['${escapedText.replace(/'/g, "\\'")}']))[0]
-print(json.dumps(emb.tolist()))
-"`,
-      { timeout: 30000, encoding: "utf-8" }
-    );
-
-    return JSON.parse(result.trim());
-  } catch (err) {
-    console.error("Embedding generation failed:", err);
-    return null;
-  }
-}
 
 function ResultCard({ result }: { result: SearchResult }) {
   const isExternal = result.source_type === "external";
@@ -160,11 +136,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   if (query) {
     try {
       if (mode === "semantic") {
-        const embedding = await generateEmbedding(query);
-        if (embedding) {
+        try {
+          const embedding = await generateEmbedding(query);
           embeddingGenerated = true;
           results = await semanticSearch(embedding, 20);
-        } else {
+        } catch (embErr) {
+          console.error("Embedding generation failed, falling back to keyword:", embErr);
           // Fallback to keyword search if embedding fails
           results = (await keywordSearch(query)).map((r) => ({
             ...r,
