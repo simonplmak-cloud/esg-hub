@@ -3,19 +3,23 @@ const nextConfig = {
   reactStrictMode: true,
   serverExternalPackages: [
     "onnxruntime-node",
-    "onnxruntime-web",
-    "onnxruntime-common",
-    "@huggingface/transformers",
     "sharp",
   ],
   webpack: (config, { isServer }) => {
     if (isServer) {
-      // Exclude native modules from the server bundle
+      // Exclude native ONNX modules from the server bundle
       config.externals = config.externals || [];
       config.externals.push({
         "onnxruntime-node": "commonjs onnxruntime-node",
       });
     }
+    // Handle WASM files for client-side @huggingface/transformers
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      os: false,
+    };
     return config;
   },
 };
