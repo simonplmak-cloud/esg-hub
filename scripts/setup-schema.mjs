@@ -18,13 +18,13 @@ async function query(sql) {
   const res = await fetch(`${SURREAL_ENDPOINT}/sql`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "text/plain",
       "Accept": "application/json",
       "surreal-ns": SURREAL_NAMESPACE,
       "surreal-db": SURREAL_DATABASE,
       "Authorization": "Basic " + Buffer.from(`${SURREAL_USERNAME}:${SURREAL_PASSWORD}`).toString("base64"),
     },
-    body: JSON.stringify({ query: sql }),
+    body: sql,
   });
 
   if (!res.ok) {
@@ -65,9 +65,10 @@ DEFINE INDEX IF NOT EXISTS idx_page_slug ON page FIELDS slug;
 DEFINE INDEX IF NOT EXISTS idx_page_section ON page FIELDS section;
 DEFINE INDEX IF NOT EXISTS idx_page_pillar ON page FIELDS pillar;
 
--- Full-text search index
+-- Full-text search indexes (separate indexes for title and content to support OR queries)
 DEFINE ANALYZER IF NOT EXISTS esg_analyzer TOKENIZERS blank, class FILTERS lowercase, ascii, snowball(english);
-DEFINE INDEX IF NOT EXISTS idx_page_search ON page FIELDS title, content SEARCH ANALYZER esg_analyzer BM25;
+DEFINE INDEX IF NOT EXISTS idx_page_title_search ON page FIELDS title SEARCH ANALYZER esg_analyzer BM25(1.2,0.75);
+DEFINE INDEX IF NOT EXISTS idx_page_content_search ON page FIELDS content SEARCH ANALYZER esg_analyzer BM25(1.2,0.75);
 
 -- Navigation table: stores nav structure
 DEFINE TABLE IF NOT EXISTS navigation SCHEMAFULL;
