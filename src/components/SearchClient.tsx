@@ -189,8 +189,18 @@ export default function SearchClient() {
   }, []);
 
   const generateEmbedding = async (text: string): Promise<number[]> => {
+    // If model isn't loaded yet, wait for it
     if (!extractorRef.current) {
-      await loadModel();
+      if (!loadingModelRef.current) {
+        await loadModel();
+      } else {
+        // Model is currently loading, wait for it
+        let attempts = 0;
+        while (!extractorRef.current && attempts < 60) {
+          await new Promise((r) => setTimeout(r, 500));
+          attempts++;
+        }
+      }
     }
     if (!extractorRef.current) {
       throw new Error("Embedding model not available");
