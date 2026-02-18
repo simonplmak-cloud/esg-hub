@@ -1,0 +1,32 @@
+{
+  "name": "@esg-hub/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for the ESG Hub knowledge base — provides AI agents with access to 307 ESG articles and 244 curated external resources",
+  "type": "module",
+  "bin": {
+    "esg-hub-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "keywords": [
+    "mcp",
+    "esg",
+    "sustainability",
+    "knowledge-base",
+    "ai-tools"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}

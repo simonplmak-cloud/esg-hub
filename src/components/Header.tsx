@@ -26,6 +26,7 @@ const SECONDARY_LINKS = [
   { label: "Emerging", href: "/learning/emerging-topics" },
   { label: "Books", href: "/learning/books" },
   { label: "Glossary", href: "/learning/glossary" },
+  { label: "Developers", href: "/developers" },
 ];
 
 export default function Header() {
