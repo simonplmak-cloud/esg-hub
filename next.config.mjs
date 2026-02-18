@@ -4,13 +4,15 @@ const nextConfig = {
   serverExternalPackages: [
     "onnxruntime-node",
     "sharp",
+    "@huggingface/transformers",
   ],
   webpack: (config, { isServer }) => {
     if (isServer) {
-      // Exclude native ONNX modules from the server bundle
+      // Exclude native ONNX and transformers modules from the server bundle
       config.externals = config.externals || [];
       config.externals.push({
         "onnxruntime-node": "commonjs onnxruntime-node",
+        "@huggingface/transformers": "commonjs @huggingface/transformers",
       });
     }
     // Handle WASM files for client-side @huggingface/transformers
