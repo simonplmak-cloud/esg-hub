@@ -53,10 +53,30 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Page Not Found — ESG Hub" };
   }
 
+  const pageTitle = page.title;
+  const pageDescription = page.description || `${page.title} — ESG Hub by Ascent Partners Foundation`;
+  const canonicalUrl = `https://esg-hub-six.vercel.app${permalink.replace(/\/$/, "")}`;
+
   return {
-    title: `${page.title} — ESG Hub`,
-    description: page.description || `${page.title} — ESG Hub by Ascent Partners Foundation`,
+    title: pageTitle,
+    description: pageDescription,
     keywords: page.keywords || undefined,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${pageTitle} — ESG Hub`,
+      description: pageDescription,
+      url: canonicalUrl,
+      siteName: "ESG Hub",
+      type: "article",
+      images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary",
+      title: `${pageTitle} — ESG Hub`,
+      description: pageDescription,
+    },
   };
 }
 

@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { keywordSearch } from "@/lib/search";
-import { queryHttp } from "@/lib/surrealdb";
+import { queryHttp, sanitizeInt } from "@/lib/surrealdb";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Cache-Control": "public, s-maxage=120, stale-while-revalidate=300",
 };
+
+const VALID_SOURCES = new Set(["all", "pages", "external"]);
 
 export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
@@ -16,22 +19,31 @@ export async function OPTIONS() {
  * GET /api/v1/search?q=query&limit=20&source=all
  * 
  * Full-text keyword search using BM25 ranking across pages and external resources.
- * 
- * Query Parameters:
- *   - q: Search query (required)
- *   - limit: Max results (default 20, max 50)
- *   - source: "all" | "pages" | "external" (default "all")
  */
 export async function GET(request: NextRequest) {
   try {
     const params = request.nextUrl.searchParams;
     const q = params.get("q");
-    const limit = Math.min(parseInt(params.get("limit") || "20"), 50);
+    const limit = sanitizeInt(params.get("limit"), 20, 1, 50);
     const source = params.get("source") || "all";
 
     if (!q) {
       return NextResponse.json(
         { error: "Query parameter 'q' is required" },
+        { status: 400, headers: CORS_HEADERS }
+      );
+    }
+
+    if (q.length > 500) {
+      return NextResponse.json(
+        { error: "Query must be 500 characters or fewer." },
+        { status: 400, headers: CORS_HEADERS }
+      );
+    }
+
+    if (!VALID_SOURCES.has(source)) {
+      return NextResponse.json(
+        { error: "Invalid source parameter. Must be 'all', 'pages', or 'external'." },
         { status: 400, headers: CORS_HEADERS }
       );
     }
@@ -53,9 +65,9 @@ export async function GET(request: NextRequest) {
       total: filtered.length,
     }, { headers: CORS_HEADERS });
   } catch (err) {
-    console.error("Search API error:", err);
+    console.error("[API /v1/search GET] Error:", err);
     return NextResponse.json(
-      { error: "Search failed" },
+      { error: "An internal error occurred. Please try again later." },
       { status: 500, headers: CORS_HEADERS }
     );
   }
@@ -70,12 +82,19 @@ export async function GET(request: NextRequest) {
  *   - embedding: number[] (384-dimensional vector, required)
  *   - k: number (max results, default 10, max 50)
  *   - source: "all" | "pages" | "external" (default "all")
- * 
- * Note: Generate embeddings client-side using the BAAI/bge-small-en-v1.5 model
- * (384 dimensions) via @huggingface/transformers or any compatible library.
  */
 export async function POST(request: NextRequest) {
   try {
+    // Validate content type
+    const contentType = request.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      return NextResponse.json(
+        { error: "Content-Type must be application/json" },
+        { status: 415, headers: CORS_HEADERS }
+      );
+    }
+
+    // Limit body size (384 floats * ~12 chars each + overhead ≈ 6KB max)
     const body = await request.json();
     const { embedding, k = 10, source = "all" } = body;
 
@@ -93,7 +112,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const limit = Math.min(k, 50);
+    // Validate all elements are finite numbers
+    for (let i = 0; i < embedding.length; i++) {
+      if (typeof embedding[i] !== "number" || !isFinite(embedding[i])) {
+        return NextResponse.json(
+          { error: `Invalid embedding value at index ${i}. All values must be finite numbers.` },
+          { status: 400, headers: CORS_HEADERS }
+        );
+      }
+    }
+
+    if (!VALID_SOURCES.has(source)) {
+      return NextResponse.json(
+        { error: "Invalid source parameter. Must be 'all', 'pages', or 'external'." },
+        { status: 400, headers: CORS_HEADERS }
+      );
+    }
+
+    const limit = Math.max(1, Math.min(typeof k === "number" ? k : 10, 50));
     const embStr = "[" + embedding.map((v: number) => v.toFixed(8)).join(",") + "]";
     const results: Array<{
       id: string;
@@ -178,9 +214,9 @@ export async function POST(request: NextRequest) {
       total: results.length,
     }, { headers: CORS_HEADERS });
   } catch (err) {
-    console.error("Semantic search API error:", err);
+    console.error("[API /v1/search POST] Error:", err);
     return NextResponse.json(
-      { error: "Semantic search failed" },
+      { error: "An internal error occurred. Please try again later." },
       { status: 500, headers: CORS_HEADERS }
     );
   }

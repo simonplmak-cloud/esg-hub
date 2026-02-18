@@ -1,4 +1,4 @@
-import { queryHttp } from "./surrealdb";
+import { queryHttp, sanitize } from "./surrealdb";
 
 export interface SearchResult {
   id: string;
@@ -14,10 +14,13 @@ export interface SearchResult {
 }
 
 /**
- * Full-text keyword search using BM25 ranking
+ * Full-text keyword search using BM25 ranking.
+ * Input is sanitized to prevent SurrealQL injection.
  */
 export async function keywordSearch(query: string): Promise<SearchResult[]> {
-  const escaped = query.replace(/'/g, "\\'");
+  // Truncate excessively long queries
+  const trimmed = query.slice(0, 500);
+  const escaped = sanitize(trimmed);
   
   // Search pages
   const pageResults = await queryHttp<{
@@ -83,12 +86,26 @@ export async function keywordSearch(query: string): Promise<SearchResult[]> {
 }
 
 /**
- * Semantic vector search using HNSW index
+ * Semantic vector search using HNSW index.
+ * Embedding values are validated before use.
  */
 export async function semanticSearch(
   embedding: number[],
   k: number = 15
 ): Promise<SearchResult[]> {
+  // Validate embedding
+  if (!Array.isArray(embedding) || embedding.length !== 384) {
+    throw new Error("Invalid embedding: expected 384-dimensional array");
+  }
+  for (let i = 0; i < embedding.length; i++) {
+    if (typeof embedding[i] !== "number" || !isFinite(embedding[i])) {
+      throw new Error(`Invalid embedding value at index ${i}`);
+    }
+  }
+
+  // Sanitize k
+  const safeK = Math.max(1, Math.min(k, 50));
+
   const embStr = "[" + embedding.map((v) => v.toFixed(8)).join(",") + "]";
   const results: SearchResult[] = [];
 
@@ -105,9 +122,9 @@ export async function semanticSearch(
       `SELECT id, title, permalink, description, section,
         vector::distance::knn() AS distance
       FROM page
-      WHERE embedding <|${k}, 100|> ${embStr}
+      WHERE embedding <|${safeK}, 100|> ${embStr}
       ORDER BY distance
-      LIMIT ${k};`
+      LIMIT ${safeK};`
     );
 
     for (const r of pageResults) {
@@ -122,7 +139,7 @@ export async function semanticSearch(
       });
     }
   } catch (err) {
-    console.error("Page semantic search error:", err);
+    console.error("[Search] Page semantic search error:", err);
   }
 
   // Search external resources
@@ -137,9 +154,9 @@ export async function semanticSearch(
       `SELECT id, title, url, source_domain,
         vector::distance::knn() AS distance
       FROM external_resource
-      WHERE embedding <|${k}, 100|> ${embStr}
+      WHERE embedding <|${safeK}, 100|> ${embStr}
       ORDER BY distance
-      LIMIT ${k};`
+      LIMIT ${safeK};`
     );
 
     for (const r of extResults) {
@@ -153,10 +170,10 @@ export async function semanticSearch(
       });
     }
   } catch (err) {
-    console.error("External semantic search error:", err);
+    console.error("[Search] External semantic search error:", err);
   }
 
   // Sort by distance ascending (lower = more similar)
   results.sort((a, b) => (a.distance || 0) - (b.distance || 0));
-  return results.slice(0, k);
+  return results.slice(0, safeK);
 }

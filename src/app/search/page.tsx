@@ -6,6 +6,23 @@ export const metadata: Metadata = {
   title: "Search — ESG Hub",
   description:
     "Search across 300+ ESG topics, standards, frameworks, and 240+ external authoritative sources. Supports keyword and AI-powered semantic search.",
+  alternates: {
+    canonical: "https://esg-hub-six.vercel.app/search",
+  },
+  openGraph: {
+    title: "Search — ESG Hub",
+    description:
+      "Search across 300+ ESG topics, standards, frameworks, and 240+ external authoritative sources.",
+    url: "https://esg-hub-six.vercel.app/search",
+    siteName: "ESG Hub",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Search — ESG Hub",
+    description:
+      "Search across 300+ ESG topics, standards, and frameworks.",
+  },
 };
 
 export default function SearchPage() {

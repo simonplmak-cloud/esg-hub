@@ -5,6 +5,7 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1200",
 };
 
 export async function OPTIONS() {
@@ -16,7 +17,7 @@ export async function OPTIONS() {
  * 
  * Returns database metadata: sections, pillars, domains, and record counts.
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get sections with counts
     const sections = await queryHttp<{ section: string; count: number }>(
@@ -56,9 +57,9 @@ export async function GET(request: NextRequest) {
       embedding_dimensions: 384,
     }, { headers: CORS_HEADERS });
   } catch (err) {
-    console.error("Meta API error:", err);
+    console.error("[API /v1/meta] Error:", err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "An internal error occurred. Please try again later." },
       { status: 500, headers: CORS_HEADERS }
     );
   }

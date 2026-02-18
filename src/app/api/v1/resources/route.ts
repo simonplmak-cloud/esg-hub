@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { queryHttp } from "@/lib/surrealdb";
+import { queryHttp, sanitize, sanitizeInt } from "@/lib/surrealdb";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
 };
 
 export async function OPTIONS() {
@@ -27,18 +28,30 @@ export async function GET(request: NextRequest) {
     const params = request.nextUrl.searchParams;
     const domain = params.get("domain");
     const q = params.get("q");
-    const limit = Math.min(parseInt(params.get("limit") || "20"), 100);
-    const offset = parseInt(params.get("offset") || "0");
+    const limit = sanitizeInt(params.get("limit"), 20, 1, 100);
+    const offset = sanitizeInt(params.get("offset"), 0, 0, 100000);
 
     const selectFields = "id, title, url, domain, description, content, scraped_content";
 
     const conditions: string[] = [];
     if (domain) {
-      conditions.push(`domain = '${domain.replace(/'/g, "\\'")}'`);
+      // Validate domain format
+      if (!/^[a-zA-Z0-9\-_.]+$/.test(domain) || domain.length > 253) {
+        return NextResponse.json(
+          { error: "Invalid domain parameter format." },
+          { status: 400, headers: CORS_HEADERS }
+        );
+      }
+      conditions.push(`domain = '${sanitize(domain)}'`);
     }
     if (q) {
-      const escaped = q.replace(/'/g, "\\'");
-      conditions.push(`(string::lowercase(title) CONTAINS string::lowercase('${escaped}'))`);
+      if (q.length > 200) {
+        return NextResponse.json(
+          { error: "Query parameter 'q' must be 200 characters or fewer." },
+          { status: 400, headers: CORS_HEADERS }
+        );
+      }
+      conditions.push(`(string::lowercase(title) CONTAINS string::lowercase('${sanitize(q)}'))`);
     }
 
     const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -61,9 +74,9 @@ export async function GET(request: NextRequest) {
       },
     }, { headers: CORS_HEADERS });
   } catch (err) {
-    console.error("API error:", err);
+    console.error("[API /v1/resources] Error:", err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "An internal error occurred. Please try again later." },
       { status: 500, headers: CORS_HEADERS }
     );
   }
