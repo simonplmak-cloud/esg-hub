@@ -1,14 +1,13 @@
 import Surreal from "surrealdb";
 
-// Credentials come from environment variables with fallback defaults for the
-// ESG Hub read-only knowledge base. Override via SURREAL_* env vars in production.
-const SURREAL_ENDPOINT =
-  process.env.SURREAL_ENDPOINT ||
-  "https://valuation-webap-06dvm6i94trq92goln8f5gebnk.aws-euw1.surreal.cloud";
-const SURREAL_USERNAME = process.env.SURREAL_USERNAME || "root";
-const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "ValuationApp2026!";
-const SURREAL_NAMESPACE = process.env.SURREAL_NAMESPACE || "esg_hub";
-const SURREAL_DATABASE = process.env.SURREAL_DATABASE || "main";
+// Credentials are sourced exclusively from environment variables.
+// Set SURREAL_ENDPOINT, SURREAL_USERNAME, SURREAL_PASSWORD,
+// SURREAL_NAMESPACE, and SURREAL_DATABASE in your deployment environment.
+const SURREAL_ENDPOINT = process.env.SURREAL_ENDPOINT || "";
+const SURREAL_USERNAME = process.env.SURREAL_USERNAME || "";
+const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "";
+const SURREAL_NAMESPACE = process.env.SURREAL_NAMESPACE || "";
+const SURREAL_DATABASE = process.env.SURREAL_DATABASE || "";
 
 let dbInstance: Surreal | null = null;
 
