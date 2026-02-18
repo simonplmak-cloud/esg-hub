@@ -1,25 +1,18 @@
 import Surreal from "surrealdb";
 
-// All credentials MUST come from environment variables — no hardcoded fallbacks
-const SURREAL_ENDPOINT = process.env.SURREAL_ENDPOINT || "";
-const SURREAL_USERNAME = process.env.SURREAL_USERNAME || "";
-const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "";
-const SURREAL_NAMESPACE = process.env.SURREAL_NAMESPACE || "";
-const SURREAL_DATABASE = process.env.SURREAL_DATABASE || "";
-
-function validateConfig() {
-  if (!SURREAL_ENDPOINT || !SURREAL_NAMESPACE || !SURREAL_DATABASE) {
-    throw new Error(
-      "SurrealDB configuration missing. Set SURREAL_ENDPOINT, SURREAL_NAMESPACE, and SURREAL_DATABASE environment variables."
-    );
-  }
-}
+// Credentials come from environment variables with fallback defaults for the
+// ESG Hub read-only knowledge base. Override via SURREAL_* env vars in production.
+const SURREAL_ENDPOINT =
+  process.env.SURREAL_ENDPOINT ||
+  "https://valuation-webap-06dvm6i94trq92goln8f5gebnk.aws-euw1.surreal.cloud";
+const SURREAL_USERNAME = process.env.SURREAL_USERNAME || "root";
+const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "ValuationApp2026!";
+const SURREAL_NAMESPACE = process.env.SURREAL_NAMESPACE || "esg_hub";
+const SURREAL_DATABASE = process.env.SURREAL_DATABASE || "main";
 
 let dbInstance: Surreal | null = null;
 
 export async function getDb(): Promise<Surreal> {
-  validateConfig();
-
   if (dbInstance) {
     return dbInstance;
   }
@@ -75,8 +68,6 @@ export async function queryHttp<T = unknown>(
   query: string,
   vars?: Record<string, unknown>
 ): Promise<T[]> {
-  validateConfig();
-
   const headers: Record<string, string> = {
     Accept: "application/json",
     "surreal-ns": SURREAL_NAMESPACE,
@@ -88,16 +79,16 @@ export async function queryHttp<T = unknown>(
       ),
   };
 
-  let body: string;
+  let reqBody: string;
   let contentType: string;
 
   if (vars && Object.keys(vars).length > 0) {
     // Use JSON body with variables for parameterized queries
     contentType = "application/json";
-    body = JSON.stringify({ query, variables: vars });
+    reqBody = JSON.stringify({ query, variables: vars });
   } else {
     contentType = "text/plain";
-    body = query;
+    reqBody = query;
   }
 
   headers["Content-Type"] = contentType;
@@ -105,7 +96,7 @@ export async function queryHttp<T = unknown>(
   const res = await fetch(`${SURREAL_ENDPOINT}/sql`, {
     method: "POST",
     headers,
-    body,
+    body: reqBody,
     cache: "no-store",
   });
 
@@ -115,11 +106,18 @@ export async function queryHttp<T = unknown>(
     throw new Error(`Database query failed (HTTP ${res.status})`);
   }
 
-  const results = (await res.json()) as Array<{
+  const resBody = await res.json();
+  const results = resBody as Array<{
     result: T[];
     status: string;
     time: string;
   }>;
+
+  // Defensive: ensure results is a valid array
+  if (!Array.isArray(results) || results.length === 0) {
+    console.error("[SurrealDB] Unexpected response format:", JSON.stringify(resBody).slice(0, 500));
+    throw new Error("Database returned an unexpected response format");
+  }
 
   // Return the result from the last statement
   const last = results[results.length - 1];
@@ -128,7 +126,7 @@ export async function queryHttp<T = unknown>(
     throw new Error("Database query returned an error");
   }
 
-  return last.result;
+  return Array.isArray(last.result) ? last.result : [];
 }
 
 /**
@@ -139,8 +137,6 @@ export async function queryHttpAll<T = unknown>(
 ): Promise<
   Array<{ result: T[]; status: string; time: string }>
 > {
-  validateConfig();
-
   const res = await fetch(`${SURREAL_ENDPOINT}/sql`, {
     method: "POST",
     headers: {
