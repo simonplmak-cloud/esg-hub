@@ -1,11 +1,4 @@
-import { Metadata } from "next";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "MCP Server — ESG Hub",
-  description:
-    "Connect AI assistants to the ESG Hub knowledge base via the Model Context Protocol (MCP). Setup guide for Claude Desktop, Cursor, and Windsurf.",
-};
 
 function CodeBlock({ children, title }: { children: string; title?: string }) {
   return (
@@ -102,7 +95,7 @@ function ToolCard({
   );
 }
 
-export default function McpDocsPage() {
+export default function McpDocs() {
   return (
     <div className="content-wrapper">
       <nav aria-label="Breadcrumb" style={{ marginBottom: "1rem" }}>

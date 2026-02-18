@@ -1,13 +1,6 @@
-import { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Developers — ESG Hub",
-  description:
-    "Access the ESG Hub knowledge base programmatically via REST API or MCP server for AI agents.",
-};
-
-export default function DevelopersPage() {
+export default function DevelopersLanding() {
   return (
     <div className="content-wrapper">
       <article>

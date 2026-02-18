@@ -1,11 +1,4 @@
-import { Metadata } from "next";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "REST API Documentation — ESG Hub",
-  description:
-    "Complete REST API reference for the ESG Hub knowledge base. Query pages, resources, and search ESG content programmatically.",
-};
 
 function CodeBlock({ children, title }: { children: string; title?: string }) {
   return (
@@ -183,7 +176,7 @@ function EndpointSection({
   );
 }
 
-export default function ApiDocsPage() {
+export default function ApiDocs() {
   const BASE = "https://esg-hub-six.vercel.app";
 
   return (

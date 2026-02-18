@@ -5,6 +5,28 @@ import MarkdownContent from "@/components/MarkdownContent";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TableOfContents from "@/components/TableOfContents";
 import Link from "next/link";
+import DevelopersLanding from "@/components/developers/DevelopersLanding";
+import ApiDocs from "@/components/developers/ApiDocs";
+import McpDocs from "@/components/developers/McpDocs";
+
+/* ── Developer route map ── */
+const DEVELOPER_ROUTES: Record<string, { component: React.ComponentType; title: string; description: string }> = {
+  "developers": {
+    component: DevelopersLanding,
+    title: "Developers — ESG Hub",
+    description: "Access the ESG Hub knowledge base programmatically via REST API or MCP server for AI agents.",
+  },
+  "developers/api": {
+    component: ApiDocs,
+    title: "REST API Documentation — ESG Hub",
+    description: "Complete REST API reference for the ESG Hub knowledge base.",
+  },
+  "developers/mcp": {
+    component: McpDocs,
+    title: "MCP Server — ESG Hub",
+    description: "Connect AI assistants to the ESG Hub knowledge base via the Model Context Protocol.",
+  },
+};
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -16,6 +38,14 @@ function buildPermalink(slugParts: string[]): string {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+  const slugPath = slug.join("/");
+
+  // Check developer routes first
+  const devRoute = DEVELOPER_ROUTES[slugPath];
+  if (devRoute) {
+    return { title: devRoute.title, description: devRoute.description };
+  }
+
   const permalink = buildPermalink(slug);
   const page = await getPageByPermalink(permalink);
 
@@ -32,6 +62,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ContentPage({ params }: PageProps) {
   const { slug } = await params;
+  const slugPath = slug.join("/");
+
+  // Check developer routes first
+  const devRoute = DEVELOPER_ROUTES[slugPath];
+  if (devRoute) {
+    const Component = devRoute.component;
+    return <Component />;
+  }
+
   const permalink = buildPermalink(slug);
   const page = await getPageByPermalink(permalink);
 
