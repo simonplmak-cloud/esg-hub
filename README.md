@@ -39,3 +39,4 @@ A dynamic Next.js web application serving the ESG Hub, an open-access encycloped
 ## License
 
 Content licensed under CC BY-SA 4.0 by Ascent Partners Foundation.
+
