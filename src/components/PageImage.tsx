@@ -1,53 +1,93 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 /**
- * Maps ESG sections/topics to relevant Unsplash search terms.
- * Using curated keywords ensures high-quality, relevant images.
+ * Curated Unsplash image URLs mapped to ESG topics.
+ * Using direct Unsplash CDN URLs with resize parameters.
  */
-const SECTION_IMAGE_MAP: Record<string, string> = {
-  environmental: "nature sustainability green earth",
-  social: "community people diversity workplace",
-  governance: "corporate boardroom business meeting",
-  standards: "document compliance regulation",
-  "hk-apac": "hong kong skyline asia city",
-  learning: "education books library study",
-  sdg: "sustainable development goals global",
-  ratings: "data analytics chart financial",
-  finance: "finance stock market investment",
-  investment: "investment portfolio sustainable finance",
-  frameworks: "framework structure blueprint",
-  "emerging-topics": "innovation technology future",
-  books: "books library reading knowledge",
-  videos: "video presentation conference",
-  glossary: "dictionary reference guide",
+const TOPIC_IMAGES: Record<string, string[]> = {
+  climate: [
+    "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=960&h=280&fit=crop&auto=format",
+  ],
+  biodiversity: [
+    "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=960&h=280&fit=crop&auto=format",
+  ],
+  water: [
+    "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1432405972618-c6b0cfba8673?w=960&h=280&fit=crop&auto=format",
+  ],
+  energy: [
+    "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=960&h=280&fit=crop&auto=format",
+  ],
+  social: [
+    "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=960&h=280&fit=crop&auto=format",
+  ],
+  governance: [
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=960&h=280&fit=crop&auto=format",
+  ],
+  standards: [
+    "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=960&h=280&fit=crop&auto=format",
+  ],
+  hongkong: [
+    "https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?w=960&h=280&fit=crop&auto=format",
+  ],
+  finance: [
+    "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=960&h=280&fit=crop&auto=format",
+  ],
+  sustainability: [
+    "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=960&h=280&fit=crop&auto=format",
+    "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=960&h=280&fit=crop&auto=format",
+  ],
 };
 
-/**
- * Keyword-based fallback for pages without a clear section match.
- */
-const KEYWORD_IMAGE_MAP: Record<string, string> = {
-  climate: "climate change weather earth",
-  carbon: "carbon emissions factory smoke",
-  biodiversity: "biodiversity wildlife nature forest",
-  water: "water ocean river clean",
-  energy: "renewable energy solar wind",
-  waste: "recycling waste management",
-  "human rights": "human rights equality justice",
-  labor: "workers labor rights factory",
-  health: "health safety workplace wellbeing",
-  diversity: "diversity inclusion workplace",
-  board: "corporate board governance meeting",
-  ethics: "business ethics integrity",
-  risk: "risk management assessment",
-  supply: "supply chain logistics global",
-  gri: "sustainability reporting standards",
-  ifrs: "financial reporting accounting",
-  tcfd: "climate disclosure reporting",
-  tnfd: "nature biodiversity ecosystem",
-  sasb: "sustainability accounting standards",
-  sdg: "sustainable development goals united nations",
+const SECTION_TOPIC_MAP: Record<string, string> = {
+  environmental: "climate",
+  social: "social",
+  governance: "governance",
+  standards: "standards",
+  "hk-apac": "hongkong",
+  learning: "sustainability",
+  sdg: "sustainability",
+  ratings: "finance",
+  finance: "finance",
+};
+
+const KEYWORD_TOPIC_MAP: Record<string, string> = {
+  climate: "climate",
+  carbon: "climate",
+  emission: "climate",
+  ghg: "climate",
+  biodiversity: "biodiversity",
+  nature: "biodiversity",
+  forest: "biodiversity",
+  ecosystem: "biodiversity",
+  water: "water",
+  ocean: "water",
+  freshwater: "water",
+  energy: "energy",
+  renewable: "energy",
+  solar: "energy",
+  human: "social",
+  labor: "social",
+  health: "social",
+  diversity: "social",
+  board: "governance",
+  ethics: "governance",
+  gri: "standards",
+  ifrs: "standards",
+  tcfd: "standards",
+  tnfd: "biodiversity",
+  finance: "finance",
+  investment: "finance",
 };
 
 interface PageImageProps {
@@ -56,41 +96,29 @@ interface PageImageProps {
   keywords?: string | null;
 }
 
-/**
- * Determines the best search query for an Unsplash image.
- */
-function getImageQuery(section?: string | null, title?: string, keywords?: string | null): string {
-  // Try section map first
-  if (section && SECTION_IMAGE_MAP[section]) {
-    return SECTION_IMAGE_MAP[section];
+function getTopic(section?: string | null, title?: string, keywords?: string | null): string {
+  if (section && SECTION_TOPIC_MAP[section]) return SECTION_TOPIC_MAP[section];
+  const combined = ((title || "") + " " + (keywords || "")).toLowerCase();
+  for (const [key, topic] of Object.entries(KEYWORD_TOPIC_MAP)) {
+    if (combined.includes(key)) return topic;
   }
-
-  // Try keyword matching
-  const lowerTitle = (title || "").toLowerCase();
-  const lowerKeywords = (keywords || "").toLowerCase();
-  const combined = lowerTitle + " " + lowerKeywords;
-
-  for (const [key, query] of Object.entries(KEYWORD_IMAGE_MAP)) {
-    if (combined.includes(key)) {
-      return query;
-    }
-  }
-
-  // Default fallback
-  return "sustainability environment business";
+  return "sustainability";
 }
 
-/**
- * Renders a royalty-free hero image from Unsplash for a content page.
- * Uses the Unsplash Source API (no API key required for basic usage).
- */
+function getImageUrl(topic: string, title: string): string {
+  const images = TOPIC_IMAGES[topic] || TOPIC_IMAGES.sustainability;
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) {
+    hash = ((hash << 5) - hash + title.charCodeAt(i)) | 0;
+  }
+  return images[Math.abs(hash) % images.length];
+}
+
 export default function PageImage({ section, title, keywords }: PageImageProps) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-
-  const query = getImageQuery(section, title, keywords);
-  // Use Unsplash Source API for royalty-free images (no key needed)
-  const imageUrl = `https://source.unsplash.com/960x280/?${encodeURIComponent(query)}`;
+  const topic = useMemo(() => getTopic(section, title, keywords), [section, title, keywords]);
+  const imageUrl = useMemo(() => getImageUrl(topic, title), [topic, title]);
 
   if (error) return null;
 
@@ -100,10 +128,7 @@ export default function PageImage({ section, title, keywords }: PageImageProps) 
         src={imageUrl}
         alt={`Illustration for ${title}`}
         className="page-hero-image"
-        style={{
-          opacity: loaded ? 1 : 0,
-          transition: "opacity 0.3s",
-        }}
+        style={{ opacity: loaded ? 1 : 0, transition: "opacity 0.3s" }}
         loading="lazy"
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
@@ -123,7 +148,7 @@ export default function PageImage({ section, title, keywords }: PageImageProps) 
         >
           Photo via{" "}
           <a
-            href={`https://unsplash.com/s/photos/${encodeURIComponent(query)}?utm_source=esg_hub&utm_medium=referral`}
+            href="https://unsplash.com/?utm_source=esg_hub&utm_medium=referral"
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: "rgba(255,255,255,0.8)", textDecoration: "underline" }}

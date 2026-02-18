@@ -100,9 +100,11 @@ export default async function ContentPage({ params }: PageProps) {
     redirect(page.redirect_to);
   }
 
+  // Hub/index pages are section landing pages (slug matches section name) or very short stubs
   const isHubPage =
-    page.layout === "apf-design" ||
     page.slug === "index" ||
+    page.slug === page.section ||
+    slug.length === 1 ||
     page.content.trim().length < 200;
 
   let childPages: Awaited<ReturnType<typeof getPagesBySection>> = [];
