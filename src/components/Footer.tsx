@@ -16,8 +16,9 @@ const FOOTER_SECTIONS = [
     links: [
       { label: "Standards", href: "/standards" },
       { label: "Ratings", href: "/ratings" },
+      { label: "Videos", href: "/videos" },
+      { label: "Books", href: "/books" },
       { label: "Learning Hub", href: "/learning" },
-      { label: "UN SDGs", href: "/sdg" },
     ],
   },
   {
@@ -68,16 +69,16 @@ export default function Footer() {
               style={{
                 fontFamily: "var(--font-heading)",
                 fontWeight: 700,
-                fontSize: "1.1rem",
-                marginBottom: "0.6rem",
+                fontSize: "1rem",
+                marginBottom: "0.5rem",
+                color: "var(--color-text)",
               }}
             >
               ESG Hub
             </div>
-            <p style={{ margin: 0, maxWidth: "360px", lineHeight: 1.6 }}>
+            <p style={{ margin: 0, maxWidth: "340px", lineHeight: 1.6, color: "var(--color-text-muted)" }}>
               An open-access ESG encyclopedia by Ascent Partners Foundation.
-              Providing comprehensive, accessible ESG resources for
-              professionals, students, and researchers.
+              Comprehensive resources for professionals, students, and researchers.
             </p>
           </div>
 
@@ -88,35 +89,31 @@ export default function Footer() {
                 style={{
                   fontFamily: "var(--font-heading)",
                   fontWeight: 600,
-                  fontSize: "0.85rem",
-                  marginBottom: "0.6rem",
+                  fontSize: "0.78rem",
+                  marginBottom: "0.5rem",
                   textTransform: "uppercase",
                   letterSpacing: "0.04em",
-                  opacity: 0.85,
+                  color: "var(--color-text-muted)",
                 }}
               >
                 {section.title}
               </div>
               <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
                 {section.links.map((link) => (
-                  <li key={link.href} style={{ margin: "0.3rem 0" }}>
+                  <li key={link.href} style={{ margin: "0.25rem 0" }}>
                     {"external" in link && link.external ? (
                       <a
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ fontSize: "0.88rem" }}
+                        style={{ fontSize: "0.85rem" }}
                       >
                         {link.label}
                       </a>
                     ) : (
                       <Link
                         href={link.href}
-                        style={{
-                          color: "#fff",
-                          textDecoration: "underline",
-                          fontSize: "0.88rem",
-                        }}
+                        style={{ fontSize: "0.85rem" }}
                       >
                         {link.label}
                       </Link>
@@ -131,16 +128,16 @@ export default function Footer() {
         {/* Copyright bar */}
         <div
           style={{
-            borderTop: "1px solid rgba(255,255,255,0.2)",
-            marginTop: "1.5rem",
-            paddingTop: "1rem",
+            borderTop: "1px solid var(--color-border)",
+            marginTop: "1.2rem",
+            paddingTop: "0.8rem",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             flexWrap: "wrap",
             gap: "0.5rem",
-            fontSize: "0.82rem",
-            opacity: 0.85,
+            fontSize: "0.78rem",
+            color: "var(--color-text-muted)",
           }}
         >
           <span>&copy; {year} Ascent Partners Foundation</span>

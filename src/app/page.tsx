@@ -69,9 +69,9 @@ export default async function HomePage() {
       {/* Hero section */}
       <div
         style={{
-          background: "var(--color-primary-light)",
-          borderBottom: "1px solid var(--color-border-light)",
-          padding: "2.5rem 1.5rem 2rem",
+          background: "var(--color-bg-alt)",
+          borderBottom: "1px solid var(--color-border)",
+          padding: "2rem 1.5rem 1.75rem",
         }}
       >
         <div
@@ -84,11 +84,11 @@ export default async function HomePage() {
           <h1
             style={{
               fontFamily: "var(--font-heading)",
-              fontSize: "2rem",
-              fontWeight: 800,
+              fontSize: "1.8rem",
+              fontWeight: 700,
               color: "var(--color-text)",
               marginTop: 0,
-              marginBottom: "0.5rem",
+              marginBottom: "0.4rem",
               borderBottom: "none",
               paddingBottom: 0,
             }}
@@ -97,11 +97,11 @@ export default async function HomePage() {
           </h1>
           <p
             style={{
-              fontSize: "1.05rem",
+              fontSize: "1rem",
               color: "var(--color-text-secondary)",
-              maxWidth: "640px",
+              maxWidth: "600px",
               margin: "0 auto",
-              lineHeight: 1.65,
+              lineHeight: 1.6,
             }}
           >
             An open-access ESG encyclopedia by Ascent Partners Foundation.
@@ -115,9 +115,9 @@ export default async function HomePage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: "1rem",
-            margin: "1.5rem 0 2.5rem",
+            gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))",
+            gap: "0.8rem",
+            margin: "1.2rem 0 2rem",
           }}
         >
           {SECTIONS.map((section) => (
@@ -125,14 +125,14 @@ export default async function HomePage() {
               key={section.href}
               href={section.href}
               className="section-card"
-              style={{ borderLeft: `4px solid ${section.color}` }}
+              style={{ borderLeft: `3px solid ${section.color}` }}
             >
               <div
                 style={{
                   fontFamily: "var(--font-heading)",
-                  fontWeight: 700,
-                  fontSize: "1rem",
-                  marginBottom: "0.35rem",
+                  fontWeight: 600,
+                  fontSize: "0.95rem",
+                  marginBottom: "0.3rem",
                   color: section.color,
                 }}
               >
@@ -140,9 +140,9 @@ export default async function HomePage() {
               </div>
               <div
                 style={{
-                  fontSize: "0.88rem",
-                  color: "var(--color-text-secondary)",
-                  lineHeight: 1.55,
+                  fontSize: "0.85rem",
+                  color: "var(--color-text-muted)",
+                  lineHeight: 1.5,
                 }}
               >
                 {section.description}

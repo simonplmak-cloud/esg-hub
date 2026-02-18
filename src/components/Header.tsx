@@ -24,6 +24,7 @@ const SECONDARY_LINKS = [
   { label: "Frameworks", href: "/frameworks" },
   { label: "Fundamentals", href: "/learning/esg-fundamentals" },
   { label: "Emerging", href: "/emerging-topics" },
+  { label: "Videos", href: "/videos" },
   { label: "Books", href: "/books" },
   { label: "Glossary", href: "/glossary" },
   { label: "Developers", href: "/developers" },
@@ -64,7 +65,7 @@ export default function Header() {
             width: "100%",
             maxWidth: "var(--wide-max-width)",
             margin: "0 auto",
-            gap: "0.5rem",
+            gap: "0.35rem",
           }}
         >
           {/* Logo + site name */}
@@ -73,10 +74,10 @@ export default function Header() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "0.5rem",
+              gap: "0.45rem",
               textDecoration: "none",
-              color: "#fff",
-              marginRight: "0.75rem",
+              color: "var(--color-text)",
+              marginRight: "0.6rem",
               flexShrink: 0,
             }}
             aria-label="ESG Hub — Home"
@@ -84,17 +85,18 @@ export default function Header() {
             <Image
               src="/esg-hub-logo.png"
               alt=""
-              width={28}
-              height={28}
-              style={{ borderRadius: "4px" }}
+              width={26}
+              height={26}
+              style={{ borderRadius: "3px" }}
               aria-hidden="true"
             />
             <span
               style={{
                 fontFamily: "var(--font-heading)",
                 fontWeight: 700,
-                fontSize: "1.05rem",
+                fontSize: "0.95rem",
                 letterSpacing: "-0.01em",
+                color: "var(--color-text)",
               }}
             >
               ESG Hub
@@ -102,7 +104,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop category links */}
-          <div className="desktop-only" style={{ display: "flex", alignItems: "center", gap: "0.15rem", flex: 1 }}>
+          <div className="desktop-only" style={{ display: "flex", alignItems: "center", gap: "0.1rem", flex: 1 }}>
             {PRIMARY_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -130,7 +132,7 @@ export default function Header() {
               name="q"
               type="search"
               className="search-input"
-              placeholder="Search..."
+              placeholder="Search ESG Hub..."
               aria-label="Search ESG Hub"
             />
           </form>
@@ -146,13 +148,13 @@ export default function Header() {
             style={{
               display: "none",
               background: "none",
-              border: "1px solid rgba(255,255,255,0.4)",
-              color: "#fff",
-              padding: "0.35em 0.7em",
-              borderRadius: "4px",
+              border: "1px solid var(--color-border)",
+              color: "var(--color-text)",
+              padding: "0.3em 0.65em",
+              borderRadius: "3px",
               cursor: "pointer",
               fontFamily: "var(--font-heading)",
-              fontSize: "0.85rem",
+              fontSize: "0.82rem",
               fontWeight: 500,
               marginLeft: "auto",
             }}
@@ -171,7 +173,7 @@ export default function Header() {
             width: "100%",
             maxWidth: "var(--wide-max-width)",
             margin: "0 auto",
-            gap: "0.15rem",
+            gap: "0.1rem",
           }}
         >
           {SECONDARY_LINKS.map((link) => (
@@ -186,7 +188,7 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* ── Mobile menu (no animations) ── */}
+      {/* ── Mobile menu ── */}
       {menuOpen && (
         <div
           id="mobile-menu"
@@ -207,11 +209,11 @@ export default function Header() {
               aria-label="Search ESG Hub"
               style={{
                 width: "100%",
-                padding: "0.6em 0.8em",
+                padding: "0.5em 0.75em",
                 border: "1px solid var(--color-border)",
-                borderRadius: "4px",
+                borderRadius: "3px",
                 fontFamily: "var(--font-heading)",
-                fontSize: "1rem",
+                fontSize: "0.95rem",
                 background: "var(--color-bg-alt)",
                 color: "var(--color-text)",
               }}
@@ -219,7 +221,7 @@ export default function Header() {
           </form>
 
           {/* Section label */}
-          <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-text-muted)", marginBottom: "0.3rem" }}>
+          <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-text-muted)", marginBottom: "0.25rem" }}>
             ESG Pillars
           </div>
           {PRIMARY_LINKS.map((link) => (
@@ -228,7 +230,7 @@ export default function Header() {
             </Link>
           ))}
 
-          <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-text-muted)", marginTop: "1rem", marginBottom: "0.3rem" }}>
+          <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-text-muted)", marginTop: "0.8rem", marginBottom: "0.25rem" }}>
             Knowledge Base
           </div>
           {SECONDARY_LINKS.map((link) => (
