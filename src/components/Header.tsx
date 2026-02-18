@@ -19,13 +19,13 @@ const PRIMARY_LINKS = [
 /* ── 2nd tier: knowledge-base sub-sections ── */
 const SECONDARY_LINKS = [
   { label: "Ratings", href: "/ratings" },
-  { label: "Finance", href: "/learning/esg-finance" },
-  { label: "Investment", href: "/learning/esg-investment" },
-  { label: "Frameworks", href: "/learning/esg-frameworks" },
+  { label: "Finance", href: "/finance" },
+  { label: "Investment", href: "/investment" },
+  { label: "Frameworks", href: "/frameworks" },
   { label: "Fundamentals", href: "/learning/esg-fundamentals" },
-  { label: "Emerging", href: "/learning/emerging-topics" },
-  { label: "Books", href: "/learning/books" },
-  { label: "Glossary", href: "/learning/glossary" },
+  { label: "Emerging", href: "/emerging-topics" },
+  { label: "Books", href: "/books" },
+  { label: "Glossary", href: "/glossary" },
   { label: "Developers", href: "/developers" },
 ];
 
