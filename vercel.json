@@ -11,10 +11,6 @@
     "src/app/api/ai-chat/route.ts": {
       "memory": 512,
       "maxDuration": 60
-    },
-    "src/app/search/page.tsx": {
-      "memory": 1024,
-      "maxDuration": 30
     }
   }
 }
