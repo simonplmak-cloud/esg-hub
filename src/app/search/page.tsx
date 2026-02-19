@@ -1,27 +1,27 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
-import SearchClient from "@/components/SearchClient";
+import AISearchAgent from "@/components/AISearchAgent";
 
 export const metadata: Metadata = {
   title: "Search — ESG Hub",
   description:
-    "Search across 300+ ESG topics, standards, frameworks, and 240+ external authoritative sources. Supports keyword and AI-powered semantic search.",
+    "AI-powered ESG search agent. Ask any ESG question and get comprehensive answers grounded in 300+ articles, 10 reference books, and 240+ authoritative sources.",
   alternates: {
-    canonical: "https://esg-hub-six.vercel.app/search",
+    canonical: "https://esg-hub.ascent.partners/search",
   },
   openGraph: {
-    title: "Search — ESG Hub",
+    title: "Search — ESG Hub AI Agent",
     description:
-      "Search across 300+ ESG topics, standards, frameworks, and 240+ external authoritative sources.",
-    url: "https://esg-hub-six.vercel.app/search",
+      "AI-powered ESG search. Ask questions about standards, frameworks, climate risk, and sustainability reporting.",
+    url: "https://esg-hub.ascent.partners/search",
     siteName: "ESG Hub",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Search — ESG Hub",
+    title: "Search — ESG Hub AI Agent",
     description:
-      "Search across 300+ ESG topics, standards, and frameworks.",
+      "AI-powered ESG search with RAG across 300+ articles and 10 reference books.",
   },
 };
 
@@ -30,22 +30,28 @@ export default function SearchPage() {
     <Suspense
       fallback={
         <div className="content-wrapper" id="main-content">
-          <h1 style={{ borderBottom: "none", marginBottom: "0.5rem" }}>
-            Search ESG Hub
-          </h1>
-          <p
-            style={{
+          <div style={{ textAlign: "center", padding: "3rem 0" }}>
+            <h1 style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "2rem",
+              fontWeight: 700,
+              borderBottom: "none",
+              marginBottom: "0.5rem",
+            }}>
+              ESG Hub Search
+            </h1>
+            <p style={{
               fontFamily: "var(--font-heading)",
               fontSize: "0.88rem",
               color: "var(--color-text-muted)",
-            }}
-          >
-            Loading search...
-          </p>
+            }}>
+              Loading search agent...
+            </p>
+          </div>
         </div>
       }
     >
-      <SearchClient />
+      <AISearchAgent />
     </Suspense>
   );
 }

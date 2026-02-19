@@ -1,57 +1,36 @@
 import { Metadata } from "next";
 import { getPageByPermalink } from "@/lib/pages";
+import { queryHttp } from "@/lib/surrealdb";
 import MarkdownContent from "@/components/MarkdownContent";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "ESG Books & Literature",
   description:
-    "Comprehensive ESG book collection with downloadable PDF resources covering carbon accounting, climate risk, carbon credits, and more.",
-  alternates: { canonical: "https://esg-hub-six.vercel.app/books" },
+    "Comprehensive ESG book collection with downloadable PDF resources covering IFRS, GRI, TNFD, carbon credits, and more. By Ascent Partners Foundation.",
+  alternates: { canonical: "https://esg-hub.ascent.partners/books" },
   openGraph: {
     title: "ESG Books & Literature — ESG Hub",
     description:
       "Comprehensive ESG book collection with downloadable PDF resources.",
-    url: "https://esg-hub-six.vercel.app/books",
+    url: "https://esg-hub.ascent.partners/books",
     siteName: "ESG Hub",
     type: "website",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
 };
 
-/**
- * Curated ESG book collection with PDF download links.
- * These are open-access or Creative Commons licensed resources.
- */
-const ESG_BOOKS = [
-  {
-    title: "Carbon Accounting in Practice",
-    author: "Ascent Partners Foundation",
-    description:
-      "A practical guide to corporate carbon accounting, covering Scope 1, 2, and 3 emissions measurement, GHG Protocol methodologies, and reporting best practices.",
-    topics: ["Carbon Accounting", "GHG Protocol", "Scope 1/2/3"],
-    pdfUrl: null as string | null,
-    section: "environmental",
-  },
-  {
-    title: "Climate Risk Quantification in Practice",
-    author: "Ascent Partners Foundation",
-    description:
-      "Comprehensive guide to quantifying climate-related financial risks, including physical and transition risk assessment, scenario analysis, and TCFD-aligned reporting.",
-    topics: ["Climate Risk", "TCFD", "Scenario Analysis"],
-    pdfUrl: null as string | null,
-    section: "environmental",
-  },
-  {
-    title: "Carbon Credits Made Simple",
-    author: "Ascent Partners Foundation",
-    description:
-      "An accessible introduction to carbon credit markets, covering voluntary and compliance markets, credit types, verification standards, and market mechanisms.",
-    topics: ["Carbon Credits", "Carbon Markets", "Offsets"],
-    pdfUrl: null as string | null,
-    section: "environmental",
-  },
-];
+interface Book {
+  slug: string;
+  title: string;
+  author: string;
+  category: string;
+  description: string;
+  pdf_url: string | null;
+  cover_url: string | null;
+  pdf_size: number;
+}
 
 /** Open-access ESG reference books from external sources */
 const EXTERNAL_BOOKS = [
@@ -97,8 +76,31 @@ const EXTERNAL_BOOKS = [
   },
 ];
 
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export default async function BooksPage() {
+  let books: Book[] = [];
+  try {
+    books = await queryHttp<Book>(
+      "SELECT slug, title, author, category, description, pdf_url, cover_url, pdf_size FROM book ORDER BY category, title;"
+    );
+  } catch (err) {
+    console.error("[BooksPage] Failed to fetch books:", err);
+  }
+
   const page = await getPageByPermalink("/books/");
+
+  // Group books by category
+  const categories = new Map<string, Book[]>();
+  for (const book of books) {
+    const cat = book.category || "Other";
+    if (!categories.has(cat)) categories.set(cat, []);
+    categories.get(cat)!.push(book);
+  }
 
   return (
     <div className="wide-wrapper">
@@ -110,158 +112,157 @@ export default async function BooksPage() {
 
       <h1>ESG Literature &amp; Resources</h1>
       <p style={{ color: "var(--color-text-secondary)", marginBottom: "1.5rem", maxWidth: "720px" }}>
-        Comprehensive collection of ESG books, guides, and reference documents.
-        Download full PDF versions of our publications or access external
-        standards and frameworks.
+        Comprehensive collection of ESG books, guides, and reference documents
+        by Ascent Partners Foundation. Download full PDF versions of our
+        publications or access external standards and frameworks.
       </p>
 
-      {/* APF Publications */}
-      <section style={{ marginBottom: "2.5rem" }}>
-        <h2>Ascent Partners Foundation Publications</h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "1rem",
-            marginTop: "0.8rem",
-          }}
-        >
-          {ESG_BOOKS.map((book) => (
-            <div
-              key={book.title}
-              style={{
-                background: "var(--color-bg-alt)",
-                border: "1px solid var(--color-border-light)",
-                borderRadius: "4px",
-                padding: "1.2rem",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              {/* Book icon */}
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.6rem" }}>
-                <div
-                  style={{
-                    width: "40px",
-                    height: "52px",
-                    background: "var(--color-bg-secondary)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "2px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                  </svg>
-                </div>
-                <div>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-heading)",
-                      fontWeight: 600,
-                      fontSize: "0.95rem",
-                      color: "var(--color-text)",
-                      marginBottom: "0.15rem",
-                    }}
-                  >
-                    {book.title}
-                  </div>
-                  <div style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
-                    {book.author}
-                  </div>
-                </div>
-              </div>
-              <p
+      {/* Books from SurrealDB grouped by category */}
+      {Array.from(categories.entries()).map(([category, catBooks]) => (
+        <section key={category} style={{ marginBottom: "2.5rem" }}>
+          <h2>{category}</h2>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+              gap: "1.2rem",
+              marginTop: "0.8rem",
+            }}
+          >
+            {catBooks.map((book) => (
+              <div
+                key={book.slug}
                 style={{
-                  fontSize: "0.85rem",
-                  color: "var(--color-text-secondary)",
-                  lineHeight: 1.55,
-                  flex: 1,
-                  margin: "0 0 0.6rem 0",
+                  background: "var(--color-bg-alt)",
+                  border: "1px solid var(--color-border-light)",
+                  borderRadius: "4px",
+                  padding: "1.2rem",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
-                {book.description}
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem", marginBottom: "0.6rem" }}>
-                {book.topics.map((topic) => (
-                  <span
-                    key={topic}
-                    style={{
-                      fontSize: "0.72rem",
-                      padding: "0.15em 0.45em",
-                      background: "var(--color-bg-secondary)",
-                      border: "1px solid var(--color-border)",
-                      borderRadius: "3px",
-                      color: "var(--color-text-muted)",
-                      fontFamily: "var(--font-heading)",
-                    }}
-                  >
-                    {topic}
-                  </span>
-                ))}
-              </div>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                {book.pdfUrl ? (
-                  <a
-                    href={book.pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.3rem",
-                      fontSize: "0.82rem",
-                      fontFamily: "var(--font-heading)",
-                      fontWeight: 500,
-                      padding: "0.35em 0.7em",
-                      background: "var(--color-primary)",
-                      color: "#fff",
-                      borderRadius: "3px",
-                      textDecoration: "none",
-                    }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="7 10 12 15 17 10" />
-                      <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    Download PDF
-                  </a>
-                ) : (
-                  <span
-                    style={{
-                      fontSize: "0.78rem",
-                      color: "var(--color-text-muted)",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    PDF coming soon
-                  </span>
-                )}
-                <Link
-                  href={`/${book.section}`}
+                {/* Book cover + title */}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.6rem" }}>
+                  {book.cover_url ? (
+                    <div
+                      style={{
+                        width: "60px",
+                        height: "80px",
+                        flexShrink: 0,
+                        borderRadius: "2px",
+                        overflow: "hidden",
+                        border: "1px solid var(--color-border)",
+                        position: "relative",
+                      }}
+                    >
+                      <Image
+                        src={book.cover_url}
+                        alt={`${book.title} cover`}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        width: "60px",
+                        height: "80px",
+                        background: "var(--color-bg-secondary)",
+                        border: "1px solid var(--color-border)",
+                        borderRadius: "2px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                      </svg>
+                    </div>
+                  )}
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: "var(--font-heading)",
+                        fontWeight: 600,
+                        fontSize: "0.95rem",
+                        color: "var(--color-text)",
+                        marginBottom: "0.15rem",
+                      }}
+                    >
+                      {book.title}
+                    </div>
+                    <div style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
+                      {book.author}
+                    </div>
+                  </div>
+                </div>
+                <p
                   style={{
-                    fontSize: "0.82rem",
-                    fontFamily: "var(--font-heading)",
-                    fontWeight: 500,
-                    padding: "0.35em 0.7em",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "3px",
-                    color: "var(--color-link)",
-                    textDecoration: "none",
+                    fontSize: "0.85rem",
+                    color: "var(--color-text-secondary)",
+                    lineHeight: 1.55,
+                    flex: 1,
+                    margin: "0 0 0.6rem 0",
                   }}
                 >
-                  Related articles
-                </Link>
+                  {book.description}
+                </p>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
+                  {book.pdf_url ? (
+                    <a
+                      href={book.pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        fontSize: "0.82rem",
+                        fontFamily: "var(--font-heading)",
+                        fontWeight: 500,
+                        padding: "0.35em 0.7em",
+                        background: "var(--color-primary)",
+                        color: "#fff",
+                        borderRadius: "3px",
+                        textDecoration: "none",
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                      </svg>
+                      Download PDF
+                      {book.pdf_size > 0 && (
+                        <span style={{ opacity: 0.8, fontSize: "0.75rem" }}>
+                          ({formatFileSize(book.pdf_size)})
+                        </span>
+                      )}
+                    </a>
+                  ) : (
+                    <span style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", fontStyle: "italic" }}>
+                      PDF coming soon
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {/* Fallback if no books loaded from DB */}
+      {books.length === 0 && (
+        <section style={{ marginBottom: "2.5rem" }}>
+          <p style={{ color: "var(--color-text-muted)", fontStyle: "italic" }}>
+            Unable to load book catalog. Please try again later.
+          </p>
+        </section>
+      )}
 
       {/* External Standards & Frameworks */}
       <section style={{ marginBottom: "2.5rem" }}>

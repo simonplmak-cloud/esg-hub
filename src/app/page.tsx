@@ -1,6 +1,7 @@
 import { getPageByPermalink } from "@/lib/pages";
 import MarkdownContent from "@/components/MarkdownContent";
 import Link from "next/link";
+import HomeSearchBox from "@/components/HomeSearchBox";
 
 const SECTIONS = [
   {
@@ -66,17 +67,17 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero section */}
+      {/* Hero section with prominent search */}
       <div
         style={{
           background: "var(--color-bg-alt)",
           borderBottom: "1px solid var(--color-border)",
-          padding: "2rem 1.5rem 1.75rem",
+          padding: "2.5rem 1.5rem 2rem",
         }}
       >
         <div
           style={{
-            maxWidth: "var(--content-max-width)",
+            maxWidth: "var(--wide-max-width)",
             margin: "0 auto",
             textAlign: "center",
           }}
@@ -84,11 +85,11 @@ export default async function HomePage() {
           <h1
             style={{
               fontFamily: "var(--font-heading)",
-              fontSize: "1.8rem",
+              fontSize: "2rem",
               fontWeight: 700,
               color: "var(--color-text)",
               marginTop: 0,
-              marginBottom: "0.4rem",
+              marginBottom: "0.3rem",
               borderBottom: "none",
               paddingBottom: 0,
             }}
@@ -100,13 +101,16 @@ export default async function HomePage() {
               fontSize: "1rem",
               color: "var(--color-text-secondary)",
               maxWidth: "600px",
-              margin: "0 auto",
+              margin: "0 auto 1.25rem",
               lineHeight: 1.6,
             }}
           >
             An open-access ESG encyclopedia by Ascent Partners Foundation.
-            Comprehensive resources for professionals, students, and researchers.
+            Ask any ESG question — powered by AI and 300+ articles.
           </p>
+
+          {/* Prominent search box */}
+          <HomeSearchBox />
         </div>
       </div>
 
