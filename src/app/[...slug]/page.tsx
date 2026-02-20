@@ -50,7 +50,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const permalink = buildPermalink(slug);
   const page = await getPageByPermalink(permalink);
 
+  // Check if DB is configured
+  const isDbConfigured = !!(
+    process.env.SURREAL_ENDPOINT &&
+    process.env.SURREAL_USERNAME &&
+    process.env.SURREAL_PASSWORD
+  );
+
   if (!page) {
+    if (!isDbConfigured) {
+      return { title: "Service Temporarily Unavailable — ESG Hub" };
+    }
     return { title: "Page Not Found — ESG Hub" };
   }
 
@@ -92,7 +102,45 @@ export default async function ContentPage({ params }: PageProps) {
   const permalink = buildPermalink(slug);
   const page = await getPageByPermalink(permalink);
 
+  // Check if DB is configured - if not, show service unavailable message
+  const isDbConfigured = !!(
+    process.env.SURREAL_ENDPOINT &&
+    process.env.SURREAL_USERNAME &&
+    process.env.SURREAL_PASSWORD
+  );
+
   if (!page) {
+    if (!isDbConfigured) {
+      // Database unavailable - show maintenance message instead of 404
+      return (
+        <div className="content-wrapper" id="main-content" style={{ textAlign: "center", padding: "3rem 1rem" }}>
+          <h1 style={{ borderBottom: "none", fontSize: "1.8rem" }}>
+            Content Temporarily Unavailable
+          </h1>
+          <p style={{ fontSize: "1rem", color: "var(--color-text-secondary)", maxWidth: "480px", margin: "1rem auto", lineHeight: 1.6 }}>
+            We&apos;re experiencing technical difficulties with our content database.
+            <br />
+            Please try again later or visit our homepage.
+          </p>
+          <Link
+            href="/"
+            style={{
+              display: "inline-block",
+              padding: "0.6em 1.5em",
+              background: "var(--color-primary)",
+              color: "#fff",
+              borderRadius: "4px",
+              textDecoration: "none",
+              fontFamily: "var(--font-heading)",
+              fontWeight: 600,
+              fontSize: "0.92rem",
+            }}
+          >
+            Go to Homepage
+          </Link>
+        </div>
+      );
+    }
     notFound();
   }
 
