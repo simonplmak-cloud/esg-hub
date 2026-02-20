@@ -3,27 +3,34 @@ import Surreal from "surrealdb";
 // Credentials are sourced exclusively from environment variables.
 // Set SURREAL_ENDPOINT, SURREAL_USERNAME, SURREAL_PASSWORD,
 // SURREAL_NAMESPACE, and SURREAL_DATABASE in your deployment environment.
-const SURREAL_ENDPOINT = process.env.SURREAL_ENDPOINT || "";
-const SURREAL_USERNAME = process.env.SURREAL_USERNAME || "";
-const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "";
-const SURREAL_NAMESPACE = process.env.SURREAL_NAMESPACE || "";
-const SURREAL_DATABASE = process.env.SURREAL_DATABASE || "";
+// NOTE: Access env vars inside functions, not at module level, for Vercel compatibility
 
 let dbInstance: Surreal | null = null;
+
+function getEnvVars() {
+  return {
+    endpoint: process.env.SURREAL_ENDPOINT || "",
+    username: process.env.SURREAL_USERNAME || "",
+    password: process.env.SURREAL_PASSWORD || "",
+    namespace: process.env.SURREAL_NAMESPACE || "",
+    database: process.env.SURREAL_DATABASE || "",
+  };
+}
 
 export async function getDb(): Promise<Surreal> {
   if (dbInstance) {
     return dbInstance;
   }
 
+  const env = getEnvVars();
   const db = new Surreal();
 
-  await db.connect(SURREAL_ENDPOINT, {
-    namespace: SURREAL_NAMESPACE,
-    database: SURREAL_DATABASE,
+  await db.connect(env.endpoint, {
+    namespace: env.namespace,
+    database: env.database,
     auth: {
-      username: SURREAL_USERNAME,
-      password: SURREAL_PASSWORD,
+      username: env.username,
+      password: env.password,
     },
   });
 
@@ -67,13 +74,14 @@ export async function queryHttp<T = unknown>(
   query: string,
   vars?: Record<string, unknown>
 ): Promise<T[]> {
+  const env = getEnvVars();
   const headers: Record<string, string> = {
     Accept: "application/json",
-    "surreal-ns": SURREAL_NAMESPACE,
-    "surreal-db": SURREAL_DATABASE,
+    "surreal-ns": env.namespace,
+    "surreal-db": env.database,
     Authorization:
       "Basic " +
-      Buffer.from(`${SURREAL_USERNAME}:${SURREAL_PASSWORD}`).toString(
+      Buffer.from(`${env.username}:${env.password}`).toString(
         "base64"
       ),
   };
@@ -92,7 +100,7 @@ export async function queryHttp<T = unknown>(
 
   headers["Content-Type"] = contentType;
 
-  const res = await fetch(`${SURREAL_ENDPOINT}/sql`, {
+  const res = await fetch(`${env.endpoint}/sql`, {
     method: "POST",
     headers,
     body: reqBody,
@@ -136,16 +144,17 @@ export async function queryHttpAll<T = unknown>(
 ): Promise<
   Array<{ result: T[]; status: string; time: string }>
 > {
-  const res = await fetch(`${SURREAL_ENDPOINT}/sql`, {
+  const env = getEnvVars();
+  const res = await fetch(`${env.endpoint}/sql`, {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
       Accept: "application/json",
-      "surreal-ns": SURREAL_NAMESPACE,
-      "surreal-db": SURREAL_DATABASE,
+      "surreal-ns": env.namespace,
+      "surreal-db": env.database,
       Authorization:
         "Basic " +
-        Buffer.from(`${SURREAL_USERNAME}:${SURREAL_PASSWORD}`).toString(
+        Buffer.from(`${env.username}:${env.password}`).toString(
           "base64"
         ),
     },
