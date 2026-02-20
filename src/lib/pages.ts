@@ -23,13 +23,25 @@ export interface Page {
  * Check if database is configured
  */
 function isDbConfigured(): boolean {
-  return !!(
-    process.env.SURREAL_ENDPOINT &&
-    process.env.SURREAL_USERNAME &&
-    process.env.SURREAL_PASSWORD &&
-    process.env.SURREAL_NAMESPACE &&
-    process.env.SURREAL_DATABASE
-  );
+  const hasEndpoint = !!process.env.SURREAL_ENDPOINT;
+  const hasUsername = !!process.env.SURREAL_USERNAME;
+  const hasPassword = !!process.env.SURREAL_PASSWORD;
+  const hasNamespace = !!process.env.SURREAL_NAMESPACE;
+  const hasDatabase = !!process.env.SURREAL_DATABASE;
+  
+  const configured = hasEndpoint && hasUsername && hasPassword && hasNamespace && hasDatabase;
+  
+  if (!configured) {
+    console.log("[pages] DB config check:", {
+      endpoint: hasEndpoint,
+      username: hasUsername,
+      password: hasPassword,
+      namespace: hasNamespace,
+      database: hasDatabase
+    });
+  }
+  
+  return configured;
 }
 
 /**
@@ -44,12 +56,12 @@ export async function getPageByPermalink(
     return null;
   }
 
-  try {
-    // Normalize: ensure leading and trailing slashes
-    let normalized = permalink;
-    if (!normalized.startsWith("/")) normalized = "/" + normalized;
-    if (!normalized.endsWith("/")) normalized += "/";
+  // Normalize: ensure leading and trailing slashes
+  let normalized = permalink;
+  if (!normalized.startsWith("/")) normalized = "/" + normalized;
+  if (!normalized.endsWith("/")) normalized += "/";
 
+  try {
     const results = await queryHttp<Page>(
       `SELECT * FROM page WHERE permalink = $permalink LIMIT 1;`,
       { permalink: normalized }
@@ -58,6 +70,11 @@ export async function getPageByPermalink(
     return results.length > 0 ? results[0] : null;
   } catch (error) {
     console.error("[pages] Error fetching page:", error);
+    console.error("[pages] Error details:", {
+      permalink: normalized,
+      endpoint: process.env.SURREAL_ENDPOINT?.substring(0, 30) + "...",
+      errorMessage: error instanceof Error ? error.message : String(error)
+    });
     return null;
   }
 }
