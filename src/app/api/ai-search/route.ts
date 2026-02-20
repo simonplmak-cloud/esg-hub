@@ -1,4 +1,6 @@
 import { NextRequest } from "next/server";
+
+export const runtime = "nodejs";
 import { queryHttp, queryHttpAll, sanitize } from "@/lib/surrealdb";
 
 /**

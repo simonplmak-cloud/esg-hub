@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
 import { keywordSearch } from "@/lib/search";
 import { queryHttp, sanitizeInt } from "@/lib/surrealdb";
 

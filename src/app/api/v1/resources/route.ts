@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
 import { queryHttp, sanitize, sanitizeInt } from "@/lib/surrealdb";
 
 const CORS_HEADERS = {
