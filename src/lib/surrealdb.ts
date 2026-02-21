@@ -67,7 +67,7 @@ export function isAlphanumericDash(value: string): boolean {
 }
 
 /**
- * Execute a raw SurrealQL query via HTTP (more reliable for server-side use in Next.js).
+ * Execute a raw SurrealQL query via HTTP using JSON-RPC (more reliable for server-side use in Next.js).
  * Supports optional variables for parameterized queries.
  */
 export async function queryHttp<T = unknown>(
@@ -76,6 +76,7 @@ export async function queryHttp<T = unknown>(
 ): Promise<T[]> {
   const env = getEnvVars();
   const headers: Record<string, string> = {
+    "Content-Type": "application/json",
     Accept: "application/json",
     "surreal-ns": env.namespace,
     "surreal-db": env.database,
@@ -86,21 +87,15 @@ export async function queryHttp<T = unknown>(
       ),
   };
 
-  let reqBody: string;
-  let contentType: string;
+  // Build RPC request body
+  const params: unknown[] = vars && Object.keys(vars).length > 0 ? [query, vars] : [query];
+  const reqBody = JSON.stringify({
+    id: 1,
+    method: "query",
+    params,
+  });
 
-  if (vars && Object.keys(vars).length > 0) {
-    // Use JSON body with variables for parameterized queries
-    contentType = "application/json";
-    reqBody = JSON.stringify({ query, variables: vars });
-  } else {
-    contentType = "text/plain";
-    reqBody = query;
-  }
-
-  headers["Content-Type"] = contentType;
-
-  const res = await fetch(`${env.endpoint}/sql`, {
+  const res = await fetch(`${env.endpoint}/rpc`, {
     method: "POST",
     headers,
     body: reqBody,
@@ -114,20 +109,22 @@ export async function queryHttp<T = unknown>(
   }
 
   const resBody = await res.json();
-  const results = resBody as Array<{
-    result: T[];
-    status: string;
-    time: string;
-  }>;
+  
+  // Handle JSON-RPC response format
+  if (resBody.error) {
+    console.error("[SurrealDB] RPC error:", JSON.stringify(resBody.error));
+    throw new Error(`Database query returned an error: ${resBody.error.message}`);
+  }
 
-  // Defensive: ensure results is a valid array
-  if (!Array.isArray(results) || results.length === 0) {
+  // RPC response: { result: [...], status: "OK", time: "..." }
+  const rpcResult = resBody.result;
+  if (!Array.isArray(rpcResult) || rpcResult.length === 0) {
     console.error("[SurrealDB] Unexpected response format:", JSON.stringify(resBody).slice(0, 500));
     throw new Error("Database returned an unexpected response format");
   }
 
   // Return the result from the last statement
-  const last = results[results.length - 1];
+  const last = rpcResult[rpcResult.length - 1];
   if (last?.status !== "OK") {
     console.error("[SurrealDB] Query error:", JSON.stringify(last));
     throw new Error("Database query returned an error");
@@ -137,7 +134,7 @@ export async function queryHttp<T = unknown>(
 }
 
 /**
- * Execute multiple statements and return all results
+ * Execute multiple statements and return all results using JSON-RPC
  */
 export async function queryHttpAll<T = unknown>(
   query: string
@@ -145,10 +142,18 @@ export async function queryHttpAll<T = unknown>(
   Array<{ result: T[]; status: string; time: string }>
 > {
   const env = getEnvVars();
-  const res = await fetch(`${env.endpoint}/sql`, {
+  
+  // Build RPC request body
+  const reqBody = JSON.stringify({
+    id: 1,
+    method: "query",
+    params: [query],
+  });
+  
+  const res = await fetch(`${env.endpoint}/rpc`, {
     method: "POST",
     headers: {
-      "Content-Type": "text/plain",
+      "Content-Type": "application/json",
       Accept: "application/json",
       "surreal-ns": env.namespace,
       "surreal-db": env.database,
@@ -158,7 +163,7 @@ export async function queryHttpAll<T = unknown>(
           "base64"
         ),
     },
-    body: query,
+    body: reqBody,
     cache: "no-store",
   });
 
@@ -168,5 +173,14 @@ export async function queryHttpAll<T = unknown>(
     throw new Error(`Database query failed (HTTP ${res.status})`);
   }
 
-  return res.json();
+  const resBody = await res.json();
+  
+  // Handle JSON-RPC response format
+  if (resBody.error) {
+    console.error("[SurrealDB] RPC error:", JSON.stringify(resBody.error));
+    throw new Error(`Database query returned an error: ${resBody.error.message}`);
+  }
+
+  // Return the result array directly
+  return resBody.result || [];
 }
