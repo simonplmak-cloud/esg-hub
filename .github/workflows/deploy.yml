@@ -47,15 +47,6 @@ jobs:
         run: pnpm run lint
         continue-on-error: true
 
-      - name: Build application
-        run: pnpm run build
-        env:
-          SURREAL_ENDPOINT: ${{ secrets.SURREAL_ENDPOINT }}
-          SURREAL_USERNAME: ${{ secrets.SURREAL_USERNAME }}
-          SURREAL_PASSWORD: ${{ secrets.SURREAL_PASSWORD }}
-          SURREAL_NAMESPACE: ${{ secrets.SURREAL_NAMESPACE }}
-          SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
-
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
@@ -64,6 +55,12 @@ jobs:
 
       - name: Build for Vercel
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          SURREAL_ENDPOINT: ${{ secrets.SURREAL_ENDPOINT }}
+          SURREAL_USERNAME: ${{ secrets.SURREAL_USERNAME }}
+          SURREAL_PASSWORD: ${{ secrets.SURREAL_PASSWORD }}
+          SURREAL_NAMESPACE: ${{ secrets.SURREAL_NAMESPACE }}
+          SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
 
       - name: Deploy to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
