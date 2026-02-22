@@ -22,28 +22,6 @@
       "maxDuration": 30
     }
   },
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/videos",
-      "has": [
-        {
-          "type": "host",
-          "value": "esg.video"
-        }
-      ]
-    },
-    {
-      "source": "/",
-      "destination": "/videos",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.esg.video"
-        }
-      ]
-    }
-  ],
   "rewrites": [
     {
       "source": "/api/(.*)",

@@ -6,31 +6,31 @@ const nextConfig = {
     "sharp",
     "@huggingface/transformers",
   ],
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/videos",
-        has: [
-          {
-            type: "host",
-            value: "esg.video",
-          },
-        ],
-        permanent: false,
-      },
-      {
-        source: "/",
-        destination: "/videos",
-        has: [
-          {
-            type: "host",
-            value: "www.esg.video",
-          },
-        ],
-        permanent: false,
-      },
-    ];
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/:path*",
+          has: [
+            {
+              type: "host",
+              value: "esg.video",
+            },
+          ],
+          destination: "/videos/:path*",
+        },
+        {
+          source: "/:path*",
+          has: [
+            {
+              type: "host",
+              value: "www.esg.video",
+            },
+          ],
+          destination: "/videos/:path*",
+        },
+      ],
+    };
   },
   webpack: (config, { isServer }) => {
     if (isServer) {
