@@ -69,7 +69,11 @@ export default async function HomePage() {
   const headersList = headers();
   const hostname = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   
+  // Debug: Log hostname to see what we're getting
+  console.log("[DEBUG] Hostname detected:", hostname);
+  
   if (hostname === "esg.video" || hostname === "www.esg.video" || hostname.endsWith(".esg.video")) {
+    console.log("[DEBUG] Redirecting to /videos");
     redirect("/videos");
   }
   
@@ -78,6 +82,7 @@ export default async function HomePage() {
   return (
     <>
       <ClientRedirect />
+      {/* DEBUG: Hostname: {hostname} */}
       {/* Hero section with prominent search */}
       <div
         style={{
