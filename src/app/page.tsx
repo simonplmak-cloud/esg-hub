@@ -2,6 +2,8 @@ import { getPageByPermalink } from "@/lib/pages";
 import MarkdownContent from "@/components/MarkdownContent";
 import Link from "next/link";
 import HomeSearchBox from "@/components/HomeSearchBox";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 const SECTIONS = [
   {
@@ -63,6 +65,13 @@ const SECTIONS = [
 ];
 
 export default async function HomePage() {
+  const headersList = headers();
+  const hostname = headersList.get("host") || "";
+  
+  if (hostname === "esg.video" || hostname === "www.esg.video") {
+    redirect("/videos");
+  }
+  
   const page = await getPageByPermalink("/");
 
   return (
