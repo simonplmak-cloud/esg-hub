@@ -82,7 +82,7 @@ export default async function HomePage() {
   return (
     <>
       <ClientRedirect />
-      {/* DEBUG: Hostname: {hostname} */}
+      {/* DEBUG: Hostname detected: {hostname} - Should redirect if esg.video */}
       {/* Hero section with prominent search */}
       <div
         style={{
