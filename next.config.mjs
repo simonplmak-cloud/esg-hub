@@ -6,24 +6,6 @@ const nextConfig = {
     "sharp",
     "@huggingface/transformers",
   ],
-  async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          { type: 'host', value: 'esg.video' },
-        ],
-        destination: '/videos/:path*',
-      },
-      {
-        source: '/:path*',
-        has: [
-          { type: 'host', value: 'www.esg.video' },
-        ],
-        destination: '/videos/:path*',
-      },
-    ];
-  },
   webpack: (config, { isServer }) => {
     if (isServer) {
       // Exclude native ONNX and transformers modules from the server bundle
