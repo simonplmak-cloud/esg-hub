@@ -95,20 +95,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                var hostname = window.location.hostname;
-                if (hostname === 'esg.video' || hostname === 'www.esg.video' || hostname.endsWith('.esg.video')) {
-                  if (window.location.pathname === '/') {
-                    window.location.replace('/videos');
-                  }
-                }
-              })();
-            `,
-          }}
-        />
+        <script src="/domain-redirect.js" />
         {/* Domain redirect script - forces esg.video to show videos page */}
       </head>
       <body>
