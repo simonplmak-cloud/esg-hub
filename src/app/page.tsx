@@ -4,6 +4,7 @@ import Link from "next/link";
 import HomeSearchBox from "@/components/HomeSearchBox";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import ClientRedirect from "@/components/ClientRedirect";
 
 const SECTIONS = [
   {
@@ -76,6 +77,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <ClientRedirect />
       {/* Hero section with prominent search */}
       <div
         style={{
