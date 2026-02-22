@@ -109,6 +109,7 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Domain redirect script - forces esg.video to show videos page */}
       </head>
       <body>
         <Header />
