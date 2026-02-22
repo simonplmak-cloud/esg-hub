@@ -28,28 +28,6 @@
       "destination": "/api/$1"
     }
   ],
-  "redirects": [
-    {
-      "source": "/:path*",
-      "destination": "/videos",
-      "has": [
-        {
-          "type": "host",
-          "value": "esg.video"
-        }
-      ]
-    },
-    {
-      "source": "/:path*",
-      "destination": "/videos",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.esg.video"
-        }
-      ]
-    }
-  ],
   "headers": [
     {
       "source": "/api/(.*)",
