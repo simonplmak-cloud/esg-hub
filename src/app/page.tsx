@@ -66,9 +66,9 @@ const SECTIONS = [
 
 export default async function HomePage() {
   const headersList = headers();
-  const hostname = headersList.get("host") || "";
+  const hostname = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   
-  if (hostname === "esg.video" || hostname === "www.esg.video") {
+  if (hostname === "esg.video" || hostname === "www.esg.video" || hostname.endsWith(".esg.video")) {
     redirect("/videos");
   }
   
