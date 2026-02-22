@@ -66,7 +66,7 @@ const SECTIONS = [
 ];
 
 export default async function HomePage() {
-  const headersList = headers();
+  const headersList = await headers();
   const hostname = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   
   // Debug: Log hostname to see what we're getting
