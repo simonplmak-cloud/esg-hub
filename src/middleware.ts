@@ -3,11 +3,10 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
+  const isVideoDomain = hostname === 'esg.video' || hostname === 'www.esg.video' || hostname.endsWith('.esg.video');
   
-  if (hostname === 'esg.video' || hostname === 'www.esg.video') {
-    const url = request.nextUrl.clone();
-    url.pathname = '/videos';
-    return NextResponse.redirect(url);
+  if (isVideoDomain && !request.nextUrl.pathname.startsWith('/videos')) {
+    return NextResponse.redirect(new URL('/videos', request.url));
   }
   
   return NextResponse.next();
