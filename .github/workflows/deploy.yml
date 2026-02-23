@@ -47,6 +47,24 @@ jobs:
         run: pnpm run lint
         continue-on-error: true
 
+      - name: Verify Database Schema
+        run: node scripts/verify-db-schema.mjs
+        env:
+          SURREAL_ENDPOINT: ${{ secrets.SURREAL_ENDPOINT }}
+          SURREAL_USERNAME: ${{ secrets.SURREAL_USERNAME }}
+          SURREAL_PASSWORD: ${{ secrets.SURREAL_PASSWORD }}
+          SURREAL_NAMESPACE: ${{ secrets.SURREAL_NAMESPACE }}
+          SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
+        continue-on-error: true
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium
+
+      - name: Run Accessibility & API Tests
+        run: npx playwright test --project=chromium
+        env:
+          TEST_BASE_URL: http://localhost:3000
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 

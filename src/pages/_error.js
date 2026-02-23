@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 function Error({ statusCode }) {
   return (
     <div style={{ textAlign: "center", padding: "4rem 1.5rem", fontFamily: "Inter, sans-serif" }}>

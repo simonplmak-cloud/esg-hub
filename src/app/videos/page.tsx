@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import { getPageByPermalink } from "@/lib/pages";
 import { formatPermalink } from "@/lib/utils";
 import { queryHttp } from "@/lib/surrealdb";
@@ -187,9 +188,11 @@ export default async function VideosPage() {
                   rel="noopener noreferrer"
                   style={{ display: "block", position: "relative" }}
                 >
-                  <img
+                  <Image
                     src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`}
                     alt={video.title}
+                    width={480}
+                    height={270}
                     style={{
                       width: "100%",
                       aspectRatio: "16/9",

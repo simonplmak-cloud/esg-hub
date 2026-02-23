@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import Image from "next/image";
 
 /**
  * Curated Unsplash image URLs mapped to ESG topics.
@@ -124,11 +125,13 @@ export default function PageImage({ section, title, keywords }: PageImageProps) 
 
   return (
     <div style={{ position: "relative", marginBottom: "1rem" }}>
-      <img
+      <Image
         src={imageUrl}
         alt={`Illustration for ${title}`}
+        width={960}
+        height={280}
         className="page-hero-image"
-        style={{ opacity: loaded ? 1 : 0, transition: "opacity 0.3s" }}
+        style={{ opacity: loaded ? 1 : 0, transition: "opacity 0.3s", width: "100%", height: "auto" }}
         loading="lazy"
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
