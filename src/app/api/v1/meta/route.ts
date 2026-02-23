@@ -19,7 +19,7 @@ export async function OPTIONS() {
  * 
  * Returns database metadata: sections, pillars, domains, and record counts.
  */
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     // Get sections with counts
     const sections = await queryHttp<{ section: string; count: number }>(

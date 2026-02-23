@@ -30,16 +30,8 @@ export default async function ContentsPage() {
   return (
     <div className="content-wrapper layout-content">
       <nav aria-label="Breadcrumb">
-        <ol style={{ 
-          listStyle: "none", 
-          padding: 0, 
-          margin: "0 0 1.5rem",
-          display: "flex",
-          gap: "0.5rem",
-          fontSize: "0.85rem",
-          color: "var(--color-text-muted)"
-        }}>
-          <li><Link href="/" style={{ color: "var(--color-link)" }}>ESG Hub</Link></li>
+        <ol className="breadcrumb">
+          <li><Link href="/">ESG Hub</Link></li>
           <li>›</li>
           <li aria-current="page">Contents</li>
         </ol>
@@ -47,40 +39,28 @@ export default async function ContentsPage() {
       
       <h1>Contents</h1>
       
-      <p style={{ 
-        fontSize: "1.1rem", 
-        color: "var(--color-text-secondary)",
-        marginBottom: "2rem"
-      }}>
+      <p className="contents-description">
         Complete directory of the ESG Hub knowledge base. 
         {totalCount} articles organized by subject, type, and ESG pillar.
       </p>
       
       {/* Statistics */}
-      <div style={{ 
-        display: "grid", 
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: "1rem",
-        marginBottom: "2rem",
-        padding: "1.5rem",
-        background: "var(--color-bg-alt)",
-        borderRadius: "4px"
-      }}>
-        <div>
-          <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--color-section-env)" }}>{pillarCounts.E}</div>
-          <div style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>Environmental Articles</div>
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-value" style={{ color: "var(--color-section-env)" }}>{pillarCounts.E}</div>
+          <div className="stat-label">Environmental Articles</div>
         </div>
-        <div>
-          <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--color-section-social)" }}>{pillarCounts.S}</div>
-          <div style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>Social Articles</div>
+        <div className="stat-card">
+          <div className="stat-value" style={{ color: "var(--color-section-social)" }}>{pillarCounts.S}</div>
+          <div className="stat-label">Social Articles</div>
         </div>
-        <div>
-          <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--color-section-gov)" }}>{pillarCounts.G}</div>
-          <div style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>Governance Articles</div>
+        <div className="stat-card">
+          <div className="stat-value" style={{ color: "var(--color-section-gov)" }}>{pillarCounts.G}</div>
+          <div className="stat-label">Governance Articles</div>
         </div>
-        <div>
-          <div style={{ fontSize: "2rem", fontWeight: 700 }}>{totalCount}</div>
-          <div style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>Total Articles</div>
+        <div className="stat-card">
+          <div className="stat-value">{totalCount}</div>
+          <div className="stat-label">Total Articles</div>
         </div>
       </div>
       
@@ -89,226 +69,108 @@ export default async function ContentsPage() {
       
       <div style={{ marginBottom: "3rem" }}>
         {/* ESG Pillars */}
-        <section style={{ marginBottom: "2rem" }}>
-          <h3 style={{ 
-            color: "var(--color-section-env)",
-            borderBottom: "2px solid var(--color-section-env)",
-            paddingBottom: "0.5rem",
-            marginBottom: "1rem"
-          }}>
-            ESG Pillars
-          </h3>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
-            <div>
-              <Link 
-                href="/environmental" 
-                style={{ 
-                  fontSize: "1.1rem", 
-                  fontWeight: 600,
-                  color: "var(--color-section-env)",
-                  textDecoration: "none"
-                }}
-              >
-                Environmental (E)
-              </Link>
-              <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0.5rem 0" }}>
-                9 aspects: Climate Change, Energy, Water, Biodiversity, Materials, Waste, Pollution, Compliance, Supply Chain
-              </p>
-              <Link href="/environmental" style={{ fontSize: "0.85rem" }}>
-                View all {pillarCounts.E} articles →
-              </Link>
-            </div>
-            
-            <div>
-              <Link 
-                href="/social" 
-                style={{ 
-                  fontSize: "1.1rem", 
-                  fontWeight: 600,
-                  color: "var(--color-section-social)",
-                  textDecoration: "none"
-                }}
-              >
-                Social (S)
-              </Link>
-              <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0.5rem 0" }}>
-                10 topics: Employment, Health & Safety, Training, Diversity, Human Rights, Communities, Supply Chain
-              </p>
-              <Link href="/social" style={{ fontSize: "0.85rem" }}>
-                View all {pillarCounts.S} articles →
-              </Link>
-            </div>
-            
-            <div>
-              <Link 
-                href="/governance" 
-                style={{ 
-                  fontSize: "1.1rem", 
-                  fontWeight: 600,
-                  color: "var(--color-section-gov)",
-                  textDecoration: "none"
-                }}
-              >
-                Governance (G)
-              </Link>
-              <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0.5rem 0" }}>
-                9 areas: Board Governance, Executive Compensation, Shareholder Rights, Transparency, Risk Management, Ethics
-              </p>
-              <Link href="/governance" style={{ fontSize: "0.85rem" }}>
-                View all {pillarCounts.G} articles →
-              </Link>
-            </div>
+        <section className="section-card">
+          <h3 className="section-heading env">ESG Pillars</h3>
+          <div className="section-links">
+            <Link href="/environmental" className="section-link">
+              <span className="section-link-title">Environmental</span>
+              <span className="section-link-desc">{bySection.environmental?.length || 0} articles — Climate, emissions, biodiversity</span>
+            </Link>
+            <Link href="/social" className="section-link">
+              <span className="section-link-title">Social</span>
+              <span className="section-link-desc">{bySection.social?.length || 0} articles — Human rights, labor, community</span>
+            </Link>
+            <Link href="/governance" className="section-link">
+              <span className="section-link-title">Governance</span>
+              <span className="section-link-desc">{bySection.governance?.length || 0} articles — Board, ethics, transparency</span>
+            </Link>
           </div>
         </section>
-        
-        {/* Standards & Regulations */}
-        <section style={{ marginBottom: "2rem" }}>
-          <h3 style={{ 
-            color: "var(--color-section-standards)",
-            borderBottom: "2px solid var(--color-section-standards)",
-            paddingBottom: "0.5rem",
-            marginBottom: "1rem"
-          }}
-          >
-            Standards, Frameworks & Regulations
-          </h3>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem" }}>
-            {[
-              { title: "Standards & Frameworks", href: "/standards", count: bySection.standards?.length || 0, desc: "GRI, IFRS S1/S2, TCFD, TNFD, SASB" },
-              { title: "Regional Regulations", href: "/hk-apac", count: (bySection["hk-apac"]?.length || 0) + (bySection.regulations?.length || 0), desc: "EU, APAC, North America" },
-              { title: "ESG Ratings & Data", href: "/ratings", count: bySection.ratings?.length || 0, desc: "Rating agencies & methodologies" },
-            ].map(item => (
-              <div key={item.href}>
-                <Link href={item.href} style={{ fontWeight: 600, textDecoration: "none" }}>
-                  {item.title}
-                </Link>
-                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0.25rem 0" }}>
-                  {item.desc}
-                </p>
-                <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
-                  {item.count} articles
-                </span>
-              </div>
-            ))}
+
+        {/* Standards */}
+        <section className="section-card">
+          <h3 className="section-heading standards">Standards & Frameworks</h3>
+          <div className="section-links">
+            <Link href="/standards" className="section-link">
+              <span className="section-link-title">Standards & Frameworks</span>
+              <span className="section-link-desc">{bySection.standards?.length || 0} articles — GRI, IFRS S1/S2, TCFD, TNFD, SASB</span>
+            </Link>
+            <Link href="/hk-apac" className="section-link">
+              <span className="section-link-title">Regional Regulations</span>
+              <span className="section-link-desc">{(bySection["hk-apac"]?.length || 0) + (bySection.regulations?.length || 0)} articles — EU, APAC, North America</span>
+            </Link>
+            <Link href="/ratings" className="section-link">
+              <span className="section-link-title">ESG Ratings & Data</span>
+              <span className="section-link-desc">{bySection.ratings?.length || 0} articles — Rating agencies & methodologies</span>
+            </Link>
           </div>
         </section>
-        
-        {/* Finance & Investment */}
-        <section style={{ marginBottom: "2rem" }}>
-          <h3 style={{ 
-            color: "var(--color-section-climate)",
-            borderBottom: "2px solid var(--color-section-climate)",
-            paddingBottom: "0.5rem",
-            marginBottom: "1rem"
-          }}
-          >
-            Finance & Investment
-          </h3>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem" }}>
-            {[
-              { title: "ESG Finance", href: "/finance", count: bySection.finance?.length || 0, desc: "Blended Finance, Green Taxonomies, Social Bonds" },
-              { title: "Climate Finance", href: "/climate-finance", count: bySection["climate-finance"]?.length || 0, desc: "Carbon Markets, Green Bonds, Net-Zero" },
-              { title: "ESG Investment", href: "/investment", count: bySection.investment?.length || 0, desc: "Impact Investing, Shareholder Activism" },
-            ].map(item => (
-              <div key={item.href}>
-                <Link href={item.href} style={{ fontWeight: 600, textDecoration: "none" }}>
-                  {item.title}
-                </Link>
-                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0.25rem 0" }}>
-                  {item.desc}
-                </p>
-                <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
-                  {item.count} articles
-                </span>
-              </div>
-            ))}
+
+        {/* Finance */}
+        <section className="section-card">
+          <h3 className="section-heading finance">Finance & Investment</h3>
+          <div className="section-links">
+            <Link href="/finance" className="section-link">
+              <span className="section-link-title">ESG Finance</span>
+              <span className="section-link-desc">{bySection.finance?.length || 0} articles — Blended Finance, Green Taxonomies, Social Bonds</span>
+            </Link>
+            <Link href="/climate-finance" className="section-link">
+              <span className="section-link-title">Climate Finance</span>
+              <span className="section-link-desc">{bySection["climate-finance"]?.length || 0} articles — Carbon Markets, Green Bonds, Net-Zero</span>
+            </Link>
+            <Link href="/investment" className="section-link">
+              <span className="section-link-title">ESG Investment</span>
+              <span className="section-link-desc">{bySection.investment?.length || 0} articles — Impact Investing, Shareholder Activism</span>
+            </Link>
           </div>
         </section>
-        
+
         {/* Sustainability Topics */}
-        <section style={{ marginBottom: "2rem" }}>
-          <h3 style={{ 
-            color: "var(--color-section-biodiversity)",
-            borderBottom: "2px solid var(--color-section-biodiversity)",
-            paddingBottom: "0.5rem",
-            marginBottom: "1rem"
-          }}
-          >
-            Sustainability Topics
-          </h3>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem" }}>
-            {[
-              { title: "Biodiversity & Nature", href: "/biodiversity", count: bySection.biodiversity?.length || 0, desc: "TNFD, Ecosystem Services, Nature-Positive" },
-              { title: "Emerging Topics", href: "/emerging-topics", count: bySection["emerging-topics"]?.length || 0, desc: "AI Ethics, Circular Economy, Just Transition" },
-              { title: "UN SDGs", href: "/sdg", count: (bySection.sdg?.length || 0) + (bySection.sdgs?.length || 0), desc: "17 Sustainable Development Goals" },
-            ].map(item => (
-              <div key={item.href}>
-                <Link href={item.href} style={{ fontWeight: 600, textDecoration: "none" }}>
-                  {item.title}
-                </Link>
-                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0.25rem 0" }}>
-                  {item.desc}
-                </p>
-                <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
-                  {item.count} articles
-                </span>
-              </div>
-            ))}
+        <section className="section-card">
+          <h3 className="section-heading biodiversity">Sustainability Topics</h3>
+          <div className="section-links">
+            <Link href="/biodiversity" className="section-link">
+              <span className="section-link-title">Biodiversity & Nature</span>
+              <span className="section-link-desc">{bySection.biodiversity?.length || 0} articles — TNFD, Ecosystem Services, Nature-Positive</span>
+            </Link>
+            <Link href="/emerging-topics" className="section-link">
+              <span className="section-link-title">Emerging Topics</span>
+              <span className="section-link-desc">{bySection["emerging-topics"]?.length || 0} articles — AI Ethics, Circular Economy, Just Transition</span>
+            </Link>
+            <Link href="/sdg" className="section-link">
+              <span className="section-link-title">UN SDGs</span>
+              <span className="section-link-desc">{(bySection.sdg?.length || 0) + (bySection.sdgs?.length || 0)} articles — 17 Sustainable Development Goals</span>
+            </Link>
           </div>
         </section>
-        
-        {/* Professional Development */}
-        <section style={{ marginBottom: "2rem" }}>
-          <h3 style={{ 
-            color: "var(--color-section-learning)",
-            borderBottom: "2px solid var(--color-section-learning)",
-            paddingBottom: "0.5rem",
-            marginBottom: "1rem"
-          }}
-          >
-            Professional Development
-          </h3>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem" }}>
-            {[
-              { title: "Learning Hub", href: "/learning", count: (bySection.learning?.length || 0) + (bySection.learn?.length || 0), desc: "Courses & Certifications" },
-              { title: "Practice & Implementation", href: "/practice", count: bySection.practice?.length || 0, desc: "Implementation Guides" },
-              { title: "ESG Fundamentals", href: "/learning/esg-fundamentals", count: bySection.fundamentals?.length || 0, desc: "Foundation Knowledge" },
-            ].map(item => (
-              <div key={item.href}>
-                <Link href={item.href} style={{ fontWeight: 600, textDecoration: "none" }}>
-                  {item.title}
-                </Link>
-                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0.25rem 0" }}>
-                  {item.desc}
-                </p>
-                <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
-                  {item.count} articles
-                </span>
-              </div>
-            ))}
+
+        {/* Learning */}
+        <section className="section-card">
+          <h3 className="section-heading learning">Learning & Practice</h3>
+          <div className="section-links">
+            <Link href="/learning" className="section-link">
+              <span className="section-link-title">Learning Hub</span>
+              <span className="section-link-desc">{(bySection.learning?.length || 0) + (bySection.learn?.length || 0)} articles — Courses & Certifications</span>
+            </Link>
+            <Link href="/practice" className="section-link">
+              <span className="section-link-title">Practice & Implementation</span>
+              <span className="section-link-desc">{bySection.practice?.length || 0} articles — Implementation Guides</span>
+            </Link>
+            <Link href="/learning/esg-fundamentals" className="section-link">
+              <span className="section-link-title">ESG Fundamentals</span>
+              <span className="section-link-desc">{bySection.fundamentals?.length || 0} articles — Foundation Knowledge</span>
+            </Link>
           </div>
         </section>
       </div>
-      
-      {/* Quick Links */}
-      <div style={{ 
-        borderTop: "1px solid var(--color-border)",
-        paddingTop: "2rem",
-        marginTop: "2rem"
-      }}>
-        <h2>Quick Access</h2>
-        <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
-          <Link href="/search" style={{ fontSize: "0.95rem" }}>Search</Link>
-          <Link href="/glossary" style={{ fontSize: "0.95rem" }}>Glossary</Link>
-          <Link href="/books" style={{ fontSize: "0.95rem" }}>Books</Link>
-          <Link href="/videos" style={{ fontSize: "0.95rem" }}>Videos</Link>
-          <Link href="/developers" style={{ fontSize: "0.95rem" }}>Developers</Link>
-        </div>
+
+      {/* Footer links */}
+      <div className="contents-footer-links">
+        <Link href="/search" className="footer-link">Search</Link>
+        <Link href="/glossary" className="footer-link">Glossary</Link>
+        <Link href="/books" className="footer-link">Books</Link>
+        <Link href="/videos" className="footer-link">Videos</Link>
+        <Link href="/developers" className="footer-link">Developers</Link>
       </div>
     </div>
   );

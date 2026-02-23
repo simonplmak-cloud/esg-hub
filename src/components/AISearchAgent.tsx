@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
@@ -144,7 +143,6 @@ export default function AISearchAgent() {
   const [quickResults, setQuickResults] = useState<QuickResult[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showQuickResults, setShowQuickResults] = useState(false);
   const [activeMode, setActiveMode] = useState<"ai" | "quick">("ai");
 
   // Embedding state
@@ -237,7 +235,6 @@ export default function AISearchAgent() {
     setSources([]);
     setError(null);
     setActiveMode("ai");
-    setShowQuickResults(false);
 
     // Update URL
     router.replace(`/search?q=${encodeURIComponent(q)}`, { scroll: false });
@@ -315,7 +312,6 @@ export default function AISearchAgent() {
     if (!q) return;
 
     setActiveMode("quick");
-    setShowQuickResults(true);
     setHasSearched(true);
 
     router.replace(`/search?q=${encodeURIComponent(q)}&mode=quick`, { scroll: false });

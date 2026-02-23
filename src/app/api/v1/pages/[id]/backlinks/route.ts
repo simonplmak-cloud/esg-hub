@@ -10,11 +10,23 @@ interface BacklinkPage {
   section: string | null;
 }
 
+function validatePageId(id: string): { valid: boolean; error?: string } {
+  if (!id || typeof id !== "string") {
+    return { valid: false, error: "Page identifier is required" };
+  }
+  if (id.length > 500) {
+    return { valid: false, error: "Page identifier too long" };
+  }
+  if (!/^[\w\-\/]+$/.test(id)) {
+    return { valid: false, error: "Invalid page identifier format" };
+  }
+  return { valid: true };
+}
+
 async function resolvePageId(idOrPermalink: string): Promise<string | null> {
   if (idOrPermalink.startsWith("page:")) {
     return idOrPermalink;
   }
-
   const page = await getPageByPermalink(formatPermalink(idOrPermalink));
   return page?.id ?? null;
 }
@@ -29,6 +41,12 @@ export async function GET(
 
   try {
     const { id } = await params;
+    
+    const idValidation = validatePageId(id);
+    if (!idValidation.valid) {
+      return NextResponse.json({ error: idValidation.error }, { status: 400 });
+    }
+
     const pageId = await resolvePageId(id);
     if (!pageId) {
       return NextResponse.json({ data: [] }, { status: 404 });

@@ -10,13 +10,41 @@ interface RelatedPage {
   section: string | null;
 }
 
+function validatePageId(id: string): { valid: boolean; error?: string } {
+  if (!id || typeof id !== "string") {
+    return { valid: false, error: "Page identifier is required" };
+  }
+  if (id.length > 500) {
+    return { valid: false, error: "Page identifier too long" };
+  }
+  // Only allow alphanumeric, hyphens, underscores, slashes
+  if (!/^[\w\-\/]+$/.test(id)) {
+    return { valid: false, error: "Invalid page identifier format" };
+  }
+  return { valid: true };
+}
+
+function validateLimit(limitParam: string | null): { valid: boolean; value?: number; error?: string } {
+  if (!limitParam) {
+    return { valid: true, value: 15 };
+  }
+  const limit = Number(limitParam);
+  if (Number.isNaN(limit)) {
+    return { valid: false, error: "Limit must be a number" };
+  }
+  if (limit < 1) {
+    return { valid: false, error: "Limit must be at least 1" };
+  }
+  if (limit > 50) {
+    return { valid: false, error: "Limit cannot exceed 50" };
+  }
+  return { valid: true, value: Math.floor(limit) };
+}
+
 async function resolvePageId(idOrPermalink: string): Promise<string | null> {
-  // If it looks like a SurrealDB record id, return as-is
   if (idOrPermalink.startsWith("page:")) {
     return idOrPermalink;
   }
-
-  // Otherwise treat as permalink
   const page = await getPageByPermalink(formatPermalink(idOrPermalink));
   return page?.id ?? null;
 }
@@ -29,12 +57,24 @@ export async function GET(
     return NextResponse.json({ error: "Database not configured" }, { status: 503 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const limitParam = Number(searchParams.get("limit"));
-  const limit = Number.isFinite(limitParam) && limitParam > 0 ? Math.min(limitParam, 50) : 15;
-
   try {
     const { id } = await params;
+    
+    // Validate id parameter
+    const idValidation = validatePageId(id);
+    if (!idValidation.valid) {
+      return NextResponse.json({ error: idValidation.error }, { status: 400 });
+    }
+
+    // Validate limit parameter
+    const { searchParams } = new URL(request.url);
+    const limitParam = searchParams.get("limit");
+    const limitValidation = validateLimit(limitParam);
+    if (!limitValidation.valid) {
+      return NextResponse.json({ error: limitValidation.error }, { status: 400 });
+    }
+    const limit = limitValidation.value!;
+
     const pageId = await resolvePageId(id);
     if (!pageId) {
       return NextResponse.json({ data: [] }, { status: 404 });

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
-import { queryHttp, queryHttpAll, sanitize } from "@/lib/surrealdb";
+import { queryHttpAll, sanitize } from "@/lib/surrealdb";
 
 /**
  * AI-Powered Search Agent API
