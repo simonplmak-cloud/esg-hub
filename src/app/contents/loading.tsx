@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Loading state for Contents page
  * WCAG 2.2 AAA Compliant with accessible loading indicators

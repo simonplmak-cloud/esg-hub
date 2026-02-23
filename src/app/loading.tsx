@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Default loading state for ESG Hub pages
  * Displayed while server components fetch data

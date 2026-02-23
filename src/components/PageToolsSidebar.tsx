@@ -342,9 +342,9 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
                 cursor: loading ? "not-allowed" : "pointer",
                 opacity: loading ? 0.7 : 1,
               }}
-              aria-label="Retry loading related content"
+              aria-label={`Retry loading related content${retryCount > 0 ? ` (attempt ${retryCount + 1})` : ''}`}
             >
-              {loading ? "Retrying..." : "Try Again"}
+              {loading ? "Retrying..." : retryCount > 0 ? `Try Again (${retryCount + 1})` : "Try Again"}
             </button>
           </div>
         ) : loading ? (

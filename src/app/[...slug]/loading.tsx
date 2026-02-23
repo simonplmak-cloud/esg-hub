@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Loading state for article pages
  * Shows skeleton layout matching the article structure
