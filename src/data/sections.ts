@@ -127,7 +127,6 @@ export const CONTENTS_MENU: Record<string, ContentsCategory> = {
 export const QUICK_LINKS = [
   { label: "Random Article", href: "/random" },
   { label: "Contents", href: "/contents" },
-  { label: "Search", href: "/search" },
 ];
 
 /**

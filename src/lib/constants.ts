@@ -14,23 +14,23 @@ export const TOC_MIN_CONTENT_LENGTH = 800;
 // Cross-reference Settings
 export const MAX_RELATED_PAGES = 15;
 
-// Pillar Configuration
+// Pillar Configuration - Dark theme colors
 export const PILLAR_STYLES = {
   E: {
-    bg: "#c6f6d5",
-    color: "#22543d",
+    bg: "var(--color-pillar-e-bg)",
+    color: "var(--color-pillar-e-dark)",
     label: "Environmental",
     href: "/environmental",
   },
   S: {
-    bg: "#bee3f8",
-    color: "#2a4365",
+    bg: "var(--color-pillar-s-bg)",
+    color: "var(--color-pillar-s-dark)",
     label: "Social",
     href: "/social",
   },
   G: {
-    bg: "#e9d8fd",
-    color: "#553c9a",
+    bg: "var(--color-pillar-g-bg)",
+    color: "var(--color-pillar-g-dark)",
     label: "Governance",
     href: "/governance",
   },

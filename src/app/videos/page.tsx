@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { getPageByPermalink } from "@/lib/pages";
+import { formatPermalink } from "@/lib/utils";
 import { queryHttp } from "@/lib/surrealdb";
 import MarkdownContent from "@/components/MarkdownContent";
 import Link from "next/link";
@@ -261,7 +262,7 @@ export default async function VideosPage() {
             {crossRefs.map((ref) => (
               <Link
                 key={ref.permalink}
-                href={ref.permalink.replace(/\/$/, "") || "/"}
+                href={formatPermalink(ref.permalink) || "/"}
                 className="topic-card"
               >
                 <div

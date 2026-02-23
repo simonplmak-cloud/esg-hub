@@ -28,7 +28,7 @@ export default async function ContentsPage() {
   const totalCount = pages.length;
 
   return (
-    <div className="content-wrapper" style={{ maxWidth: "1000px" }}>
+    <div className="content-wrapper layout-content">
       <nav aria-label="Breadcrumb">
         <ol style={{ 
           listStyle: "none", 

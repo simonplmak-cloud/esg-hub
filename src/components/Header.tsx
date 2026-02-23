@@ -3,14 +3,14 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { CONTENTS_MENU, QUICK_LINKS } from "@/data/sections";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [contentsOpen, setContentsOpen] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(false);
   const pathname = usePathname() || "/";
-  const router = useRouter();
   
   // Refs for focus management
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -24,13 +24,22 @@ export default function Header() {
     return pathname === href || pathname.startsWith(href + "/");
   };
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const q = formData.get("q")?.toString().trim();
-    if (q) {
-      router.push(`/search?q=${encodeURIComponent(q)}`);
-      setMenuOpen(false);
+  // Get current page URL for display
+  const getCurrentUrl = () => {
+    if (typeof window !== "undefined") {
+      return window.location.href;
+    }
+    return `https://esg.video${pathname}`;
+  };
+
+  // Copy URL to clipboard
+  const copyUrlToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(getCurrentUrl());
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy URL:", err);
     }
   };
 
@@ -66,7 +75,7 @@ export default function Header() {
 
     const menu = mobileMenuRef.current;
     const focusableElements = menu.querySelectorAll<HTMLElement>(
-      'a, button, input, [tabindex]:not([tabindex="-1"])'
+      'a, button, [tabindex]:not([tabindex="-1"])'
     );
     
     const firstElement = focusableElements[0];
@@ -114,30 +123,13 @@ export default function Header() {
         Skip to main content
       </a>
 
-      {/* ── Primary navigation bar ── */}
+      {/* Primary navigation bar */}
       <nav className="primary-nav" aria-label="Main navigation">
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-            maxWidth: "var(--wide-max-width)",
-            margin: "0 auto",
-            gap: "0.5rem",
-          }}
-        >
+        <div className="nav-container">
           {/* Logo + site name */}
           <Link
             href="/"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.45rem",
-              textDecoration: "none",
-              color: "var(--color-text)",
-              marginRight: "1rem",
-              flexShrink: 0,
-            }}
+            className="logo-link"
             aria-label="ESG Hub — Home"
           >
             <Image
@@ -145,24 +137,16 @@ export default function Header() {
               alt=""
               width={26}
               height={26}
-              style={{ borderRadius: "3px" }}
+              className="logo-image"
               aria-hidden="true"
             />
-            <span
-              style={{
-                fontFamily: "var(--font-heading)",
-                fontWeight: 700,
-                fontSize: "0.95rem",
-                letterSpacing: "-0.01em",
-                color: "var(--color-text)",
-              }}
-            >
+            <span className="logo-text">
               ESG Hub
             </span>
           </Link>
 
           {/* Contents Dropdown */}
-          <div className="desktop-only" style={{ position: "relative" }}>
+          <div className="contents-dropdown-container">
             <button
               ref={contentsToggleRef}
               type="button"
@@ -173,24 +157,10 @@ export default function Header() {
               aria-expanded={contentsOpen}
               aria-controls="contents-menu"
               aria-haspopup="true"
-              className="nav-button"
-              style={{
-                background: contentsOpen ? "var(--color-bg-alt)" : "transparent",
-                border: "none",
-                color: "var(--color-text)",
-                padding: "0.4em 0.8em",
-                borderRadius: "3px",
-                cursor: "pointer",
-                fontFamily: "var(--font-heading)",
-                fontSize: "0.85rem",
-                fontWeight: 500,
-                display: "flex",
-                alignItems: "center",
-                gap: "0.3rem",
-              }}
+              className="nav-button contents-button"
             >
               Contents
-              <span style={{ fontSize: "0.7em" }} aria-hidden="true">
+              <span className="dropdown-arrow" aria-hidden="true">
                 {contentsOpen ? "▲" : "▼"}
               </span>
             </button>
@@ -202,70 +172,41 @@ export default function Header() {
                 className="contents-dropdown"
                 role="menu"
                 aria-label="Site contents"
-                style={{
-                  position: "absolute",
-                  top: "100%",
-                  left: "0",
-                  marginTop: "0.25rem",
-                  background: "var(--color-bg)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "4px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                  zIndex: 1000,
-                  minWidth: "600px",
-                  maxWidth: "800px",
-                  padding: "1rem",
-                }}
               >
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "1rem",
-                  }}
-                >
+                {/* Current Page URL Display */}
+                <div className="url-display">
+                  <div className="url-label">Current Page URL</div>
+                  <div className="url-value">
+                    {getCurrentUrl()}
+                  </div>
+                  <button 
+                    onClick={copyUrlToClipboard}
+                    className="url-copy-button"
+                    aria-label="Copy page URL to clipboard"
+                  >
+                    {copiedUrl ? "✓ Copied!" : "Copy URL"}
+                  </button>
+                </div>
+
+                <div className="contents-grid">
                   {Object.values(CONTENTS_MENU).map((category) => (
                     <div key={category.title} role="group" aria-label={category.title}>
-                      <h3
-                        style={{
-                          fontFamily: "var(--font-heading)",
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          color: "var(--color-text-muted)",
-                          marginBottom: "0.5rem",
-                          borderBottom: "1px solid var(--color-border)",
-                          paddingBottom: "0.25rem",
-                        }}
-                      >
+                      <h3 className="category-heading">
                         {category.title}
                       </h3>
-                      <ul style={{ listStyle: "none", padding: 0, margin: 0 }} role="menu">
+                      <ul className="category-list" role="menu">
                         {category.links.map((link) => (
-                          <li key={link.href} style={{ marginBottom: "0.4rem" }} role="none">
+                          <li key={link.href} className="category-item" role="none">
                             <Link
                               href={link.href}
                               onClick={() => setContentsOpen(false)}
                               role="menuitem"
-                              style={{
-                                display: "block",
-                                textDecoration: "none",
-                                color: "var(--color-text)",
-                                fontSize: "0.85rem",
-                                fontWeight: isActive(link.href) ? 600 : 400,
-                              }}
+                              className={`category-link ${isActive(link.href) ? 'active' : ''}`}
                             >
                               {link.label}
                             </Link>
                             {link.description && (
-                              <span
-                                style={{
-                                  fontSize: "0.75rem",
-                                  color: "var(--color-text-muted)",
-                                  display: "block",
-                                }}
-                              >
+                              <span className="category-description">
                                 {link.description}
                               </span>
                             )}
@@ -276,26 +217,13 @@ export default function Header() {
                   ))}
                 </div>
                 
-                <div
-                  style={{
-                    marginTop: "1rem",
-                    paddingTop: "0.75rem",
-                    borderTop: "1px solid var(--color-border)",
-                    display: "flex",
-                    gap: "1rem",
-                    justifyContent: "center",
-                  }}
-                >
+                <div className="quick-links-footer">
                   {QUICK_LINKS.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setContentsOpen(false)}
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "var(--color-link)",
-                        textDecoration: "none",
-                      }}
+                      className="quick-link"
                     >
                       {link.label}
                     </Link>
@@ -306,68 +234,26 @@ export default function Header() {
           </div>
 
           {/* Quick Links - Desktop */}
-          <div className="desktop-only" style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginLeft: "auto" }}>
-            <Link
-              href="/search"
-              style={{
-                padding: "0.4em 0.8em",
-                fontSize: "0.85rem",
-                borderRadius: "3px",
-                background: isActive("/search") ? "var(--color-bg-alt)" : "transparent",
-              }}
-            >
-              Search
-            </Link>
+          <div className="quick-links">
             <Link
               href="/developers"
-              style={{
-                padding: "0.4em 0.8em",
-                fontSize: "0.85rem",
-                borderRadius: "3px",
-                background: isActive("/developers") ? "var(--color-bg-alt)" : "transparent",
-              }}
+              className={`quick-link-nav ${isActive("/developers") ? 'active' : ''}`}
             >
               Developers
             </Link>
             <Link
               href="/glossary"
-              style={{
-                padding: "0.4em 0.8em",
-                fontSize: "0.85rem",
-                borderRadius: "3px",
-                background: isActive("/glossary") ? "var(--color-bg-alt)" : "transparent",
-              }}
+              className={`quick-link-nav ${isActive("/glossary") ? 'active' : ''}`}
             >
               Glossary
             </Link>
           </div>
 
-          {/* Desktop search */}
-          <form
-            onSubmit={handleSearch}
-            role="search"
-            aria-label="Search ESG Hub"
-            className="desktop-only"
-            style={{ flexShrink: 0, marginLeft: "auto" }}
-          >
-            <label htmlFor="nav-search" className="visually-hidden">
-              Search
-            </label>
-            <input
-              id="nav-search"
-              name="q"
-              type="search"
-              className="search-input"
-              placeholder="Search ESG Hub..."
-              aria-label="Search ESG Hub"
-            />
-          </form>
-
           {/* Mobile menu toggle */}
           <button
             ref={mobileToggleRef}
             type="button"
-            className="mobile-only"
+            className="mobile-menu-toggle"
             onClick={() => {
               setMenuOpen(!menuOpen);
               setContentsOpen(false);
@@ -376,26 +262,13 @@ export default function Header() {
             aria-controls="mobile-menu"
             aria-haspopup="true"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
-            style={{
-              display: "none",
-              background: "none",
-              border: "1px solid var(--color-border)",
-              color: "var(--color-text)",
-              padding: "0.3em 0.65em",
-              borderRadius: "3px",
-              cursor: "pointer",
-              fontFamily: "var(--font-heading)",
-              fontSize: "0.82rem",
-              fontWeight: 500,
-              marginLeft: "auto",
-            }}
           >
             {menuOpen ? "Close" : "Menu"}
           </button>
         </div>
       </nav>
 
-      {/* ── Mobile menu ── */}
+      {/* Mobile menu */}
       {menuOpen && (
         <div
           ref={mobileMenuRef}
@@ -405,43 +278,24 @@ export default function Header() {
           aria-label="Mobile navigation"
           aria-modal="true"
         >
-          {/* Search */}
-          <form onSubmit={handleSearch} role="search" style={{ marginBottom: "1.5rem" }}>
-            <label htmlFor="mobile-search" className="visually-hidden">
-              Search
-            </label>
-            <input
-              id="mobile-search"
-              name="q"
-              type="search"
-              placeholder="Search ESG Hub..."
-              aria-label="Search ESG Hub"
-              style={{
-                width: "100%",
-                padding: "0.5em 0.75em",
-                border: "1px solid var(--color-border)",
-                borderRadius: "3px",
-                fontFamily: "var(--font-heading)",
-                fontSize: "0.95rem",
-                background: "var(--color-bg-alt)",
-                color: "var(--color-text)",
-              }}
-            />
-          </form>
+          {/* Current Page URL Display - Mobile */}
+          <div className="url-display-mobile">
+            <div className="url-label">Current Page URL</div>
+            <div className="url-value">
+              {getCurrentUrl()}
+            </div>
+            <button 
+              onClick={copyUrlToClipboard}
+              className="url-copy-button"
+              aria-label="Copy page URL to clipboard"
+            >
+              {copiedUrl ? "✓ Copied!" : "Copy URL"}
+            </button>
+          </div>
 
           {Object.values(CONTENTS_MENU).map((category) => (
-            <div key={category.title} style={{ marginBottom: "1rem" }}>
-              <div
-                style={{
-                  fontFamily: "var(--font-heading)",
-                  fontSize: "0.72rem",
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  color: "var(--color-text-muted)",
-                  marginBottom: "0.5rem",
-                }}
-              >
+            <div key={category.title} className="mobile-category">
+              <div className="mobile-category-heading">
                 {category.title}
               </div>
               {category.links.map((link) => (
@@ -449,12 +303,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  style={{
-                    display: "block",
-                    padding: "0.35rem 0",
-                    textDecoration: "none",
-                    color: "var(--color-text)",
-                  }}
+                  className="mobile-link"
                 >
                   {link.label}
                 </Link>
@@ -462,18 +311,13 @@ export default function Header() {
             </div>
           ))}
 
-          <div style={{ borderTop: "1px solid var(--color-border)", paddingTop: "1rem" }}>
+          <div className="mobile-quick-links">
             {QUICK_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                style={{
-                  display: "block",
-                  padding: "0.35rem 0",
-                  textDecoration: "none",
-                  color: "var(--color-link)",
-                }}
+                className="mobile-quick-link"
               >
                 {link.label}
               </Link>
@@ -485,33 +329,11 @@ export default function Header() {
       {/* Click outside to close dropdowns */}
       {(contentsOpen || menuOpen) && (
         <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 999,
-          }}
+          className="overlay"
           onClick={closeAllMenus}
           aria-hidden="true"
         />
       )}
-
-      {/* Visually hidden styles */}
-      <style jsx>{`
-        .visually-hidden {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border: 0;
-        }
-      `}</style>
     </header>
   );
 }

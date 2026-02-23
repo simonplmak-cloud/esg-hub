@@ -210,8 +210,8 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
                     fontSize: "0.75rem",
                     fontWeight: 600,
                     textDecoration: "none",
-                    background: style?.bg || "#e2e8f0",
-                    color: style?.color || "#2d3748",
+                    background: style?.bg || "var(--color-bg-alt)",
+                    color: style?.color || "var(--color-text)",
                   }}
                 >
                   {style?.label || pillar}
@@ -326,7 +326,7 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
         
         {error ? (
           <div role="alert" aria-live="assertive">
-            <p style={{ fontSize: "0.85rem", color: "#e53e3e", marginBottom: "0.75rem" }}>
+            <p style={{ fontSize: "0.85rem", color: "var(--color-error)", marginBottom: "0.75rem" }}>
               {error}
             </p>
             <button

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getPageByPermalink, getPagesBySection, isDbConfigured } from "@/lib/pages";
 import { extractHeadings } from "@/lib/markdown";
+import { formatPermalink } from "@/lib/utils";
 import { SITE_URL, HUB_PAGE_MAX_CONTENT_LENGTH, ARTICLE_MIN_CONTENT_LENGTH, TOC_MIN_CONTENT_LENGTH } from "@/lib/constants";
 import MarkdownContent from "@/components/MarkdownContent";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -62,7 +63,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const pageTitle = page.title;
   const pageDescription = page.description || `${page.title} — ESG Hub by Ascent Partners Foundation`;
-  const canonicalUrl = `${SITE_URL}${permalink.replace(/\/$/, "")}`;
+  const canonicalUrl = `${SITE_URL}${formatPermalink(permalink)}`;
 
   return {
     title: pageTitle,
@@ -159,31 +160,16 @@ export default async function ContentPage({ params }: PageProps) {
   const showImage = !isHubPage && page.content.trim().length > ARTICLE_MIN_CONTENT_LENGTH;
 
   return (
-    <div id="main-content" style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
+    <div id="main-content" className="layout-container">
       <Breadcrumbs permalink={page.permalink} title={page.title} />
       
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 320px",
-          gap: "3rem",
-          alignItems: "start",
-        }}
-      >
+      <div className="layout-article">
         {/* Main Content */}
-        <article className="content-wrapper" style={{ maxWidth: "none", padding: 0 }}>
+        <article className="content-wrapper">
           {/* Cross-Pillar Banner - EXPLICITLY HIGHLIGHTED */}
           {page.connects_to && page.connects_to.length > 1 && (
-            <div
-              style={{
-                background: "linear-gradient(to right, #e6fffa, #faf5ff, #fff5f5)",
-                borderLeft: "4px solid #3182ce",
-                padding: "1rem",
-                marginBottom: "1.5rem",
-                borderRadius: "0.25rem",
-              }}
-            >
-              <span style={{ fontWeight: 600, color: "#2d3748", marginRight: "0.5rem" }}>
+            <div className="cross-pillar-banner">
+              <span className="cross-pillar-label">
                 Cross-Pillar Article:
               </span>
               {page.connects_to.map((pillar, i) => (
@@ -191,11 +177,7 @@ export default async function ContentPage({ params }: PageProps) {
                   {i > 0 && " + "}
                   <Link
                     href={pillar === "E" ? "/environmental" : pillar === "S" ? "/social" : "/governance"}
-                    style={{
-                      color: pillar === "E" ? "#38a169" : pillar === "S" ? "#3182ce" : "#805ad5",
-                      fontWeight: 600,
-                      textDecoration: "none",
-                    }}
+                    className={`cross-pillar-link ${pillar.toLowerCase()}`}
                   >
                     {pillar === "E" && "Environmental"}
                     {pillar === "S" && "Social"}
@@ -275,7 +257,7 @@ export default async function ContentPage({ params }: PageProps) {
               {childPages.map((child) => (
                 <Link
                   key={child.permalink}
-                  href={child.permalink.replace(/\/$/, "") || "/"}
+                  href={formatPermalink(child.permalink) || "/"}
                   className="topic-card"
                 >
                   <div
@@ -315,7 +297,7 @@ export default async function ContentPage({ params }: PageProps) {
               {childPages.slice(0, 8).map((child) => (
                 <li key={child.permalink} style={{ margin: "0.25rem 0" }}>
                   <Link
-                    href={child.permalink.replace(/\/$/, "") || "/"}
+                    href={formatPermalink(child.permalink) || "/"}
                     style={{ fontSize: "0.9rem" }}
                   >
                     {child.title}

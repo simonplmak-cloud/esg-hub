@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getAllPages } from "@/lib/pages";
+import { formatPermalink } from "@/lib/utils";
 
 const BASE_URL = "https://esg-hub-six.vercel.app";
 
@@ -44,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dynamicRoutes: MetadataRoute.Sitemap = pages
     .filter((p) => !p.redirect_to)
     .map((page) => ({
-      url: `${BASE_URL}${page.permalink.replace(/\/$/, "")}`,
+      url: `${BASE_URL}${formatPermalink(page.permalink)}`,
       lastModified: page.updated_at ? new Date(page.updated_at) : new Date(),
       changeFrequency: "monthly" as const,
       priority: page.section === "home" ? 1.0 : page.subsection ? 0.6 : 0.8,
