@@ -276,6 +276,7 @@ h4 { font-size: 1rem; }
   z-index: 200;
   padding: calc(var(--nav-height) + 1rem) 1.5rem 2rem;
   overflow-y: auto;
+  pointer-events: auto;
 }
 .mobile-menu a {
   display: block;
@@ -952,6 +953,7 @@ h4 { font-size: 1rem; }
   min-width: 600px;
   max-width: 800px;
   padding: 1rem;
+  pointer-events: auto;
 }
 
 .url-display {
@@ -1165,6 +1167,7 @@ h4 { font-size: 1rem; }
   right: 0;
   bottom: 0;
   z-index: 999;
+  pointer-events: none;
 }
 
 /* ===== Cross-Pillar Banner ===== */
