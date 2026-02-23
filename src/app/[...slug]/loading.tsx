@@ -1,11 +1,22 @@
 /**
  * Loading state for article pages
  * Shows skeleton layout matching the article structure
+ * WCAG 2.2 AAA Compliant with accessible loading indicators
  */
 
 export default function ArticleLoading() {
   return (
-    <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "2rem 1.5rem" }}>
+    <div 
+      style={{ maxWidth: "1280px", margin: "0 auto", padding: "2rem 1.5rem" }}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label="Loading article"
+    >
+      <span className="visually-hidden">
+        Loading article content. Please wait.
+      </span>
+
       {/* Breadcrumb skeleton */}
       <div style={{ marginBottom: "1rem" }}>
         <div 
@@ -15,12 +26,13 @@ export default function ArticleLoading() {
             background: "var(--color-border)",
             borderRadius: "2px"
           }} 
+          aria-hidden="true"
         />
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "3rem" }}>
         {/* Main content skeleton */}
-        <div>
+        <div aria-hidden="true">
           {/* Title skeleton */}
           <div 
             style={{ 
@@ -77,7 +89,10 @@ export default function ArticleLoading() {
         </div>
 
         {/* Sidebar skeleton */}
-        <div style={{ borderLeft: "1px solid var(--color-border)", paddingLeft: "1.5rem" }}>
+        <div 
+          style={{ borderLeft: "1px solid var(--color-border)", paddingLeft: "1.5rem" }}
+          aria-hidden="true"
+        >
           {[1, 2, 3].map((i) => (
             <div key={i} style={{ marginBottom: "2rem" }}>
               {/* Section title skeleton */}
@@ -108,6 +123,20 @@ export default function ArticleLoading() {
           ))}
         </div>
       </div>
+      
+      <style jsx>{`
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        }
+      `}</style>
     </div>
   );
 }

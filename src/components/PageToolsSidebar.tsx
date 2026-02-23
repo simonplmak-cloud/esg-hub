@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import type { Page } from "@/lib/pages";
 import { extractHeadings } from "@/lib/markdown";
@@ -28,39 +28,65 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
   const [backlinks, setBacklinks] = useState<BacklinkPage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [liveStatus, setLiveStatus] = useState<string>("");
+
+  const fetchCrossReferences = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setLiveStatus("Loading related content...");
+
+    try {
+      // Fetch related pages (automatic, max 15)
+      const relatedRes = await fetch(
+        `/api/v1/pages/${encodeURIComponent(page.id)}/related?limit=${MAX_RELATED_PAGES}`
+      );
+      
+      let relatedData: RelatedPage[] = [];
+      if (relatedRes.ok) {
+        const data = await relatedRes.json();
+        relatedData = data.data || [];
+        setRelatedPages(relatedData);
+      }
+
+      // Fetch backlinks (show all)
+      const backlinksRes = await fetch(
+        `/api/v1/pages/${encodeURIComponent(page.id)}/backlinks`
+      );
+      
+      let backlinksData: BacklinkPage[] = [];
+      if (backlinksRes.ok) {
+        const data = await backlinksRes.json();
+        backlinksData = data.data || [];
+        setBacklinks(backlinksData);
+      }
+
+      // Announce completion to screen readers
+      const relatedCount = relatedData.length;
+      const backlinkCount = backlinksData.length;
+      setLiveStatus(
+        `Content loaded. Found ${relatedCount} related topic${relatedCount !== 1 ? 's' : ''} and ${backlinkCount} page${backlinkCount !== 1 ? 's' : ''} that link here.`
+      );
+    } catch (err) {
+      console.error("Error fetching cross-references:", err);
+      const errorMessage = "Failed to load related content. Please try again later.";
+      setError(errorMessage);
+      setLiveStatus(`Error: ${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [page.id]);
 
   useEffect(() => {
-    async function fetchCrossReferences() {
-      try {
-        // Fetch related pages (automatic, max 15)
-        const relatedRes = await fetch(
-          `/api/v1/pages/${encodeURIComponent(page.id)}/related?limit=${MAX_RELATED_PAGES}`
-        );
-        if (relatedRes.ok) {
-          const data = await relatedRes.json();
-          setRelatedPages(data.data || []);
-        }
-
-        // Fetch backlinks (show all)
-        const backlinksRes = await fetch(
-          `/api/v1/pages/${encodeURIComponent(page.id)}/backlinks`
-        );
-        if (backlinksRes.ok) {
-          const data = await backlinksRes.json();
-          setBacklinks(data.data || []);
-        }
-      } catch (err) {
-        console.error("Error fetching cross-references:", err);
-        setError("Failed to load related content. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
     if (page.id) {
       fetchCrossReferences();
     }
-  }, [page.id]);
+  }, [page.id, fetchCrossReferences]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    fetchCrossReferences();
+  };
 
   const headings = extractHeadings(page.content);
   const standards = page.standards || [];
@@ -74,7 +100,24 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
         paddingLeft: "1.5rem",
         fontSize: "0.9rem",
       }}
+      aria-label="Page tools and related content"
     >
+      {/* Live region for screen reader announcements */}
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        className="visually-hidden"
+        style={{
+          position: "absolute",
+          left: "-10000px",
+          width: "1px",
+          height: "1px",
+          overflow: "hidden",
+        }}
+      >
+        {liveStatus}
+      </div>
+
       {/* Contents Navigation */}
       {headings.length > 0 && (
         <section style={{ marginBottom: "1.5rem" }}>
@@ -248,7 +291,11 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
       </section>
 
       {/* Related Topics - AUTOMATIC (Max 15) */}
-      <section style={{ marginBottom: "1.5rem" }}>
+      <section 
+        style={{ marginBottom: "1.5rem" }}
+        aria-busy={loading}
+        aria-live="polite"
+      >
         <h3
           style={{
             fontFamily: "var(--font-heading)",
@@ -263,7 +310,7 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
           }}
         >
           Related Topics
-          {relatedPages.length > 0 && (
+          {!loading && relatedPages.length > 0 && (
             <span
               style={{
                 fontSize: "0.75rem",
@@ -276,14 +323,36 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
             </span>
           )}
         </h3>
+        
         {error ? (
-          <p style={{ fontSize: "0.85rem", color: "#e53e3e" }}>
-            {error}
-          </p>
+          <div role="alert" aria-live="assertive">
+            <p style={{ fontSize: "0.85rem", color: "#e53e3e", marginBottom: "0.75rem" }}>
+              {error}
+            </p>
+            <button
+              onClick={handleRetry}
+              disabled={loading}
+              style={{
+                fontSize: "0.85rem",
+                padding: "0.4rem 0.75rem",
+                background: "var(--color-primary)",
+                color: "#fff",
+                border: "none",
+                borderRadius: "3px",
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.7 : 1,
+              }}
+              aria-label="Retry loading related content"
+            >
+              {loading ? "Retrying..." : "Try Again"}
+            </button>
+          </div>
         ) : loading ? (
-          <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>
-            Loading...
-          </p>
+          <div role="status" aria-label="Loading related topics">
+            <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>
+              Loading related topics...
+            </p>
+          </div>
         ) : relatedPages.length > 0 ? (
           <ul
             style={{
@@ -292,40 +361,40 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
               margin: 0,
             }}
           >
-              {relatedPages.slice(0, MAX_RELATED_PAGES).map((related) => (
-                <li
-                  key={related.id}
+            {relatedPages.slice(0, MAX_RELATED_PAGES).map((related) => (
+              <li
+                key={related.id}
+                style={{
+                  padding: "0.4rem 0",
+                  borderBottom: "1px solid var(--color-border-light)",
+                }}
+              >
+                <Link
+                  href={related.permalink}
                   style={{
-                    padding: "0.4rem 0",
-                    borderBottom: "1px solid var(--color-border-light)",
+                    color: "var(--color-link)",
+                    textDecoration: "none",
+                    fontSize: "0.85rem",
+                    display: "block",
                   }}
                 >
-                  <Link
-                    href={related.permalink}
+                  {related.title}
+                </Link>
+                {related.section && (
+                  <span
                     style={{
-                      color: "var(--color-link)",
-                      textDecoration: "none",
-                      fontSize: "0.85rem",
+                      fontSize: "0.75rem",
+                      color: "var(--color-text-muted)",
                       display: "block",
+                      marginTop: "0.15rem",
                     }}
                   >
-                    {related.title}
-                  </Link>
-                  {related.section && (
-                    <span
-                      style={{
-                        fontSize: "0.75rem",
-                        color: "var(--color-text-muted)",
-                        display: "block",
-                        marginTop: "0.15rem",
-                      }}
-                    >
-                      {related.section}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
+                    {related.section}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
         ) : (
           <p
             style={{

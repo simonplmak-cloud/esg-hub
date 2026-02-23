@@ -1,10 +1,22 @@
 /**
  * Loading state for Contents page
+ * WCAG 2.2 AAA Compliant with accessible loading indicators
  */
 
 export default function ContentsLoading() {
   return (
-    <div className="content-wrapper" style={{ maxWidth: "1000px" }}>
+    <div 
+      className="content-wrapper" 
+      style={{ maxWidth: "1000px" }}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label="Loading contents page"
+    >
+      <span className="visually-hidden">
+        Loading page contents. Please wait.
+      </span>
+
       {/* Breadcrumb skeleton */}
       <div style={{ marginBottom: "1.5rem" }}>
         <div 
@@ -14,6 +26,7 @@ export default function ContentsLoading() {
             background: "var(--color-border)",
             borderRadius: "2px"
           }} 
+          aria-hidden="true"
         />
       </div>
 
@@ -26,6 +39,7 @@ export default function ContentsLoading() {
           borderRadius: "4px",
           marginBottom: "1rem"
         }} 
+        aria-hidden="true"
       />
 
       {/* Description skeleton */}
@@ -37,6 +51,7 @@ export default function ContentsLoading() {
           borderRadius: "2px",
           marginBottom: "2rem"
         }} 
+        aria-hidden="true"
       />
 
       {/* Stats grid skeleton */}
@@ -50,6 +65,7 @@ export default function ContentsLoading() {
           background: "var(--color-bg-alt)",
           borderRadius: "4px"
         }}
+        aria-hidden="true"
       >
         {[1, 2, 3, 4].map((i) => (
           <div key={i}>
@@ -75,7 +91,7 @@ export default function ContentsLoading() {
       </div>
 
       {/* Sections skeleton */}
-      <div>
+      <div aria-hidden="true">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} style={{ marginBottom: "2rem" }}>
             <div 
@@ -115,6 +131,20 @@ export default function ContentsLoading() {
           </div>
         ))}
       </div>
+      
+      <style jsx>{`
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        }
+      `}</style>
     </div>
   );
 }

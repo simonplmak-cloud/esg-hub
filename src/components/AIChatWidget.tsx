@@ -15,21 +15,106 @@ export default function AIChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showReasoning, setShowReasoning] = useState<Record<number, boolean>>({});
+  const [liveMessage, setLiveMessage] = useState<string>("");
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const firstFocusableRef = useRef<HTMLElement | null>(null);
+  const lastFocusableRef = useRef<HTMLElement | null>(null);
+
+  // Detect reduced motion preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches);
+    };
+    
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
+    messagesEndRef.current?.scrollIntoView({ 
+      behavior: prefersReducedMotion ? "auto" : "smooth" 
+    });
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
+  // Focus input when chat opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+      // Store previously focused element
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      
+      // Small delay to ensure panel is rendered
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+      
+      return () => clearTimeout(timer);
     }
+  }, [isOpen]);
+
+  // Restore focus when chat closes
+  useEffect(() => {
+    if (!isOpen && previousFocusRef.current) {
+      previousFocusRef.current.focus();
+    }
+  }, [isOpen]);
+
+  // Focus trap implementation
+  useEffect(() => {
+    if (!isOpen || !panelRef.current) return;
+
+    const panel = panelRef.current;
+    const focusableElements = panel.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    
+    if (focusableElements.length > 0) {
+      firstFocusableRef.current = focusableElements[0];
+      lastFocusableRef.current = focusableElements[focusableElements.length - 1];
+    }
+
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstFocusableRef.current) {
+          e.preventDefault();
+          lastFocusableRef.current?.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastFocusableRef.current) {
+          e.preventDefault();
+          firstFocusableRef.current?.focus();
+        }
+      }
+    };
+
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setIsOpen(false);
+      }
+    };
+
+    panel.addEventListener("keydown", handleTabKey);
+    document.addEventListener("keydown", handleEscapeKey);
+
+    return () => {
+      panel.removeEventListener("keydown", handleTabKey);
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
   }, [isOpen]);
 
   const sendMessage = async () => {
@@ -40,6 +125,9 @@ export default function AIChatWidget() {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
+    
+    // Announce to screen readers
+    setLiveMessage("Message sent. Waiting for response...");
 
     try {
       const res = await fetch("/api/ai-chat", {
@@ -54,31 +142,28 @@ export default function AIChatWidget() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: data.message,
-            reasoning: data.reasoning,
-          },
-        ]);
+        const assistantMessage = {
+          role: "assistant" as const,
+          content: data.message,
+          reasoning: data.reasoning,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+        setLiveMessage(`Assistant responded: ${data.message.substring(0, 100)}${data.message.length > 100 ? "..." : ""}`);
       } else {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: data.error || "Sorry, something went wrong. Please try again.",
-          },
-        ]);
+        const errorMessage = {
+          role: "assistant" as const,
+          content: data.error || "Sorry, something went wrong. Please try again.",
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        setLiveMessage("Error: Failed to get response");
       }
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Network error. Please check your connection and try again.",
-        },
-      ]);
+      const errorMessage = {
+        role: "assistant" as const,
+        content: "Network error. Please check your connection and try again.",
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      setLiveMessage("Error: Network connection failed");
     } finally {
       setLoading(false);
     }
@@ -95,13 +180,35 @@ export default function AIChatWidget() {
     setShowReasoning((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
+  const closeChat = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
+      {/* Live region for screen reader announcements */}
+      <div 
+        aria-live="polite" 
+        aria-atomic="true"
+        className="sr-only"
+        style={{
+          position: "absolute",
+          left: "-10000px",
+          width: "1px",
+          height: "1px",
+          overflow: "hidden",
+        }}
+      >
+        {liveMessage}
+      </div>
+
       {/* Floating toggle button */}
       <button
         className="ai-chat-toggle"
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
+        aria-expanded={isOpen}
+        aria-controls="ai-chat-panel"
         title="Ask ESG Hub AI"
       >
         {isOpen ? (
@@ -118,7 +225,14 @@ export default function AIChatWidget() {
 
       {/* Chat panel */}
       {isOpen && (
-        <div className="ai-chat-panel" role="dialog" aria-label="ESG Hub AI Assistant">
+        <div 
+          ref={panelRef}
+          id="ai-chat-panel"
+          className="ai-chat-panel" 
+          role="dialog" 
+          aria-label="ESG Hub AI Assistant"
+          aria-modal="true"
+        >
           {/* Header */}
           <div className="ai-chat-header">
             <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
@@ -130,7 +244,7 @@ export default function AIChatWidget() {
               ESG Hub AI
             </span>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={closeChat}
               style={{
                 background: "none",
                 border: "none",
@@ -138,7 +252,8 @@ export default function AIChatWidget() {
                 cursor: "pointer",
                 padding: "0.2em",
               }}
-              aria-label="Close chat"
+              aria-label="Close chat (Escape)"
+              title="Close chat (Escape)"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -148,7 +263,13 @@ export default function AIChatWidget() {
           </div>
 
           {/* Messages */}
-          <div className="ai-chat-messages">
+          <div 
+            className="ai-chat-messages"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions"
+            aria-label="Chat messages"
+          >
             {messages.length === 0 && (
               <div style={{ color: "var(--color-text-muted)", fontSize: "0.85rem", textAlign: "center", padding: "1.5rem 0.5rem" }}>
                 <div style={{ marginBottom: "0.5rem", fontWeight: 600, color: "var(--color-text-secondary)" }}>
@@ -162,7 +283,12 @@ export default function AIChatWidget() {
             )}
 
             {messages.map((msg, i) => (
-              <div key={i} className={`ai-msg ai-msg-${msg.role}`}>
+              <div 
+                key={i} 
+                className={`ai-msg ai-msg-${msg.role}`}
+                role={msg.role === "assistant" ? "article" : undefined}
+                aria-label={msg.role === "assistant" ? "Assistant message" : "Your message"}
+              >
                 <div className="ai-msg-bubble">
                   {msg.role === "assistant" ? (
                     <div style={{ fontSize: "0.85rem", lineHeight: 1.6 }}>
@@ -191,6 +317,8 @@ export default function AIChatWidget() {
                         <div style={{ marginTop: "0.4rem" }}>
                           <button
                             onClick={() => toggleReasoning(i)}
+                            aria-expanded={showReasoning[i]}
+                            aria-controls={`reasoning-${i}`}
                             style={{
                               background: "none",
                               border: "none",
@@ -213,7 +341,7 @@ export default function AIChatWidget() {
                               strokeWidth="2"
                               style={{
                                 transform: showReasoning[i] ? "rotate(90deg)" : "rotate(0deg)",
-                                transition: "transform 0.15s",
+                                transition: prefersReducedMotion ? "none" : "transform 0.15s",
                               }}
                             >
                               <polyline points="9 18 15 12 9 6" />
@@ -222,6 +350,7 @@ export default function AIChatWidget() {
                           </button>
                           {showReasoning[i] && (
                             <div
+                              id={`reasoning-${i}`}
                               style={{
                                 marginTop: "0.3rem",
                                 padding: "0.5rem 0.6rem",
@@ -249,9 +378,14 @@ export default function AIChatWidget() {
             ))}
 
             {loading && (
-              <div className="ai-msg ai-msg-assistant">
+              <div 
+                className="ai-msg ai-msg-assistant"
+                role="status"
+                aria-live="polite"
+              >
                 <div className="ai-msg-bubble ai-msg-thinking">
-                  Thinking...
+                  <span className="visually-hidden">Assistant is thinking</span>
+                  <span aria-hidden="true">Thinking...</span>
                 </div>
               </div>
             )}
@@ -270,10 +404,30 @@ export default function AIChatWidget() {
               placeholder="Ask about ESG topics..."
               disabled={loading}
               maxLength={2000}
+              aria-label="Message input"
+              aria-describedby="ai-chat-help"
             />
-            <button onClick={sendMessage} disabled={loading || !input.trim()}>
+            <button 
+              onClick={sendMessage} 
+              disabled={loading || !input.trim()}
+              aria-label={loading ? "Sending message" : "Send message"}
+            >
               {loading ? "..." : "Send"}
             </button>
+          </div>
+          
+          <div 
+            id="ai-chat-help" 
+            className="visually-hidden"
+            style={{
+              position: "absolute",
+              left: "-10000px",
+              width: "1px",
+              height: "1px",
+              overflow: "hidden",
+            }}
+          >
+            Type your message and press Enter to send. Press Escape to close the chat.
           </div>
         </div>
       )}

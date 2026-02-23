@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -11,6 +11,13 @@ export default function Header() {
   const [contentsOpen, setContentsOpen] = useState(false);
   const pathname = usePathname() || "/";
   const router = useRouter();
+  
+  // Refs for focus management
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const contentsMenuRef = useRef<HTMLDivElement>(null);
+  const mobileToggleRef = useRef<HTMLButtonElement>(null);
+  const contentsToggleRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -26,6 +33,80 @@ export default function Header() {
       setMenuOpen(false);
     }
   };
+
+  // Close both menus
+  const closeAllMenus = useCallback(() => {
+    setMenuOpen(false);
+    setContentsOpen(false);
+  }, []);
+
+  // Handle Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (menuOpen) {
+          e.preventDefault();
+          setMenuOpen(false);
+          mobileToggleRef.current?.focus();
+        } else if (contentsOpen) {
+          e.preventDefault();
+          setContentsOpen(false);
+          contentsToggleRef.current?.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [menuOpen, contentsOpen]);
+
+  // Focus trap for mobile menu
+  useEffect(() => {
+    if (!menuOpen || !mobileMenuRef.current) return;
+
+    const menu = mobileMenuRef.current;
+    const focusableElements = menu.querySelectorAll<HTMLElement>(
+      'a, button, input, [tabindex]:not([tabindex="-1"])'
+    );
+    
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
+
+    menu.addEventListener("keydown", handleTabKey);
+    
+    // Focus first element when menu opens
+    const timer = setTimeout(() => {
+      firstElement?.focus();
+    }, 50);
+
+    return () => {
+      menu.removeEventListener("keydown", handleTabKey);
+      clearTimeout(timer);
+    };
+  }, [menuOpen]);
+
+  // Store previous focus when opening menus
+  useEffect(() => {
+    if (menuOpen || contentsOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+    }
+  }, [menuOpen, contentsOpen]);
 
   return (
     <header role="banner">
@@ -83,10 +164,15 @@ export default function Header() {
           {/* Contents Dropdown */}
           <div className="desktop-only" style={{ position: "relative" }}>
             <button
+              ref={contentsToggleRef}
               type="button"
-              onClick={() => setContentsOpen(!contentsOpen)}
+              onClick={() => {
+                setContentsOpen(!contentsOpen);
+                setMenuOpen(false);
+              }}
               aria-expanded={contentsOpen}
               aria-controls="contents-menu"
+              aria-haspopup="true"
               className="nav-button"
               style={{
                 background: contentsOpen ? "var(--color-bg-alt)" : "transparent",
@@ -104,13 +190,18 @@ export default function Header() {
               }}
             >
               Contents
-              <span style={{ fontSize: "0.7em" }}>{contentsOpen ? "▲" : "▼"}</span>
+              <span style={{ fontSize: "0.7em" }} aria-hidden="true">
+                {contentsOpen ? "▲" : "▼"}
+              </span>
             </button>
 
             {contentsOpen && (
               <div
+                ref={contentsMenuRef}
                 id="contents-menu"
                 className="contents-dropdown"
+                role="menu"
+                aria-label="Site contents"
                 style={{
                   position: "absolute",
                   top: "100%",
@@ -134,7 +225,7 @@ export default function Header() {
                   }}
                 >
                   {Object.values(CONTENTS_MENU).map((category) => (
-                    <div key={category.title}>
+                    <div key={category.title} role="group" aria-label={category.title}>
                       <h3
                         style={{
                           fontFamily: "var(--font-heading)",
@@ -150,12 +241,13 @@ export default function Header() {
                       >
                         {category.title}
                       </h3>
-                      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                      <ul style={{ listStyle: "none", padding: 0, margin: 0 }} role="menu">
                         {category.links.map((link) => (
-                          <li key={link.href} style={{ marginBottom: "0.4rem" }}>
+                          <li key={link.href} style={{ marginBottom: "0.4rem" }} role="none">
                             <Link
                               href={link.href}
                               onClick={() => setContentsOpen(false)}
+                              role="menuitem"
                               style={{
                                 display: "block",
                                 textDecoration: "none",
@@ -258,7 +350,7 @@ export default function Header() {
             className="desktop-only"
             style={{ flexShrink: 0, marginLeft: "auto" }}
           >
-            <label htmlFor="nav-search" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+            <label htmlFor="nav-search" className="visually-hidden">
               Search
             </label>
             <input
@@ -273,11 +365,16 @@ export default function Header() {
 
           {/* Mobile menu toggle */}
           <button
+            ref={mobileToggleRef}
             type="button"
             className="mobile-only"
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() => {
+              setMenuOpen(!menuOpen);
+              setContentsOpen(false);
+            }}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
+            aria-haspopup="true"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             style={{
               display: "none",
@@ -301,14 +398,16 @@ export default function Header() {
       {/* ── Mobile menu ── */}
       {menuOpen && (
         <div
+          ref={mobileMenuRef}
           id="mobile-menu"
           className="mobile-menu"
-          role="navigation"
+          role="dialog"
           aria-label="Mobile navigation"
+          aria-modal="true"
         >
           {/* Search */}
           <form onSubmit={handleSearch} role="search" style={{ marginBottom: "1.5rem" }}>
-            <label htmlFor="mobile-search" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+            <label htmlFor="mobile-search" className="visually-hidden">
               Search
             </label>
             <input
@@ -394,12 +493,25 @@ export default function Header() {
             bottom: 0,
             zIndex: 999,
           }}
-          onClick={() => {
-            setContentsOpen(false);
-            setMenuOpen(false);
-          }}
+          onClick={closeAllMenus}
+          aria-hidden="true"
         />
       )}
+
+      {/* Visually hidden styles */}
+      <style jsx>{`
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        }
+      `}</style>
     </header>
   );
 }
