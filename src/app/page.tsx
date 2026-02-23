@@ -5,65 +5,7 @@ import HomeSearchBox from "@/components/HomeSearchBox";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import ClientRedirect from "@/components/ClientRedirect";
-
-const SECTIONS = [
-  {
-    title: "Environmental (E)",
-    href: "/environmental",
-    description:
-      "Planetary boundaries, climate change, biodiversity, and environmental sustainability.",
-    color: "var(--color-section-env)",
-  },
-  {
-    title: "Social (S)",
-    href: "/social",
-    description:
-      "Human rights, labor practices, community relations, and social impact.",
-    color: "var(--color-section-social)",
-  },
-  {
-    title: "Governance (G)",
-    href: "/governance",
-    description:
-      "Board structure, executive compensation, shareholder rights, and business ethics.",
-    color: "var(--color-section-gov)",
-  },
-  {
-    title: "Standards & Frameworks",
-    href: "/standards",
-    description:
-      "GRI, IFRS S1/S2, TCFD, TNFD, SASB, and other reporting standards.",
-    color: "var(--color-section-standards)",
-  },
-  {
-    title: "HK & APAC Regional",
-    href: "/hk-apac",
-    description:
-      "HKEX ESG Code, regional regulations, and Asia-Pacific sustainability frameworks.",
-    color: "var(--color-section-regional)",
-  },
-  {
-    title: "Learning Hub",
-    href: "/learning",
-    description:
-      "Courses, research, tools, and learning paths for ESG professionals.",
-    color: "var(--color-section-learning)",
-  },
-  {
-    title: "UN SDGs",
-    href: "/sdg",
-    description:
-      "All 17 Sustainable Development Goals mapped to ESG pillars.",
-    color: "var(--color-section-sdg)",
-  },
-  {
-    title: "ESG Ratings",
-    href: "/ratings",
-    description:
-      "Rating agencies, methodologies, data quality, and rating divergence.",
-    color: "var(--color-section-ratings)",
-  },
-];
+import { HOMEPAGE_SECTIONS, SECONDARY_RESOURCES } from "@/data/sections";
 
 export default async function HomePage() {
   const headersList = await headers();
@@ -140,7 +82,7 @@ export default async function HomePage() {
             margin: "1.2rem 0 2rem",
           }}
         >
-          {SECTIONS.map((section) => (
+          {HOMEPAGE_SECTIONS.map((section) => (
             <Link
               key={section.href}
               href={section.href}
@@ -169,6 +111,50 @@ export default async function HomePage() {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* Secondary Resources */}
+        <div
+          style={{
+            borderTop: "1px solid var(--color-border)",
+            padding: "1.5rem 0",
+            marginTop: "1rem",
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              color: "var(--color-text-muted)",
+              marginBottom: "0.75rem",
+            }}
+          >
+            Professional Development & Resources
+          </h2>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "0.75rem 1.5rem",
+            }}
+          >
+            {SECONDARY_RESOURCES.map((resource) => (
+              <Link
+                key={resource.href}
+                href={resource.href}
+                style={{
+                  fontSize: "0.9rem",
+                  color: "var(--color-link)",
+                  textDecoration: "none",
+                }}
+              >
+                {resource.label}
+              </Link>
+            ))}
+          </div>
         </div>
 
         {/* Homepage content from SurrealDB */}

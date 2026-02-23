@@ -8,25 +8,13 @@ import Surreal from "surrealdb";
 let dbInstance: Surreal | null = null;
 
 function getEnvVars() {
-  const vars = {
+  return {
     endpoint: process.env.SURREAL_ENDPOINT || "",
     username: process.env.SURREAL_USERNAME || "",
     password: process.env.SURREAL_PASSWORD || "",
     namespace: process.env.SURREAL_NAMESPACE || "",
     database: process.env.SURREAL_DATABASE || "",
   };
-  
-  // Debug logging
-  console.log("[SurrealDB Debug] Environment check:", {
-    endpoint_set: !!vars.endpoint,
-    username_set: !!vars.username,
-    password_set: !!vars.password,
-    namespace_set: !!vars.namespace,
-    database_set: !!vars.database,
-    endpoint_preview: vars.endpoint?.substring(0, 30) + "...",
-  });
-  
-  return vars;
 }
 
 export async function getDb(): Promise<Surreal> {

@@ -17,31 +17,25 @@ export interface Page {
   sort_order: number | null;
   created_at: string;
   updated_at: string;
+  // Cross-reference fields
+  standards?: string[];
+  related_pages?: string[];
+  connects_to?: string[];
+  backlinks?: string[];
 }
 
 /**
  * Check if database is configured
+ * Exported for use in page components
  */
-function isDbConfigured(): boolean {
+export function isDbConfigured(): boolean {
   const hasEndpoint = !!process.env.SURREAL_ENDPOINT;
   const hasUsername = !!process.env.SURREAL_USERNAME;
   const hasPassword = !!process.env.SURREAL_PASSWORD;
   const hasNamespace = !!process.env.SURREAL_NAMESPACE;
   const hasDatabase = !!process.env.SURREAL_DATABASE;
   
-  const configured = hasEndpoint && hasUsername && hasPassword && hasNamespace && hasDatabase;
-  
-  if (!configured) {
-    console.log("[pages] DB config check:", {
-      endpoint: hasEndpoint,
-      username: hasUsername,
-      password: hasPassword,
-      namespace: hasNamespace,
-      database: hasDatabase
-    });
-  }
-  
-  return configured;
+  return hasEndpoint && hasUsername && hasPassword && hasNamespace && hasDatabase;
 }
 
 /**

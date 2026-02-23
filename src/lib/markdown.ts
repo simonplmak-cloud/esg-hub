@@ -1,0 +1,69 @@
+/**
+ * Markdown utility functions for ESG Hub
+ * Shared utilities for parsing and processing markdown content
+ */
+
+export interface Heading {
+  level: number;
+  text: string;
+  id: string;
+}
+
+/**
+ * Extract h2 and h3 headings from markdown content for table of contents
+ * @param markdown - The markdown content to parse
+ * @returns Array of heading objects with level, text, and id
+ */
+export function extractHeadings(markdown: string): Heading[] {
+  const headings: Heading[] = [];
+  const lines = markdown.split("\n");
+  
+  for (const line of lines) {
+    const match = line.match(/^(#{2,3})\s+(.+)$/);
+    if (match) {
+      const level = match[1].length;
+      // Remove markdown formatting: bold, italic, code, and extract link text
+      let text = match[2]
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")  // Replace [text](url) with text
+        .replace(/[*_`\[\]]/g, "")  // Remove remaining formatting chars
+        .trim();
+      const id = text
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+      headings.push({ level, text, id });
+    }
+  }
+  
+  return headings;
+}
+
+/**
+ * Generate a URL-friendly ID from text
+ * @param text - The text to convert
+ * @returns URL-safe ID string
+ */
+export function generateId(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+/**
+ * Get first paragraph from markdown content
+ * @param markdown - The markdown content
+ * @returns First paragraph or empty string
+ */
+export function getFirstParagraph(markdown: string): string {
+  const lines = markdown.split("\n");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith("#") && !trimmed.startsWith("-")) {
+      return trimmed;
+    }
+  }
+  return "";
+}

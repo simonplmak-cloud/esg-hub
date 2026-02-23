@@ -1,11 +1,14 @@
 import { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { getPageByPermalink, getPagesBySection } from "@/lib/pages";
+import { getPageByPermalink, getPagesBySection, isDbConfigured } from "@/lib/pages";
+import { extractHeadings } from "@/lib/markdown";
+import { SITE_URL, HUB_PAGE_MAX_CONTENT_LENGTH, ARTICLE_MIN_CONTENT_LENGTH, TOC_MIN_CONTENT_LENGTH } from "@/lib/constants";
 import MarkdownContent from "@/components/MarkdownContent";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TableOfContents from "@/components/TableOfContents";
 import PageImage from "@/components/PageImage";
 import OpenAlexResearch from "@/components/OpenAlexResearch";
+import PageToolsSidebar from "@/components/PageToolsSidebar";
 import Link from "next/link";
 import DevelopersLanding from "@/components/developers/DevelopersLanding";
 import ApiDocs from "@/components/developers/ApiDocs";
@@ -35,7 +38,7 @@ interface PageProps {
 }
 
 function buildPermalink(slugParts: string[]): string {
-  return "/" + slugParts.join("/") + "/";
+  return `/${slugParts.join("/")}/`;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -50,15 +53,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const permalink = buildPermalink(slug);
   const page = await getPageByPermalink(permalink);
 
-  // Check if DB is configured
-  const isDbConfigured = !!(
-    process.env.SURREAL_ENDPOINT &&
-    process.env.SURREAL_USERNAME &&
-    process.env.SURREAL_PASSWORD
-  );
-
   if (!page) {
-    if (!isDbConfigured) {
+    if (!isDbConfigured()) {
       return { title: "Service Temporarily Unavailable — ESG Hub" };
     }
     return { title: "Page Not Found — ESG Hub" };
@@ -66,7 +62,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const pageTitle = page.title;
   const pageDescription = page.description || `${page.title} — ESG Hub by Ascent Partners Foundation`;
-  const canonicalUrl = `https://esg-hub-six.vercel.app${permalink.replace(/\/$/, "")}`;
+  const canonicalUrl = `${SITE_URL}${permalink.replace(/\/$/, "")}`;
 
   return {
     title: pageTitle,
@@ -102,15 +98,8 @@ export default async function ContentPage({ params }: PageProps) {
   const permalink = buildPermalink(slug);
   const page = await getPageByPermalink(permalink);
 
-  // Check if DB is configured - if not, show service unavailable message
-  const isDbConfigured = !!(
-    process.env.SURREAL_ENDPOINT &&
-    process.env.SURREAL_USERNAME &&
-    process.env.SURREAL_PASSWORD
-  );
-
   if (!page) {
-    if (!isDbConfigured) {
+    if (!isDbConfigured()) {
       // Database unavailable - show maintenance message instead of 404
       return (
         <div className="content-wrapper" id="main-content" style={{ textAlign: "center", padding: "3rem 1rem" }}>
@@ -153,7 +142,7 @@ export default async function ContentPage({ params }: PageProps) {
     page.slug === "index" ||
     page.slug === page.section ||
     slug.length === 1 ||
-    page.content.trim().length < 200;
+    page.content.trim().length < HUB_PAGE_MAX_CONTENT_LENGTH;
 
   let childPages: Awaited<ReturnType<typeof getPagesBySection>> = [];
   if (page.section) {
@@ -164,39 +153,82 @@ export default async function ContentPage({ params }: PageProps) {
   }
 
   const headings = extractHeadings(page.content);
-  const showToc = headings.length >= 3 && page.content.trim().length > 800;
+  const showToc = headings.length >= 3 && page.content.trim().length > TOC_MIN_CONTENT_LENGTH;
 
   // Show image on article pages (not hub/index pages)
-  const showImage = !isHubPage && page.content.trim().length > 500;
+  const showImage = !isHubPage && page.content.trim().length > ARTICLE_MIN_CONTENT_LENGTH;
 
   return (
-    <div className="content-wrapper" id="main-content">
+    <div id="main-content" style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
       <Breadcrumbs permalink={page.permalink} title={page.title} />
+      
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 320px",
+          gap: "3rem",
+          alignItems: "start",
+        }}
+      >
+        {/* Main Content */}
+        <article className="content-wrapper" style={{ maxWidth: "none", padding: 0 }}>
+          {/* Cross-Pillar Banner - EXPLICITLY HIGHLIGHTED */}
+          {page.connects_to && page.connects_to.length > 1 && (
+            <div
+              style={{
+                background: "linear-gradient(to right, #e6fffa, #faf5ff, #fff5f5)",
+                borderLeft: "4px solid #3182ce",
+                padding: "1rem",
+                marginBottom: "1.5rem",
+                borderRadius: "0.25rem",
+              }}
+            >
+              <span style={{ fontWeight: 600, color: "#2d3748", marginRight: "0.5rem" }}>
+                Cross-Pillar Article:
+              </span>
+              {page.connects_to.map((pillar, i) => (
+                <span key={pillar}>
+                  {i > 0 && " + "}
+                  <Link
+                    href={pillar === "E" ? "/environmental" : pillar === "S" ? "/social" : "/governance"}
+                    style={{
+                      color: pillar === "E" ? "#38a169" : pillar === "S" ? "#3182ce" : "#805ad5",
+                      fontWeight: 600,
+                      textDecoration: "none",
+                    }}
+                  >
+                    {pillar === "E" && "Environmental"}
+                    {pillar === "S" && "Social"}
+                    {pillar === "G" && "Governance"}
+                  </Link>
+                </span>
+              ))}
+            </div>
+          )}
 
-      <article>
-        <h1>{page.title}</h1>
+          <h1>{page.title}</h1>
 
-        {page.description && (
-          <p
-            style={{
-              fontSize: "0.95rem",
-              color: "var(--color-text-secondary)",
-              marginBottom: "0.8rem",
-              lineHeight: 1.6,
-            }}
-          >
-            {page.description}
-          </p>
-        )}
+          {page.description && (
+            <p
+              style={{
+                fontSize: "0.95rem",
+                color: "var(--color-text-secondary)",
+                marginBottom: "0.8rem",
+                lineHeight: 1.6,
+              }}
+            >
+              {page.description}
+            </p>
+          )}
 
-        <div className="page-meta">
-          {page.section && (
-            <span className="page-meta-item">
-              <span style={{ fontWeight: 600 }}>Section:</span>{" "}
-              <Link
-                href={`/${page.section}`}
-                style={{ color: "var(--color-link)", textDecoration: "none" }}
-              >
+          <div className="page-meta">
+            {page.section && (
+              <span className="page-meta-item">
+                <span style={{ fontWeight: 600 }}>Section:</span>{" "}
+                <Link
+                  href={`/${page.section}`}
+                  style={{ color: "var(--color-link)", textDecoration: "none" }}
+                >
                 {page.section.charAt(0).toUpperCase() + page.section.slice(1)}
               </Link>
             </span>
@@ -294,32 +326,10 @@ export default async function ContentPage({ params }: PageProps) {
           </div>
         )}
       </article>
+
+      {/* Sidebar - Page Tools */}
+      <PageToolsSidebar page={page} />
     </div>
+  </div>
   );
-}
-
-/* ── Extract h2/h3 headings from markdown for ToC ── */
-interface Heading {
-  level: number;
-  text: string;
-  id: string;
-}
-
-function extractHeadings(markdown: string): Heading[] {
-  const headings: Heading[] = [];
-  const lines = markdown.split("\n");
-  for (const line of lines) {
-    const match = line.match(/^(#{2,3})\s+(.+)$/);
-    if (match) {
-      const level = match[1].length;
-      const text = match[2].replace(/[*_`\[\]]/g, "").trim();
-      const id = text
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-");
-      headings.push({ level, text, id });
-    }
-  }
-  return headings;
 }
