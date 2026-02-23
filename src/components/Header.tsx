@@ -362,8 +362,7 @@ export default function Header() {
               ))}
             </div>
           ))}
-          ))}
-          
+
           <div style={{ borderTop: "1px solid var(--color-border)", paddingTop: "1rem" }}>
             {QUICK_LINKS.map((link) => (
               <Link

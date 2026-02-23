@@ -23,7 +23,7 @@ export function extractHeadings(markdown: string): Heading[] {
     if (match) {
       const level = match[1].length;
       // Remove markdown formatting: bold, italic, code, and extract link text
-      let text = match[2]
+      const text = match[2]
         .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")  // Replace [text](url) with text
         .replace(/[*_`\[\]]/g, "")  // Remove remaining formatting chars
         .trim();
