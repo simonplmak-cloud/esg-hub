@@ -23,21 +23,6 @@ async function apiGet(path, params) {
     }
     return res.json();
 }
-async function apiPost(path, body) {
-    const url = new URL(`/api/v1${path}`, BASE_URL);
-    const res = await fetch(url.toString(), {
-        method: "POST",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-        throw new Error(`API error: ${res.status} ${res.statusText}`);
-    }
-    return res.json();
-}
 // ── Create MCP Server ──────────────────────────────────────────────────
 const server = new McpServer({
     name: "esg-hub",

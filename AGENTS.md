@@ -12,9 +12,13 @@ npm run start        # Start production server
 npm run lint         # ESLint (uses eslint-config-next)
 npx tsc --noEmit     # TypeScript type check (strict mode)
 
-# Testing (not yet configured)
-# To add tests: npm install -D vitest @testing-library/react
-# Run single test: npx vitest run path/to/test.test.ts
+# Testing
+npm run test          # Run Playwright tests (accessibility + API contract)
+npm run test:ci       # Run tests with CI reporter
+npx playwright test   # Run Playwright tests directly
+
+# Database
+npm run verify:db    # Verify SurrealDB schema (indexes, uniqueness, required fields)
 ```
 
 ## Code Style Guidelines

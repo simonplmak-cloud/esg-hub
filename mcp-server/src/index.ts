@@ -27,22 +27,6 @@ async function apiGet<T = unknown>(path: string, params?: Record<string, string>
   return res.json() as Promise<T>;
 }
 
-async function apiPost<T = unknown>(path: string, body: unknown): Promise<T> {
-  const url = new URL(`/api/v1${path}`, BASE_URL);
-  const res = await fetch(url.toString(), {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status} ${res.statusText}`);
-  }
-  return res.json() as Promise<T>;
-}
-
 // ── Create MCP Server ──────────────────────────────────────────────────
 
 const server = new McpServer({
