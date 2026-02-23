@@ -6,7 +6,7 @@ import "./globals.css";
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL = "https://esg-hub-six.vercel.app";
+const SITE_URL = "https://esg-hub.ascent.partners";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
