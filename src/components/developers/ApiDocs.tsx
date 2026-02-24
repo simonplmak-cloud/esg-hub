@@ -1,46 +1,14 @@
-import Link from "next/link";
+import { CodeBlock, TabbedCodeBlock, SidebarNav, Callout } from "./CodeBlock";
 
-function CodeBlock({ children, title }: { children: string; title?: string }) {
-  return (
-    <div
-      style={{
-        marginBottom: "1.5rem",
-        border: "1px solid var(--color-border)",
-        borderRadius: "8px",
-        overflow: "hidden",
-      }}
-    >
-      {title && (
-        <div
-          style={{
-            padding: "0.5rem 1rem",
-            fontSize: "0.8rem",
-            fontWeight: 600,
-            color: "var(--color-text-muted)",
-            backgroundColor: "var(--color-surface)",
-            borderBottom: "1px solid var(--color-border)",
-            fontFamily: "monospace",
-          }}
-        >
-          {title}
-        </div>
-      )}
-      <pre
-        style={{
-          margin: 0,
-          padding: "1rem",
-          fontSize: "0.85rem",
-          lineHeight: 1.6,
-          overflowX: "auto",
-          backgroundColor: "var(--color-bg-alt, #f8f9fa)",
-          fontFamily: "'Fira Code', 'SF Mono', monospace",
-        }}
-      >
-        <code>{children}</code>
-      </pre>
-    </div>
-  );
-}
+const SIDEBAR_ITEMS = [
+  { id: "getting-started", label: "Getting Started" },
+  { id: "authentication", label: "Authentication" },
+  { id: "endpoints", label: "Endpoints", href: "#endpoints" },
+  { id: "errors", label: "Error Handling", href: "#errors" },
+  { id: "limits", label: "Rate Limits", href: "#limits" },
+];
+
+const BASE = "https://esg-hub.ascent.partners";
 
 function EndpointSection({
   method,
@@ -49,6 +17,7 @@ function EndpointSection({
   params,
   example,
   response,
+  id,
 }: {
   method: string;
   path: string;
@@ -56,85 +25,48 @@ function EndpointSection({
   params?: { name: string; type: string; required: boolean; description: string }[];
   example: string;
   response: string;
+  id?: string;
 }) {
+  const methodColors: Record<string, { bg: string; color: string }> = {
+    GET: { bg: "#134e4a", color: "#6ee7b7" },
+    POST: { bg: "#1e3a5f", color: "#60a5fa" },
+    PUT: { bg: "#4a3f1e", color: "#fbbf24" },
+    DELETE: { bg: "#4a1e1e", color: "#f87171" },
+  };
+  const colors = methodColors[method] || methodColors.GET;
+
   return (
-    <div
-      style={{
-        marginBottom: "2.5rem",
-        paddingBottom: "2rem",
-        borderBottom: "1px solid var(--color-border)",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.75rem",
-          marginBottom: "0.75rem",
-        }}
-      >
+    <div id={id} style={{ marginBottom: "2.5rem", paddingBottom: "2rem", borderBottom: "1px solid var(--color-border)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
         <span
           style={{
-            padding: "0.2rem 0.6rem",
+            padding: "0.25rem 0.6rem",
             fontSize: "0.75rem",
             fontWeight: 700,
             fontFamily: "monospace",
             borderRadius: "4px",
-            backgroundColor: method === "GET" ? "#e8f5e9" : "#e3f2fd",
-            color: method === "GET" ? "#2e7d32" : "#1565c0",
+            backgroundColor: colors.bg,
+            color: colors.color,
           }}
         >
           {method}
         </span>
-        <code
-          style={{
-            fontSize: "0.95rem",
-            fontWeight: 600,
-            color: "var(--color-text-primary)",
-          }}
-        >
+        <code style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--color-text)" }}>
           {path}
         </code>
       </div>
-      <p
-        style={{
-          fontSize: "0.92rem",
-          color: "var(--color-text-secondary)",
-          lineHeight: 1.55,
-          marginBottom: "1rem",
-        }}
-      >
+      <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.55, marginBottom: "1rem" }}>
         {description}
       </p>
 
       {params && params.length > 0 && (
         <div style={{ marginBottom: "1rem" }}>
-          <h4
-            style={{
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              marginBottom: "0.5rem",
-              color: "var(--color-text-muted)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}
-          >
+          <h4 style={{ fontSize: "0.8rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
             Parameters
           </h4>
-          <table
-            style={{
-              width: "100%",
-              fontSize: "0.85rem",
-              borderCollapse: "collapse",
-            }}
-          >
+          <table style={{ width: "100%", fontSize: "0.85rem", borderCollapse: "collapse" }}>
             <thead>
-              <tr
-                style={{
-                  borderBottom: "2px solid var(--color-border)",
-                  textAlign: "left",
-                }}
-              >
+              <tr style={{ borderBottom: "2px solid var(--color-border)", textAlign: "left" }}>
                 <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Name</th>
                 <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Type</th>
                 <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Required</th>
@@ -143,26 +75,17 @@ function EndpointSection({
             </thead>
             <tbody>
               {params.map((p) => (
-                <tr
-                  key={p.name}
-                  style={{ borderBottom: "1px solid var(--color-border)" }}
-                >
-                  <td style={{ padding: "0.5rem 0.75rem" }}>
-                    <code style={{ fontSize: "0.82rem" }}>{p.name}</code>
-                  </td>
-                  <td style={{ padding: "0.5rem 0.75rem", color: "var(--color-text-muted)" }}>
-                    {p.type}
-                  </td>
+                <tr key={p.name} style={{ borderBottom: "1px solid var(--color-border)" }}>
+                  <td style={{ padding: "0.5rem 0.75rem", fontFamily: "var(--font-mono)", color: "var(--color-link)" }}>{p.name}</td>
+                  <td style={{ padding: "0.5rem 0.75rem", fontFamily: "var(--font-mono)", color: "var(--color-text-muted)" }}>{p.type}</td>
                   <td style={{ padding: "0.5rem 0.75rem" }}>
                     {p.required ? (
-                      <span style={{ color: "#c62828", fontWeight: 600 }}>Yes</span>
+                      <span style={{ color: "#f87171", fontWeight: 500 }}>Required</span>
                     ) : (
-                      <span style={{ color: "var(--color-text-muted)" }}>No</span>
+                      <span style={{ color: "var(--color-text-muted)" }}>Optional</span>
                     )}
                   </td>
-                  <td style={{ padding: "0.5rem 0.75rem", color: "var(--color-text-secondary)" }}>
-                    {p.description}
-                  </td>
+                  <td style={{ padding: "0.5rem 0.75rem", color: "var(--color-text-secondary)" }}>{p.description}</td>
                 </tr>
               ))}
             </tbody>
@@ -170,304 +93,292 @@ function EndpointSection({
         </div>
       )}
 
-      <CodeBlock title="Example Request">{example}</CodeBlock>
-      <CodeBlock title="Example Response">{response}</CodeBlock>
+      <div style={{ marginBottom: "1rem" }}>
+        <h4 style={{ fontSize: "0.8rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          Request Example
+        </h4>
+        <CodeBlock language="bash" title="curl">{example}</CodeBlock>
+      </div>
+
+      <div>
+        <h4 style={{ fontSize: "0.8rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          Response
+        </h4>
+        <CodeBlock language="json">{response}</CodeBlock>
+      </div>
     </div>
   );
 }
 
 export default function ApiDocs() {
-  const BASE = "https://esg-hub-six.vercel.app";
-
   return (
-    <div className="content-wrapper">
-      <nav aria-label="Breadcrumb" style={{ marginBottom: "1rem" }}>
-        <Link
-          href="/developers"
-          style={{
-            fontSize: "0.85rem",
-            color: "var(--color-link)",
-            textDecoration: "none",
-          }}
-        >
-          Developers
-        </Link>
-        <span style={{ margin: "0 0.5rem", color: "var(--color-text-muted)" }}>/</span>
-        <span style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>
-          REST API
-        </span>
-      </nav>
-
-      <article>
-        <h1>REST API Documentation</h1>
-        <p
-          style={{
-            fontSize: "1.02rem",
-            color: "var(--color-text-secondary)",
-            marginBottom: "1.5rem",
-            lineHeight: 1.65,
-            maxWidth: "720px",
-          }}
-        >
-          The ESG Hub REST API provides programmatic access to 307 ESG articles
-          and 244 curated external resources. All endpoints return JSON and
-          support CORS for cross-origin access. No authentication is required.
-        </p>
-
-        <div
-          style={{
-            padding: "1rem 1.25rem",
-            backgroundColor: "var(--color-surface)",
-            border: "1px solid var(--color-border)",
-            borderRadius: "8px",
-            marginBottom: "2rem",
-          }}
-        >
-          <p style={{ margin: 0, fontSize: "0.9rem" }}>
-            <strong>Base URL:</strong>{" "}
-            <code style={{ fontSize: "0.88rem" }}>{BASE}/api/v1</code>
+    <div className="docs-container">
+      <SidebarNav items={SIDEBAR_ITEMS} activeId="endpoints" />
+      
+      <div className="docs-main">
+        <article>
+          <h1>REST API</h1>
+          <p style={{ fontSize: "1.05rem", color: "var(--color-text-secondary)", marginBottom: "2rem", lineHeight: 1.65 }}>
+            Query the ESG Hub knowledge base programmatically. Search articles, browse resources, and integrate ESG data into your applications.
           </p>
-        </div>
 
-        {/* Table of Contents */}
-        <div
-          style={{
-            padding: "1rem 1.25rem",
-            border: "1px solid var(--color-border)",
-            borderRadius: "8px",
-            marginBottom: "2.5rem",
-          }}
-        >
-          <h3 style={{ margin: "0 0 0.5rem", fontSize: "0.95rem" }}>Endpoints</h3>
-          <ul style={{ margin: 0, paddingLeft: "1.2rem", fontSize: "0.9rem", lineHeight: 1.8 }}>
-            <li><a href="#meta" style={{ color: "var(--color-link)" }}>GET /api/v1/meta</a> — Database metadata and statistics</li>
-            <li><a href="#list-pages" style={{ color: "var(--color-link)" }}>GET /api/v1/pages</a> — List and filter pages</li>
-            <li><a href="#get-page" style={{ color: "var(--color-link)" }}>GET /api/v1/pages/:id</a> — Get a single page</li>
-            <li><a href="#list-resources" style={{ color: "var(--color-link)" }}>GET /api/v1/resources</a> — List external resources</li>
-            <li><a href="#search" style={{ color: "var(--color-link)" }}>GET /api/v1/search</a> — Full-text keyword search</li>
-            <li><a href="#semantic-search" style={{ color: "var(--color-link)" }}>POST /api/v1/search</a> — Semantic vector search</li>
-          </ul>
-        </div>
+          {/* Getting Started */}
+          <section id="getting-started" style={{ marginBottom: "3rem" }}>
+            <h2>Getting Started</h2>
+            <p style={{ fontSize: "0.95rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginBottom: "1.5rem" }}>
+              The ESG Hub API is REST-based and returns JSON responses. No authentication is required for public endpoints.
+            </p>
 
-        {/* Endpoints */}
-        <div id="meta">
-          <EndpointSection
-            method="GET"
-            path="/api/v1/meta"
-            description="Returns database metadata including total counts, available sections, pillars, and source domains. Useful for understanding the scope of the knowledge base."
-            example={`curl ${BASE}/api/v1/meta`}
-            response={`{
-  "stats": {
-    "total_pages": 307,
-    "total_resources": 244,
-    "total_sections": 27,
-    "total_pillars": 8,
-    "total_domains": 46
-  },
+            <Callout type="info" title="Base URL">
+              All API requests should be made to: <code style={{ fontFamily: "var(--font-mono)", color: "var(--color-link)" }}>https://esg-hub.ascent.partners/api/v1</code>
+            </Callout>
+
+            <h3 style={{ fontSize: "1.1rem", marginTop: "1.5rem", marginBottom: "0.75rem" }}>Quick Start</h3>
+            <ol style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.8, paddingLeft: "1.25rem" }}>
+              <li style={{ marginBottom: "0.5rem" }}>Choose an endpoint below (e.g., <code>/api/v1/pages</code> for articles)</li>
+              <li style={{ marginBottom: "0.5rem" }}>Make a request using cURL, JavaScript, or Python</li>
+              <li style={{ marginBottom: "0.5rem" }}>Parse the JSON response for the data you need</li>
+            </ol>
+
+            <h3 style={{ fontSize: "1.1rem", marginTop: "1.5rem", marginBottom: "0.75rem" }}>Code Examples</h3>
+            <TabbedCodeBlock
+              tabs={[
+                {
+                  label: "cURL",
+                  language: "bash",
+                  code: `curl -s "${BASE}/api/v1/pages?limit=3" | jq .`,
+                },
+                {
+                  label: "JavaScript",
+                  language: "javascript",
+                  code: `const response = await fetch('${BASE}/api/v1/pages?limit=3');
+const data = await response.json();
+console.log(data.data.map(p => p.title));`,
+                },
+                {
+                  label: "Python",
+                  language: "python",
+                  code: `import requests
+
+response = requests.get('${BASE}/api/v1/pages', params={'limit': 3})
+data = response.json()
+for page in data['data']:
+    print(page['title'])`,
+                },
+              ]}
+            />
+          </section>
+
+          {/* Authentication */}
+          <section id="authentication" style={{ marginBottom: "3rem" }}>
+            <h2>Authentication</h2>
+            <Callout type="success" title="No Authentication Required">
+              The ESG Hub API is currently open and does not require authentication. All endpoints are publicly accessible.
+            </Callout>
+            <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginTop: "1rem" }}>
+              Simply make HTTP requests to the endpoints below. For browser-based applications, CORS headers are included to allow cross-origin requests.
+            </p>
+          </section>
+
+          {/* Endpoints */}
+          <section id="endpoints">
+            <h2>Endpoints</h2>
+
+            <EndpointSection
+              id="meta"
+              method="GET"
+              path="/api/v1/meta"
+              description="Get metadata about the ESG Hub knowledge base, including article counts, section statistics, and database timestamps."
+              example={`curl -s "${BASE}/api/v1/meta"`}
+              response={`{
+  "total_pages": 351,
+  "total_resources": 244,
   "sections": [
-    { "name": "environmental", "page_count": 23 },
-    { "name": "social", "page_count": 83 },
-    { "name": "governance", "page_count": 65 }
+    { "name": "environmental", "count": 23 },
+    { "name": "governance", "count": 65 }
   ],
-  "pillars": [
-    { "name": "Environmental", "page_count": 14 },
-    { "name": "Social", "page_count": 43 }
-  ],
-  "domains": [
-    { "name": "www.globalreporting.org", "resource_count": 9 },
-    { "name": "eur-lex.europa.eu", "resource_count": 13 }
-  ]
+  "updated_at": "2026-02-24T12:00:00Z"
 }`}
-          />
-        </div>
+            />
 
-        <div id="list-pages">
-          <EndpointSection
-            method="GET"
-            path="/api/v1/pages"
-            description="List ESG Hub articles with optional filtering by section, pillar, or title. Returns paginated results."
-            params={[
-              { name: "section", type: "string", required: false, description: "Filter by section (e.g., 'environmental', 'social', 'governance', 'standards')" },
-              { name: "pillar", type: "string", required: false, description: "Filter by pillar (e.g., 'Environmental', 'Social', 'Governance', 'Standards')" },
-              { name: "q", type: "string", required: false, description: "Filter by title substring" },
-              { name: "limit", type: "number", required: false, description: "Results per page (default: 20, max: 100)" },
-              { name: "offset", type: "number", required: false, description: "Pagination offset (default: 0)" },
-            ]}
-            example={`curl "${BASE}/api/v1/pages?section=environmental&limit=5"`}
-            response={`{
+            <EndpointSection
+              id="list-pages"
+              method="GET"
+              path="/api/v1/pages"
+              description="List all ESG articles with optional filtering. Supports filtering by section, pillar, and full-text search."
+              params={[
+                { name: "section", type: "string", required: false, description: "Filter by section (e.g., 'environmental', 'governance')" },
+                { name: "pillar", type: "string", required: false, description: "Filter by pillar: 'Environmental', 'Social', or 'Governance'" },
+                { name: "q", type: "string", required: false, description: "Full-text search in title and description" },
+                { name: "limit", type: "number", required: false, description: "Results per page (default: 20, max: 100)" },
+                { name: "offset", type: "number", required: false, description: "Pagination offset" },
+              ]}
+              example={`# List all pages
+curl -s "${BASE}/api/v1/pages?limit=5"
+
+# Filter by section
+curl -s "${BASE}/api/v1/pages?section=environmental&limit=10"
+
+# Search for climate
+curl -s "${BASE}/api/v1/pages?q=climate&limit=5"`}
+              response={`{
   "data": [
     {
       "id": "page:abc123",
       "title": "Climate Change",
-      "permalink": "/environmental/climate-change/",
-      "description": "Understanding climate change...",
+      "description": "Understanding climate risks...",
       "section": "environmental",
-      "pillar": "Environmental"
+      "pillar": "Environmental",
+      "permalink": "/environmental/climate-change/"
     }
   ],
   "pagination": {
-    "total": 23,
+    "total": 351,
     "limit": 5,
     "offset": 0,
     "has_more": true
   }
 }`}
-          />
-        </div>
+            />
 
-        <div id="get-page">
-          <EndpointSection
-            method="GET"
-            path="/api/v1/pages/:id"
-            description="Retrieve the full content of a specific ESG Hub article. Accepts a permalink path, slug, or SurrealDB record ID."
-            params={[
-              { name: "id", type: "string", required: true, description: "Page identifier — permalink path (e.g., 'environmental/climate-change'), slug (e.g., 'climate-change'), or record ID" },
-            ]}
-            example={`curl ${BASE}/api/v1/pages/environmental/climate-change`}
-            response={`{
-  "data": {
-    "id": "page:abc123",
-    "title": "Climate Change",
-    "permalink": "/environmental/climate-change/",
-    "description": "Understanding climate change...",
-    "section": "environmental",
-    "pillar": "Environmental",
-    "keywords": "climate, emissions, global warming",
-    "content": "## Overview\\n\\nClimate change refers to..."
-  }
+            <EndpointSection
+              id="get-page"
+              method="GET"
+              path="/api/v1/pages/:id"
+              description="Get a single page by its ID. Returns full content including markdown and metadata."
+              example={`curl -s "${BASE}/api/v1/pages/page:abc123"`}
+              response={`{
+  "id": "page:abc123",
+  "title": "Climate Change",
+  "content": "# Climate Change\\n\\nClimate change refers to...",
+  "keywords": "climate, carbon, emissions",
+  "created_at": "2024-01-15T10:30:00Z"
 }`}
-          />
-        </div>
+            />
 
-        <div id="list-resources">
-          <EndpointSection
-            method="GET"
-            path="/api/v1/resources"
-            description="List curated external ESG resources (standards bodies, regulations, tools, databases). Filter by source domain or search by title."
-            params={[
-              { name: "domain", type: "string", required: false, description: "Filter by source domain (e.g., 'ghgprotocol.org', 'www.cdp.net')" },
-              { name: "q", type: "string", required: false, description: "Filter by title substring" },
-              { name: "limit", type: "number", required: false, description: "Results per page (default: 20, max: 100)" },
-              { name: "offset", type: "number", required: false, description: "Pagination offset (default: 0)" },
-            ]}
-            example={`curl "${BASE}/api/v1/resources?domain=ghgprotocol.org"`}
-            response={`{
+            <EndpointSection
+              id="resources"
+              method="GET"
+              path="/api/v1/resources"
+              description="List curated external ESG resources. These are links to external articles, reports, and tools."
+              params={[
+                { name: "type", type: "string", required: false, description: "Filter by type: 'article', 'report', 'tool', 'dataset'" },
+                { name: "q", type: "string", required: false, description: "Search in title and description" },
+                { name: "limit", type: "number", required: false, description: "Results per page (default: 20)" },
+              ]}
+              example={`# List all resources
+curl -s "${BASE}/api/v1/resources?limit=5"
+
+# Filter by type
+curl -s "${BASE}/api/v1/resources?type=report&limit=10"`}
+              response={`{
   "data": [
     {
-      "id": "external_resource:xyz789",
-      "title": "GHG Protocol Corporate Standard",
-      "url": "https://ghgprotocol.org/corporate-standard",
-      "domain": "ghgprotocol.org",
-      "description": "The GHG Protocol Corporate Standard..."
+      "id": "resource:xyz789",
+      "title": "TCFD Recommendations",
+      "url": "https://assets.bbhub.io/...",
+      "type": "report",
+      "source": "TCFD"
     }
   ],
-  "pagination": {
-    "total": 7,
-    "limit": 20,
-    "offset": 0,
-    "has_more": false
-  }
+  "pagination": { "total": 244, "limit": 5, "offset": 0 }
 }`}
-          />
-        </div>
+            />
 
-        <div id="search">
-          <EndpointSection
-            method="GET"
-            path="/api/v1/search"
-            description="Full-text keyword search across all ESG content using BM25 ranking. Searches page titles, descriptions, content, and external resource titles."
-            params={[
-              { name: "q", type: "string", required: true, description: "Search query (e.g., 'carbon emissions', 'board diversity')" },
-              { name: "limit", type: "number", required: false, description: "Maximum results (default: 10, max: 50)" },
-              { name: "source", type: "string", required: false, description: "Filter by source: 'all' (default), 'pages', or 'external'" },
-            ]}
-            example={`curl "${BASE}/api/v1/search?q=carbon+emissions&limit=5"`}
-            response={`{
+            <EndpointSection
+              id="search"
+              method="GET"
+              path="/api/v1/search"
+              description="Full-text keyword search across all pages and resources. Use this for simple search queries."
+              params={[
+                { name: "q", type: "string", required: true, description: "Search query (required)" },
+                { name: "limit", type: "number", required: false, description: "Results to return (default: 10)" },
+                { name: "source", type: "string", required: false, description: "Filter: 'all', 'pages', or 'resources'" },
+              ]}
+              example={`curl -s "${BASE}/api/v1/search?q=carbon+emissions&limit=5"`}
+              response={`{
   "query": "carbon emissions",
   "mode": "keyword",
   "data": [
-    {
-      "id": "page:abc123",
-      "title": "Scope 3 Emissions & Value Chain Decarbonization",
-      "permalink": "/emerging-topics/scope-3-emissions/",
-      "description": "Understanding Scope 3 emissions...",
-      "section": "emerging-topics",
-      "source_type": "page",
-      "relevance": 12.5
-    }
+    { "title": "Carbon Emissions", "permalink": "/environmental/carbon-emissions/", "score": 0.95 }
   ],
-  "total": 30
+  "total": 12
 }`}
-          />
-        </div>
+            />
 
-        <div id="semantic-search">
-          <EndpointSection
-            method="POST"
-            path="/api/v1/search"
-            description="Semantic vector search using pre-computed embeddings. Send a 384-dimensional embedding vector (BAAI/bge-small-en-v1.5 model) to find conceptually related content. The ESG Hub search page generates embeddings client-side using @huggingface/transformers."
-            params={[
-              { name: "embedding", type: "number[384]", required: true, description: "384-dimensional embedding vector from BAAI/bge-small-en-v1.5 or compatible model" },
-              { name: "k", type: "number", required: false, description: "Number of nearest neighbors (default: 10, max: 50)" },
-              { name: "source", type: "string", required: false, description: "Filter: 'all' (default), 'pages', or 'external'" },
-            ]}
-            example={`curl -X POST ${BASE}/api/v1/search \\
+            <EndpointSection
+              id="semantic-search"
+              method="POST"
+              path="/api/v1/search"
+              description="Semantic vector search using pre-computed embeddings. Send a 384-dimensional embedding vector to find conceptually related content."
+              params={[
+                { name: "embedding", type: "number[384]", required: true, description: "384-dimensional embedding vector" },
+                { name: "k", type: "number", required: false, description: "Number of results (default: 10, max: 50)" },
+                { name: "source", type: "string", required: false, description: "Filter: 'all', 'pages', or 'resources'" },
+              ]}
+              example={`curl -X POST "${BASE}/api/v1/search" \\
   -H "Content-Type: application/json" \\
-  -d '{"embedding": [0.012, -0.034, ...], "k": 5}'`}
-            response={`{
+  -d '{"embedding": [0.012, -0.034, 0.056, ...], "k": 5}'`}
+              response={`{
   "query": "[vector]",
   "mode": "semantic",
   "data": [
     {
-      "id": "page:abc123",
-      "title": "Climate Change",
-      "permalink": "/environmental/climate-change/",
-      "similarity": 0.748,
-      "source_type": "page"
+      "title": "Climate Risk Assessment",
+      "permalink": "/environmental/climate-risk/",
+      "similarity": 0.748
     }
   ],
   "total": 5
 }`}
-          />
-        </div>
+            />
+          </section>
 
-        {/* Rate Limits & CORS */}
-        <div style={{ marginTop: "1rem" }}>
-          <h2>Rate Limits &amp; CORS</h2>
-          <p
-            style={{
-              fontSize: "0.92rem",
-              color: "var(--color-text-secondary)",
-              lineHeight: 1.65,
-            }}
-          >
-            The API is currently open with no authentication required. All
-            endpoints support CORS for cross-origin browser requests. There are
-            no strict rate limits, but please be respectful and avoid sending
-            more than 60 requests per minute.
-          </p>
-        </div>
-
-        {/* Error Handling */}
-        <div style={{ marginTop: "1.5rem" }}>
-          <h2>Error Handling</h2>
-          <p
-            style={{
-              fontSize: "0.92rem",
-              color: "var(--color-text-secondary)",
-              lineHeight: 1.65,
-            }}
-          >
-            All errors return a JSON object with an{" "}
-            <code>error</code> field containing a human-readable message. HTTP
-            status codes follow standard conventions: 400 for bad requests, 404
-            for not found, and 500 for server errors.
-          </p>
-          <CodeBlock title="Error Response">{`{
+          {/* Error Handling */}
+          <section id="errors" style={{ marginTop: "2rem" }}>
+            <h2>Error Handling</h2>
+            <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginBottom: "1rem" }}>
+              All errors return a JSON object with an <code style={{ fontFamily: "var(--font-mono)", background: "var(--color-bg-secondary)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>error</code> field containing a human-readable message.
+            </p>
+            <CodeBlock language="json" title="Error Response">{`{
   "error": "Missing required parameter: q"
 }`}</CodeBlock>
-        </div>
-      </article>
+            <table style={{ width: "100%", fontSize: "0.85rem", borderCollapse: "collapse", marginTop: "1rem" }}>
+              <thead>
+                <tr style={{ borderBottom: "2px solid var(--color-border)" }}>
+                  <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600 }}>Status</th>
+                  <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600 }}>Meaning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+                  <td style={{ padding: "0.5rem", fontFamily: "var(--font-mono)", color: "#f87171" }}>400</td>
+                  <td style={{ padding: "0.5rem", color: "var(--color-text-secondary)" }}>Bad Request - Missing or invalid parameters</td>
+                </tr>
+                <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+                  <td style={{ padding: "0.5rem", fontFamily: "var(--font-mono)", color: "#f87171" }}>404</td>
+                  <td style={{ padding: "0.5rem", color: "var(--color-text-secondary)" }}>Not Found - Resource does not exist</td>
+                </tr>
+                <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+                  <td style={{ padding: "0.5rem", fontFamily: "var(--font-mono)", color: "#f87171" }}>500</td>
+                  <td style={{ padding: "0.5rem", color: "var(--color-text-secondary)" }}>Server Error - Please try again later</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          {/* Rate Limits */}
+          <section id="limits" style={{ marginTop: "2rem" }}>
+            <h2>Rate Limits</h2>
+            <Callout type="info" title="No Strict Rate Limits">
+              The API is currently open with no authentication required. Please be respectful and avoid sending more than 60 requests per minute.
+            </Callout>
+            <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginTop: "1rem" }}>
+              All endpoints support CORS for cross-origin browser requests. The API includes caching headers for efficient client-side caching.
+            </p>
+          </section>
+        </article>
+      </div>
     </div>
   );
 }
