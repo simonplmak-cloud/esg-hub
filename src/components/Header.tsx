@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useLocale } from "next-intl";
 import { CONTENTS_MENU, QUICK_LINKS } from "@/data/sections";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -12,6 +13,7 @@ export default function Header() {
   const [contentsOpen, setContentsOpen] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
   const pathname = usePathname() || "/";
+  const locale = useLocale();
   
   // Refs for focus management
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -238,13 +240,13 @@ export default function Header() {
           <div className="quick-links">
             <LanguageSwitcher />
             <Link
-              href="/developers"
+              href={`/${locale}/developers`}
               className={`quick-link-nav ${isActive("/developers") ? 'active' : ''}`}
             >
               Developers
             </Link>
             <Link
-              href="/glossary"
+              href={`/${locale}/glossary`}
               className={`quick-link-nav ${isActive("/glossary") ? 'active' : ''}`}
             >
               Glossary

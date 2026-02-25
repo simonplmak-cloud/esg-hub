@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 export default function Footer() {
+  const locale = useLocale();
+  
   return (
     <footer 
       className="site-footer" 
@@ -32,13 +35,13 @@ export default function Footer() {
         
         <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
           <Link 
-            href="/about" 
+            href={`/${locale}/about`} 
             style={{ color: "var(--color-text-muted)", textDecoration: "none" }}
           >
             About
           </Link>
           <Link 
-            href="/developers" 
+            href={`/${locale}/developers`} 
             style={{ color: "var(--color-text-muted)", textDecoration: "none" }}
           >
             Developers

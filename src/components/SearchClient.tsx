@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 interface SearchResult {
   id: string;
@@ -129,6 +130,7 @@ function ResultCard({ result }: { result: SearchResult }) {
 export default function SearchClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const locale = useLocale();
   const initialQuery = searchParams?.get("q") || "";
   const initialMode = searchParams?.get("mode") === "semantic" ? "semantic" : "keyword";
 
@@ -538,9 +540,9 @@ export default function SearchClient() {
           </p>
           <p style={{ fontSize: "0.88rem", marginBottom: "1rem" }}>
             Try searching for{" "}
-            <Link href="/search?q=climate+change">climate change</Link>,{" "}
-            <Link href="/search?q=GRI">GRI</Link>, or{" "}
-            <Link href="/search?q=TCFD">TCFD</Link>.
+            <Link href={`/${locale}/search?q=climate+change`}>climate change</Link>,{" "}
+            <Link href={`/${locale}/search?q=GRI`}>GRI</Link>, or{" "}
+            <Link href={`/${locale}/search?q=TCFD`}>TCFD</Link>.
           </p>
           <div
             style={{

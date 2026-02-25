@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 const QUICK_QUERIES = [
   "IFRS S2 climate disclosures",
@@ -15,17 +16,18 @@ const QUICK_QUERIES = [
 export default function HomeSearchBox() {
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const locale = useLocale();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const q = query.trim();
     if (q) {
-      router.push(`/search?q=${encodeURIComponent(q)}`);
+      router.push(`/${locale}/search?q=${encodeURIComponent(q)}`);
     }
   };
 
   const handleQuickQuery = (q: string) => {
-    router.push(`/search?q=${encodeURIComponent(q)}`);
+    router.push(`/${locale}/search?q=${encodeURIComponent(q)}`);
   };
 
   return (

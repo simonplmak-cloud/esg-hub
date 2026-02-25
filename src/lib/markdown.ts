@@ -16,6 +16,7 @@ export interface Heading {
  */
 export function extractHeadings(markdown: string): Heading[] {
   const headings: Heading[] = [];
+  const seenIds = new Set<string>();
   const lines = markdown.split("\n");
   
   for (const line of lines) {
@@ -27,11 +28,19 @@ export function extractHeadings(markdown: string): Heading[] {
         .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")  // Replace [text](url) with text
         .replace(/[*_`\[\]]/g, "")  // Remove remaining formatting chars
         .trim();
-      const id = text
+      const baseId = text
         .toLowerCase()
         .replace(/[^\w\s-]/g, "")
         .replace(/\s+/g, "-")
         .replace(/-+/g, "-");
+      
+      let id = baseId;
+      let counter = 1;
+      while (seenIds.has(id)) {
+        id = `${baseId}-${counter}`;
+        counter++;
+      }
+      seenIds.add(id);
       headings.push({ level, text, id });
     }
   }

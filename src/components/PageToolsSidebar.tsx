@@ -8,6 +8,7 @@ import { PILLAR_STYLES, MAX_RELATED_PAGES } from "@/lib/constants";
 
 interface PageToolsSidebarProps {
   page: Page;
+  locale?: string;
 }
 
 interface RelatedPage {
@@ -23,7 +24,7 @@ interface BacklinkPage {
   permalink: string;
 }
 
-export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
+export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSidebarProps) {
   const [relatedPages, setRelatedPages] = useState<RelatedPage[]>([]);
   const [backlinks, setBacklinks] = useState<BacklinkPage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -201,7 +202,7 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
               return (
                 <Link
                   key={pillar}
-                  href={style?.href || "/"}
+                  href={style ? `/${locale}${style.href}` : `/${locale}/`}
                   className={`pillar-badge ${pillar.toLowerCase()}`}
                   style={{
                     display: "inline-block",
@@ -266,7 +267,7 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
                 }}
               >
                 <Link
-                  href={`/standards/${standard.toLowerCase().replace(/[^\w]/g, "-")}`}
+                  href={`/${locale}/standards/${standard.toLowerCase().replace(/[^\w]/g, "-")}`}
                   style={{
                     color: "var(--color-link)",
                     textDecoration: "none",
@@ -370,7 +371,7 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
                 }}
               >
                 <Link
-                  href={related.permalink}
+                  href={`/${locale}${related.permalink}`}
                   style={{
                     color: "var(--color-link)",
                     textDecoration: "none",
@@ -452,7 +453,7 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
                 }}
               >
                 <Link
-                  href={link.permalink}
+                  href={`/${locale}${link.permalink}`}
                   style={{
                     color: "var(--color-link)",
                     textDecoration: "none",
@@ -517,7 +518,7 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
           </li>
           <li style={{ marginBottom: "0.5rem" }}>
             <Link
-              href={`/search?q=${encodeURIComponent(page.title)}`}
+              href={`/${locale}/search?q=${encodeURIComponent(page.title)}`}
               style={{
                 color: "var(--color-link)",
                 textDecoration: "none",
@@ -529,7 +530,7 @@ export default function PageToolsSidebar({ page }: PageToolsSidebarProps) {
           </li>
           <li>
             <Link
-              href="/developers/api"
+              href={`/${locale}/developers/api`}
               style={{
                 color: "var(--color-link)",
                 textDecoration: "none",

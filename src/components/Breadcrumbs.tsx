@@ -31,14 +31,16 @@ const SECTION_LABELS: Record<string, string> = {
 export default function Breadcrumbs({
   permalink,
   title,
+  locale = "en",
 }: {
   permalink: string;
   title: string;
+  locale?: string;
 }) {
   const parts = permalink.replace(/^\/|\/$/g, "").split("/").filter(Boolean);
   if (parts.length === 0) return null;
 
-  const crumbs: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
+  const crumbs: BreadcrumbItem[] = [{ label: "Home", href: `/${locale}/` }];
 
   // Build intermediate crumbs
   let path = "";
@@ -46,7 +48,7 @@ export default function Breadcrumbs({
     path += "/" + parts[i];
     crumbs.push({
       label: SECTION_LABELS[parts[i]] || parts[i].replace(/-/g, " "),
-      href: path,
+      href: `/${locale}${path}`,
     });
   }
 

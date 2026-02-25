@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 const FEATURES = [
   {
@@ -46,6 +49,8 @@ const FEATURES = [
 ];
 
 export default function DevelopersLanding() {
+  const locale = useLocale();
+  
   return (
     <div className="content-wrapper">
       <article>
@@ -113,7 +118,7 @@ export default function DevelopersLanding() {
         >
           {/* REST API Card */}
           <Link
-            href="/developers/api"
+            href={`/${locale}/developers/api`}
             style={{
               display: "block",
               padding: "1.5rem",
@@ -171,7 +176,7 @@ export default function DevelopersLanding() {
 
           {/* MCP Server Card */}
           <Link
-            href="/developers/mcp"
+            href={`/${locale}/developers/mcp`}
             style={{
               display: "block",
               padding: "1.5rem",
