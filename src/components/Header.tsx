@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { CONTENTS_MENU, QUICK_LINKS } from "@/data/sections";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -235,6 +236,7 @@ export default function Header() {
 
           {/* Quick Links - Desktop */}
           <div className="quick-links">
+            <LanguageSwitcher />
             <Link
               href="/developers"
               className={`quick-link-nav ${isActive("/developers") ? 'active' : ''}`}

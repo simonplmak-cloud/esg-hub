@@ -160,3 +160,81 @@ DEEPSEEK_API_KEY=...
 - Use `revalidate` for cached external API responses
 - Lazy load heavy components with `dynamic` import
 - Use Next.js `<Image>` for optimization
+
+## Internationalization (i18n)
+
+### Supported Locales
+- English (`en`) - Default
+- Chinese Simplified (`zh`)
+- Hindi (`hi`)
+
+### Adding New Translatable Strings
+1. Add the key to `messages/en.json` under the appropriate namespace
+2. Use in Server Components:
+   ```typescript
+   import { getTranslations } from "next-intl/server";
+   
+   const t = await getTranslations({ locale, namespace: "SectionName" });
+   return <h1>{t("key")}</h1>;
+   ```
+3. Use in Client Components:
+   ```typescript
+   import { useTranslations } from "next-intl";
+   
+   const t = useTranslations("SectionName");
+   return <h1>{t("key")}</h1>;
+   ```
+
+### Translation File Structure
+```
+messages/
+├── en.json    # English (base, always complete)
+├── zh.json    # Chinese (Simplified)
+└── hi.json    # Hindi
+```
+
+### Translation Keys Namespace
+- `Common` - Shared UI elements (buttons, labels)
+- `Navigation` - Header, footer, menu items
+- `Pillars` - ESG pillar names
+- `Search` - Search UI and results
+- `AISearch` - AI search agent UI
+- `AIChat` - AI chat widget UI
+- `PageTools` - Sidebar tools
+- `Pages` - Error pages, 404
+- `Home` - Homepage content
+- `Contents` - Contents page
+- `Videos` - Videos page
+- `Books` - Books page
+- `Developers` - Developer portal
+- `ApiDocs` - API documentation
+- `McpDocs` - MCP documentation
+
+### Database Translation Fields
+For database content (pages, resources), use locale-specific fields:
+- `page.title_zh`, `page.title_hi` - Translated titles
+- `page.description_zh`, `page.description_hi` - Translated descriptions
+- `page.content_zh`, `page.content_hi` - Translated content
+
+Fetching localized content:
+```typescript
+const getContent = (page: PageRecord, locale: string) => {
+  if (locale === "zh") return page.content_zh || page.content;
+  if (locale === "hi") return page.content_hi || page.content;
+  return page.content;
+};
+```
+
+### Locale Routing
+- All routes are under `[locale]` parameter: `/en/`, `/zh/`, `/hi/`
+- Middleware handles locale detection from URL, cookie, or Accept-Language header
+- Root `/` redirects to `/en/`
+
+### Scripts
+```bash
+# Add translation fields to SurrealDB
+node scripts/add-translation-fields.mjs
+
+# Translate database content (requires MINIMAX_API_KEY)
+node scripts/translate-db-content.mjs
+```
