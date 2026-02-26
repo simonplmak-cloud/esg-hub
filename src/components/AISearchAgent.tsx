@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 
 /* ── Types ── */
@@ -136,6 +136,9 @@ export default function AISearchAgent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("AISearch");
+  const tSearch = useTranslations("Search");
+  const tCommon = useTranslations("Common");
   const initialQuery = searchParams?.get("q") || "";
 
   const [query, setQuery] = useState(initialQuery);
@@ -362,7 +365,7 @@ export default function AISearchAgent() {
               borderBottom: "none",
               paddingBottom: 0,
             }}>
-              ESG Hub Search
+              {t("title")}
             </h1>
             <p style={{
               fontSize: "1rem",
@@ -373,7 +376,7 @@ export default function AISearchAgent() {
               marginRight: "auto",
               lineHeight: 1.6,
             }}>
-              Ask any ESG question. AI-powered answers grounded in 300+ articles, 10 reference books, and 240+ authoritative sources.
+              {t("description")}
             </p>
           </>
         )}
@@ -419,8 +422,8 @@ export default function AISearchAgent() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Ask about ESG topics, standards, frameworks..."
-              aria-label="Search ESG Hub"
+              placeholder={tSearch("placeholder")}
+              aria-label={tSearch("searchButton")}
               style={{
                 flex: 1,
                 padding: "0.85em 0.75em",
@@ -455,14 +458,14 @@ export default function AISearchAgent() {
               {isSearching ? (
                 <>
                   <span className="search-spinner" />
-                  Searching...
+                  {t("thinking")}
                 </>
               ) : (
                 <>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                   </svg>
-                  Ask AI
+                  {tSearch("searchButton")}
                 </>
               )}
             </button>
@@ -495,7 +498,7 @@ export default function AISearchAgent() {
                 transition: "all 0.15s",
               }}
             >
-              <span style={{ marginRight: "0.3em" }}>⚡</span> AI Answer
+              <span style={{ marginRight: "0.3em" }}>⚡</span> {t("aiAnswer")}
             </button>
             <button
               type="button"
@@ -516,7 +519,7 @@ export default function AISearchAgent() {
                 transition: "all 0.15s",
               }}
             >
-              <span style={{ marginRight: "0.3em" }}>🔍</span> Quick Search
+              <span style={{ marginRight: "0.3em" }}>🔍</span> {t("quickSearch")}
             </button>
             {embeddingReady && (
               <span style={{
@@ -524,7 +527,7 @@ export default function AISearchAgent() {
                 color: "var(--color-text-muted)",
                 fontStyle: "italic",
               }}>
-                Vector search active
+                {t("vectorSearchActive")}
               </span>
             )}
             {embeddingStatus && (
@@ -613,7 +616,7 @@ export default function AISearchAgent() {
                   fontSize: "0.95rem",
                   color: "var(--color-text)",
                 }}>
-                  AI Answer
+                  {t("aiAnswer")}
                 </span>
                 {isSearching && (
                   <span style={{
@@ -622,7 +625,7 @@ export default function AISearchAgent() {
                     fontStyle: "italic",
                     marginLeft: "auto",
                   }}>
-                    {aiAnswer ? "Generating..." : "Searching knowledge base..."}
+                    {aiAnswer ? t("generating") : t("searchingKnowledgeBase")}
                   </span>
                 )}
                 {!isSearching && aiAnswer && (
@@ -637,7 +640,7 @@ export default function AISearchAgent() {
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                    Powered by DeepSeek + SurrealDB RAG + Google CSE
+                    {t("poweredBy")}
                   </span>
                 )}
               </div>
@@ -681,7 +684,7 @@ export default function AISearchAgent() {
                     padding: "1rem 0",
                   }}>
                     <span className="search-spinner" />
-                    <span>Searching across 307 articles, 1,954 book excerpts, 244 external sources, and 12 ESG web domains...</span>
+                    <span>{t("searchingAcross")}</span>
                   </div>
                 ) : null}
               </div>
@@ -715,10 +718,10 @@ export default function AISearchAgent() {
                 marginTop: "0.5rem",
                 marginBottom: "0.75rem",
               }}>
-                Sources ({sources.length})
+                {t("sources", { count: sources.length })}
                 {sources.some(s => s.id?.startsWith?.('google:')) && (
                   <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--color-text-muted)', marginLeft: '0.5rem' }}>
-                    incl. web results from GRI, IFRS, OECD, EPA, UN, SEC &amp; more
+                    {t("inclWebResults")}
                   </span>
                 )}
               </h2>
@@ -827,8 +830,8 @@ export default function AISearchAgent() {
             marginBottom: "1rem",
           }}>
             {quickResults.length === 0
-              ? `No results found for "${query}".`
-              : `${quickResults.length} result${quickResults.length !== 1 ? "s" : ""} for "${query}"`}
+              ? t("noResultsFor", { query })
+              : t("resultsFor", { count: quickResults.length, query })}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             {quickResults.map((result) => (
@@ -870,10 +873,10 @@ export default function AISearchAgent() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                 </svg>
-                AI-Powered
+                {t("aiPowered")}
               </div>
               <div style={{ fontSize: "0.82rem", color: "var(--color-text-secondary)", lineHeight: 1.5 }}>
-                DeepSeek reasoning generates comprehensive answers grounded in our knowledge base.
+                {t("aiPoweredDesc")}
               </div>
             </div>
 
@@ -898,10 +901,10 @@ export default function AISearchAgent() {
                   <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
                   <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
                 </svg>
-                Multi-Modal RAG
+                {t("multiModalRag")}
               </div>
               <div style={{ fontSize: "0.82rem", color: "var(--color-text-secondary)", lineHeight: 1.5 }}>
-                SurrealDB vector + BM25 full-text search, plus Google Custom Search across 12 ESG domains.
+                {t("multiModalRagDesc")}
               </div>
             </div>
 
@@ -925,10 +928,10 @@ export default function AISearchAgent() {
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                   <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                 </svg>
-                10 ESG Books
+                {t("esgBooks")}
               </div>
               <div style={{ fontSize: "0.82rem", color: "var(--color-text-secondary)", lineHeight: 1.5 }}>
-                1,954 text chunks from ESG reference books with semantic search for deep answers.
+                {t("booksDesc")}
               </div>
             </div>
           </div>
