@@ -85,17 +85,25 @@ export function localizePage(page: Page, locale: string): LocalizedPage {
   };
 }
 
+/** Sentinel value returned when the database is unreachable or misconfigured. */
+export const DB_ERROR = "db_error" as const;
+export type DbError = typeof DB_ERROR;
+
 /**
- * Get a page by its permalink with optional locale for localization
+ * Get a page by its permalink with optional locale for localization.
+ * Returns:
+ *   - Page | LocalizedPage  — page found successfully
+ *   - null                  — page not found (DB responded, no record matched)
+ *   - DB_ERROR              — DB is unconfigured or threw an error
  */
 export async function getPageByPermalink(
   permalink: string,
   locale?: string
-): Promise<Page | LocalizedPage | null> {
-  // Return null gracefully if database is not configured
+): Promise<Page | LocalizedPage | null | DbError> {
+  // Signal DB_ERROR if environment is not configured
   if (!isDbConfigured()) {
-    console.log("[pages] Database not configured, returning null for:", permalink);
-    return null;
+    console.log("[pages] Database not configured, returning db_error for:", permalink);
+    return DB_ERROR;
   }
 
   // Normalize: ensure leading and trailing slashes
@@ -126,7 +134,7 @@ export async function getPageByPermalink(
       endpoint: process.env.SURREAL_ENDPOINT?.substring(0, 30) + "...",
       errorMessage: error instanceof Error ? error.message : String(error)
     });
-    return null;
+    return DB_ERROR;
   }
 }
 

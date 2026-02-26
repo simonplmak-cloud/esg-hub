@@ -49,7 +49,8 @@ export default async function HomePage({
     redirect("/videos");
   }
   
-  const page = await getPageByPermalink("/", locale);
+  const pageResult = await getPageByPermalink("/", locale);
+  const page = pageResult === "db_error" ? null : pageResult;
 
   return (
     <>

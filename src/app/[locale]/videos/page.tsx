@@ -140,8 +140,10 @@ export default async function VideosPage({ params }: Props) {
   const tNav = await getTranslations({ locale, namespace: "Navigation" });
   const tCommon = await getTranslations({ locale, namespace: "Common" });
   
-  const videoPage = await getPageByPermalink("/videos/", locale);
-  const learningVideoPage = await getPageByPermalink("/learning/videos/", locale);
+  const videoPageResult = await getPageByPermalink("/videos/", locale);
+  const learningVideoPageResult = await getPageByPermalink("/learning/videos/", locale);
+  const videoPage = videoPageResult === "db_error" ? null : videoPageResult;
+  const learningVideoPage = learningVideoPageResult === "db_error" ? null : learningVideoPageResult;
 
   const mainContent = videoPage?.content || "";
   const learningContent = learningVideoPage?.content || "";

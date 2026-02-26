@@ -105,7 +105,8 @@ export default async function BooksPage({ params }: Props) {
     console.error("[BooksPage] Failed to fetch books:", err);
   }
 
-  const page = await getPageByPermalink("/books/", locale);
+  const pageResult = await getPageByPermalink("/books/", locale);
+  const page = pageResult === "db_error" ? null : pageResult;
 
   const categories = new Map<string, Book[]>();
   for (const book of books) {

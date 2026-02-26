@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPageByPermalink, isDbConfigured } from "@/lib/pages";
+import { getPageByPermalink, isDbConfigured, DB_ERROR } from "@/lib/pages";
 import { queryHttp } from "@/lib/surrealdb";
 import { formatPermalink } from "@/lib/utils";
 
@@ -28,7 +28,8 @@ async function resolvePageId(idOrPermalink: string): Promise<string | null> {
     return idOrPermalink;
   }
   const page = await getPageByPermalink(formatPermalink(idOrPermalink));
-  return page?.id ?? null;
+  if (!page || page === DB_ERROR) return null;
+  return page.id;
 }
 
 export async function GET(

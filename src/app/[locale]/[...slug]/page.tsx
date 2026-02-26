@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
-import { getPageByPermalink, getPagesBySection, isDbConfigured } from "@/lib/pages";
+import { getPageByPermalink, getPagesBySection, DB_ERROR } from "@/lib/pages";
 import { extractHeadings } from "@/lib/markdown";
 import { formatPermalink } from "@/lib/utils";
 import { SITE_URL, HUB_PAGE_MAX_CONTENT_LENGTH, ARTICLE_MIN_CONTENT_LENGTH, TOC_MIN_CONTENT_LENGTH } from "@/lib/constants";
@@ -66,10 +66,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const permalink = buildPermalink(slug);
   const page = await getPageByPermalink(permalink, locale);
 
+  if (page === DB_ERROR) {
+    return { title: "Service Temporarily Unavailable — ESG Hub" };
+  }
   if (!page) {
-    if (!isDbConfigured()) {
-      return { title: "Service Temporarily Unavailable — ESG Hub" };
-    }
     return { title: "Page Not Found — ESG Hub" };
   }
 
@@ -122,35 +122,36 @@ export default async function ContentPage({ params }: PageProps) {
   const permalink = buildPermalink(slug);
   const page = await getPageByPermalink(permalink, locale);
 
+  if (page === DB_ERROR) {
+    return (
+      <div className="content-wrapper" id="main-content" style={{ textAlign: "center", padding: "3rem 1rem" }}>
+        <h1 style={{ borderBottom: "none", fontSize: "1.8rem" }}>
+          {tPages("contentUnavailable")}
+        </h1>
+        <p style={{ fontSize: "1rem", color: "var(--color-text-secondary)", maxWidth: "480px", margin: "1rem auto", lineHeight: 1.6 }}>
+          {tPages("technicalDifficulties")}
+        </p>
+        <Link
+          href={`/${locale}/`}
+          style={{
+            display: "inline-block",
+            padding: "0.6em 1.5em",
+            background: "var(--color-primary)",
+            color: "#fff",
+            borderRadius: "4px",
+            textDecoration: "none",
+            fontFamily: "var(--font-heading)",
+            fontWeight: 600,
+            fontSize: "0.92rem",
+          }}
+        >
+          {tPages("goHome")}
+        </Link>
+      </div>
+    );
+  }
+
   if (!page) {
-    if (!isDbConfigured()) {
-      return (
-        <div className="content-wrapper" id="main-content" style={{ textAlign: "center", padding: "3rem 1rem" }}>
-          <h1 style={{ borderBottom: "none", fontSize: "1.8rem" }}>
-            {tPages("contentUnavailable")}
-          </h1>
-          <p style={{ fontSize: "1rem", color: "var(--color-text-secondary)", maxWidth: "480px", margin: "1rem auto", lineHeight: 1.6 }}>
-            {tPages("technicalDifficulties")}
-          </p>
-          <Link
-            href={`/${locale}/`}
-            style={{
-              display: "inline-block",
-              padding: "0.6em 1.5em",
-              background: "var(--color-primary)",
-              color: "#fff",
-              borderRadius: "4px",
-              textDecoration: "none",
-              fontFamily: "var(--font-heading)",
-              fontWeight: 600,
-              fontSize: "0.92rem",
-            }}
-          >
-            {tPages("goHome")}
-          </Link>
-        </div>
-      );
-    }
     notFound();
   }
 

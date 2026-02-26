@@ -140,8 +140,10 @@ async function getVideoReferencingPages(): Promise<
 
 export default async function VideosPage() {
   // Get both video pages
-  const videoPage = await getPageByPermalink("/videos/");
-  const learningVideoPage = await getPageByPermalink("/learning/videos/");
+  const videoPageResult = await getPageByPermalink("/videos/");
+  const learningVideoPageResult = await getPageByPermalink("/learning/videos/");
+  const videoPage = videoPageResult === "db_error" ? null : videoPageResult;
+  const learningVideoPage = learningVideoPageResult === "db_error" ? null : learningVideoPageResult;
 
   // Parse videos from both pages
   const mainContent = videoPage?.content || "";

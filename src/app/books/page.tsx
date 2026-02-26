@@ -92,7 +92,8 @@ export default async function BooksPage() {
     console.error("[BooksPage] Failed to fetch books:", err);
   }
 
-  const page = await getPageByPermalink("/books/");
+  const pageResult = await getPageByPermalink("/books/");
+  const page = pageResult === "db_error" ? null : pageResult;
 
   // Group books by category
   const categories = new Map<string, Book[]>();
