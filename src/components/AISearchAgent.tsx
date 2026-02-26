@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import ReactMarkdown from "react-markdown";
 
 /* ── Types ── */
@@ -134,6 +135,7 @@ function QuickResultCard({ result }: { result: QuickResult }) {
 export default function AISearchAgent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const locale = useLocale();
   const initialQuery = searchParams?.get("q") || "";
 
   const [query, setQuery] = useState(initialQuery);
@@ -237,7 +239,7 @@ export default function AISearchAgent() {
     setActiveMode("ai");
 
     // Update URL
-    router.replace(`/search?q=${encodeURIComponent(q)}`, { scroll: false });
+    router.replace(`/${locale}/search?q=${encodeURIComponent(q)}`, { scroll: false });
 
     try {
       // Generate embedding in parallel (non-blocking)
@@ -314,7 +316,7 @@ export default function AISearchAgent() {
     setActiveMode("quick");
     setHasSearched(true);
 
-    router.replace(`/search?q=${encodeURIComponent(q)}&mode=quick`, { scroll: false });
+    router.replace(`/${locale}/search?q=${encodeURIComponent(q)}&mode=quick`, { scroll: false });
 
     try {
       const res = await fetch(`/api/quick-search?q=${encodeURIComponent(q)}&limit=15`);

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { Page } from "@/lib/pages";
 import { extractHeadings } from "@/lib/markdown";
 import { PILLAR_STYLES, MAX_RELATED_PAGES } from "@/lib/constants";
@@ -25,6 +26,7 @@ interface BacklinkPage {
 }
 
 export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSidebarProps) {
+  const t = useTranslations("PageTools");
   const [relatedPages, setRelatedPages] = useState<RelatedPage[]>([]);
   const [backlinks, setBacklinks] = useState<BacklinkPage[]>([]);
   const [loading, setLoading] = useState(true);

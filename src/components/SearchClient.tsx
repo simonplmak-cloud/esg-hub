@@ -227,7 +227,7 @@ export default function SearchClient() {
     const params = new URLSearchParams();
     params.set("q", q);
     params.set("mode", searchMode);
-    router.replace(`/search?${params.toString()}`, { scroll: false });
+    router.replace(`/${locale}/search?${params.toString()}`, { scroll: false });
 
     try {
       if (searchMode === "semantic") {
