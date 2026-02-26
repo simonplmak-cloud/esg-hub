@@ -5,8 +5,34 @@ import HomeSearchBox from "@/components/HomeSearchBox";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import ClientRedirect from "@/components/ClientRedirect";
-import { HOMEPAGE_SECTIONS, SECONDARY_RESOURCES } from "@/data/sections";
 import { getTranslations } from "next-intl/server";
+
+const HOMEPAGE_SECTION_KEYS = [
+  { href: "/environmental", key: "environmental" },
+  { href: "/social", key: "social" },
+  { href: "/governance", key: "governance" },
+  { href: "/standards", key: "standards" },
+  { href: "/finance", key: "finance" },
+  { href: "/emerging-topics", key: "emergingTopics" },
+];
+
+const SECTION_COLORS: Record<string, string> = {
+  environmental: "var(--color-section-env)",
+  social: "var(--color-section-social)",
+  governance: "var(--color-section-gov)",
+  standards: "var(--color-section-standards)",
+  finance: "var(--color-section-climate)",
+  emergingTopics: "var(--color-section-biodiversity)",
+};
+
+const SECONDARY_RESOURCE_KEYS = [
+  { href: "/learning", key: "learning" },
+  { href: "/practice", key: "practice" },
+  { href: "/books", key: "books" },
+  { href: "/videos", key: "videos" },
+  { href: "/glossary", key: "glossary" },
+  { href: "/developers", key: "developers" },
+];
 
 export default async function HomePage({
   params,
@@ -23,7 +49,7 @@ export default async function HomePage({
     redirect("/videos");
   }
   
-  const page = await getPageByPermalink("/");
+  const page = await getPageByPermalink("/", locale);
 
   return (
     <>
@@ -81,12 +107,12 @@ export default async function HomePage({
             margin: "1.2rem 0 2rem",
           }}
         >
-          {HOMEPAGE_SECTIONS.map((section) => (
+          {HOMEPAGE_SECTION_KEYS.map((section) => (
             <Link
               key={section.href}
               href={`/${locale}${section.href}`}
               className="section-card"
-              style={{ borderLeft: `3px solid ${section.color}` }}
+              style={{ borderLeft: `3px solid ${SECTION_COLORS[section.key]}` }}
             >
               <div
                 style={{
@@ -94,10 +120,10 @@ export default async function HomePage({
                   fontWeight: 600,
                   fontSize: "0.95rem",
                   marginBottom: "0.3rem",
-                  color: section.color,
+                  color: SECTION_COLORS[section.key],
                 }}
               >
-                {section.title}
+                {t(`sections.${section.key}.title` as never)}
               </div>
               <div
                 style={{
@@ -106,7 +132,7 @@ export default async function HomePage({
                   lineHeight: 1.4,
                 }}
               >
-                {section.description}
+                {t(`sections.${section.key}.description` as never)}
               </div>
             </Link>
           ))}
@@ -145,7 +171,7 @@ export default async function HomePage({
               gap: "0.6rem",
             }}
           >
-            {SECONDARY_RESOURCES.map((resource) => (
+            {SECONDARY_RESOURCE_KEYS.map((resource) => (
               <Link
                 key={resource.href}
                 href={`/${locale}${resource.href}`}
@@ -160,7 +186,7 @@ export default async function HomePage({
                   textDecoration: "none",
                 }}
               >
-                {resource.label}
+                {t(`resources.${resource.key}` as never)}
               </Link>
             ))}
           </div>

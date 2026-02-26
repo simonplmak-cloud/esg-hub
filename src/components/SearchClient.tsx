@@ -18,11 +18,11 @@ interface SearchResult {
   source_type: "page" | "external";
 }
 
-function ResultCard({ result }: { result: SearchResult }) {
+function ResultCard({ result, locale }: { result: SearchResult; locale: string }) {
   const isExternal = result.source_type === "external";
   const href = isExternal
     ? result.url || "#"
-    : result.permalink?.replace(/\/$/, "") || "/";
+    : result.permalink ? `/${locale}${result.permalink.replace(/\/$/, "")}` : `/${locale}/`;
 
   return (
     <a
@@ -239,7 +239,7 @@ export default function SearchClient() {
           const res = await fetch("/api/semantic-search", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ embedding, k: 20 }),
+            body: JSON.stringify({ embedding, k: 20, locale }),
           });
           const data = await res.json();
           setResults(data.results || []);
@@ -247,13 +247,13 @@ export default function SearchClient() {
         } catch {
           // Fallback to keyword search
           setEmbeddingStatus("AI search unavailable, using keyword search...");
-          const res = await fetch(`/api/keyword-search?q=${encodeURIComponent(q)}`);
+          const res = await fetch(`/api/keyword-search?q=${encodeURIComponent(q)}&locale=${locale}`);
           const data = await res.json();
           setResults(data.results || []);
           setTimeout(() => setEmbeddingStatus(""), 3000);
         }
       } else {
-        const res = await fetch(`/api/keyword-search?q=${encodeURIComponent(q)}`);
+        const res = await fetch(`/api/keyword-search?q=${encodeURIComponent(q)}&locale=${locale}`);
         const data = await res.json();
         setResults(data.results || []);
       }
@@ -476,7 +476,7 @@ export default function SearchClient() {
                 }}
               >
                 {pageResults.map((result) => (
-                  <ResultCard key={result.id} result={result} />
+                  <ResultCard key={result.id} result={result} locale={locale} />
                 ))}
               </div>
             </div>
@@ -517,7 +517,7 @@ export default function SearchClient() {
                 }}
               >
                 {externalResults.map((result) => (
-                  <ResultCard key={result.id} result={result} />
+                  <ResultCard key={result.id} result={result} locale={locale} />
                 ))}
               </div>
             </div>

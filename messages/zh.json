@@ -170,7 +170,41 @@
     "professionalDevelopment": "专业发展与资源",
     "environmental": "环境",
     "social": "社会",
-    "governance": "治理"
+    "governance": "治理",
+    "sections": {
+      "environmental": {
+        "title": "环境（E）",
+        "description": "气候变化、排放、能源、水、生物多样性、材料、废物、污染和合规。与GRI 300系列一致的9个方面。"
+      },
+      "social": {
+        "title": "社会（S）",
+        "description": "就业、健康与安全、培训、多样性、人权、社区和客户责任。与GRI 400系列一致的10个主题。"
+      },
+      "governance": {
+        "title": "治理（G）",
+        "description": "董事会治理、高管薪酬、股东权利、透明度、风险管理、道德和审计。与OECD原则一致的9个领域。"
+      },
+      "standards": {
+        "title": "标准、框架与法规",
+        "description": "GRI、IFRS S1/S2、TCFD、TNFD、SASB、地区法规、ESG评级和合规要求。"
+      },
+      "finance": {
+        "title": "金融与投资",
+        "description": "ESG金融、投资策略、气候金融、绿色债券、碳市场和影响力投资。"
+      },
+      "emergingTopics": {
+        "title": "可持续发展主题",
+        "description": "生物多样性与自然、新兴趋势、循环经济、公正转型、联合国可持续发展目标和未来ESG主题。"
+      }
+    },
+    "resources": {
+      "learning": "学习中心",
+      "practice": "实践与实施",
+      "books": "书籍",
+      "videos": "视频",
+      "glossary": "词汇表",
+      "developers": "开发者"
+    }
   },
   "Contents": {
     "title": "目录",

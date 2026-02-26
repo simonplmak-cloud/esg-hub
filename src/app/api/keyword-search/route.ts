@@ -6,12 +6,13 @@ import { keywordSearch } from "@/lib/search";
 /**
  * Keyword Search API
  * 
- * GET /api/keyword-search?q=query
+ * GET /api/keyword-search?q=query&locale=zh
  * Returns: { results: SearchResult[] }
  */
 export async function GET(request: NextRequest) {
   try {
     const q = request.nextUrl.searchParams.get("q");
+    const locale = request.nextUrl.searchParams.get("locale") || "en";
 
     if (!q || typeof q !== "string") {
       return NextResponse.json(
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const results = await keywordSearch(q);
+    const results = await keywordSearch(q, locale);
 
     return NextResponse.json({ results });
   } catch (err) {

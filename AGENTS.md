@@ -116,11 +116,54 @@ export async function GET(request: NextRequest) {
 - Variables: `--color-primary`, `--color-link`, `--font-body`
 
 ## Environment Variables
+
+All environment variables must be set at the **global/shell level** - NOT in project-level `.env` files.
+
+### Required Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `SURREAL_ENDPOINT` | SurrealDB connection URL | `https://xxx.surreal.cloud` |
+| `SURREAL_USERNAME` | Database username | `root` |
+| `SURREAL_PASSWORD` | Database password | (secret) |
+| `SURREAL_NAMESPACE` | Database namespace | `esg_hub` |
+| `SURREAL_DATABASE` | Database name | `main` |
+| `DEEPSEEK_API_KEY` | DeepSeek API key for AI features | (secret) |
+| `OPENROUTER_API_KEY` | OpenRouter API key (optional) | (secret) |
+| `GITHUB_TOKEN` | GitHub personal access token | (secret) |
+
+### Setup
+
+1. Set variables in shell profile (`~/.bashrc`, `~/.zshrc`, or similar):
 ```bash
-SURREAL_ENDPOINT, SURREAL_USERNAME, SURREAL_PASSWORD
-SURREAL_NAMESPACE, SURREAL_DATABASE
-DEEPSEEK_API_KEY
+export SURREAL_ENDPOINT="https://..."
+export SURREAL_USERNAME="root"
+export SURREAL_PASSWORD="your_password"
+export SURREAL_NAMESPACE="esg_hub"
+export SURREAL_DATABASE="main"
+export DEEPSEEK_API_KEY="your_key"
+export GITHUB_TOKEN="ghp_xxx"
 ```
+
+2. For GitHub CLI, authenticate once:
+```bash
+echo "$GITHUB_TOKEN" | gh auth login --scopes repo --with-token
+```
+
+3. Verify setup:
+```bash
+gh auth status           # GitHub CLI
+npm run verify:db       # Database connection
+```
+
+### Vercel Deployment
+
+Set variables in Vercel dashboard: **Project Settings → Environment Variables**
+
+### Important
+- **NEVER create `.env` files in the project** - all vars are global/shell level
+- `.env*` is already in `.gitignore` to prevent accidental commits
+- Store secrets in password manager for disaster recovery
 
 ## Performance
 - Use `cache: "no-store"` for dynamic queries

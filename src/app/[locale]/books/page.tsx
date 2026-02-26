@@ -90,6 +90,7 @@ function formatFileSize(bytes: number): string {
 
 export default async function BooksPage({ params }: Props) {
   const { locale } = await params;
+  
   let books: Book[] = [];
   try {
     books = await queryHttp<Book>(
@@ -99,7 +100,7 @@ export default async function BooksPage({ params }: Props) {
     console.error("[BooksPage] Failed to fetch books:", err);
   }
 
-  const page = await getPageByPermalink("/books/");
+  const page = await getPageByPermalink("/books/", locale);
 
   const categories = new Map<string, Book[]>();
   for (const book of books) {

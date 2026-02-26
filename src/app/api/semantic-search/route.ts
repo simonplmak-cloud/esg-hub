@@ -10,7 +10,7 @@ import { queryHttp } from "@/lib/surrealdb";
  * and external resources using SurrealDB's HNSW vector index.
  * 
  * POST /api/semantic-search
- * Body: { query: string, embedding: number[], k?: number, source?: "all" | "pages" | "external" }
+ * Body: { query: string, embedding: number[], k?: number, source?: "all" | "pages" | "external", locale?: string }
  * 
  * GET /api/semantic-search?q=<query>&k=<number>&source=<all|pages|external>
  * (uses server-side embedding generation via fastembed proxy)
@@ -34,14 +34,15 @@ interface SearchResult {
 async function vectorSearch(
   embedding: number[],
   k: number = 10,
-  source: string = "all"
+  source: string = "all",
+  locale: string = "en"
 ): Promise<SearchResult[]> {
   const embStr = "[" + embedding.map((v) => v.toFixed(8)).join(",") + "]";
   const results: SearchResult[] = [];
 
   if (source === "all" || source === "pages") {
     const pageSql = `
-      SELECT id, title, permalink, description, section,
+      SELECT id, title, title_zh, title_hi, permalink, description, description_zh, description_hi, section,
         vector::distance::knn() AS distance
       FROM page
       WHERE embedding <|${k}, 100|> ${embStr}
@@ -52,17 +53,28 @@ async function vectorSearch(
       const pageResults = await queryHttp<{
         id: string;
         title: string;
+        title_zh: string | null;
+        title_hi: string | null;
         permalink: string;
         description: string | null;
+        description_zh: string | null;
+        description_hi: string | null;
         section: string | null;
         distance: number;
       }>(pageSql);
+      
+      const isZh = locale === "zh";
+      const isHi = locale === "hi";
+      
       for (const r of pageResults) {
+        const title = isZh && r.title_zh ? r.title_zh : (isHi && r.title_hi ? r.title_hi : r.title);
+        const description = isZh && r.description_zh ? r.description_zh : (isHi && r.description_hi ? r.description_hi : r.description || undefined);
+        
         results.push({
           id: r.id,
-          title: r.title,
+          title,
           permalink: r.permalink,
-          description: r.description || undefined,
+          description,
           section: r.section || undefined,
           distance: r.distance,
           source_type: "page",
@@ -107,13 +119,14 @@ async function vectorSearch(
 
   // Sort combined results by distance
   results.sort((a, b) => a.distance - b.distance);
+
   return results.slice(0, k);
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { embedding, k = 10, source = "all" } = body;
+    const { embedding, k = 10, source = "all", locale = "en" } = body;
 
     if (!embedding || !Array.isArray(embedding)) {
       return NextResponse.json(
@@ -122,7 +135,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const results = await vectorSearch(embedding, k, source);
+    const results = await vectorSearch(embedding, k, source, locale);
     return NextResponse.json({ results, count: results.length });
   } catch (err) {
     console.error("Semantic search error:", err);

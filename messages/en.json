@@ -170,7 +170,41 @@
     "professionalDevelopment": "Professional Development & Resources",
     "environmental": "Environmental",
     "social": "Social",
-    "governance": "Governance"
+    "governance": "Governance",
+    "sections": {
+      "environmental": {
+        "title": "Environmental (E)",
+        "description": "Climate change, emissions, energy, water, biodiversity, materials, waste, pollution, and compliance. 9 aspects aligned with GRI 300 series."
+      },
+      "social": {
+        "title": "Social (S)",
+        "description": "Employment, health & safety, training, diversity, human rights, communities, and customer responsibility. 10 topics aligned with GRI 400 series."
+      },
+      "governance": {
+        "title": "Governance (G)",
+        "description": "Board governance, executive compensation, shareholder rights, transparency, risk management, ethics, and audit. 9 areas aligned with OECD Principles."
+      },
+      "standards": {
+        "title": "Standards, Frameworks & Regulations",
+        "description": "GRI, IFRS S1/S2, TCFD, TNFD, SASB, regional regulations, ESG ratings, and compliance requirements."
+      },
+      "finance": {
+        "title": "Finance & Investment",
+        "description": "ESG finance, investment strategies, climate finance, green bonds, carbon markets, and impact investing."
+      },
+      "emergingTopics": {
+        "title": "Sustainability Topics",
+        "description": "Biodiversity & nature, emerging trends, circular economy, just transition, UN SDGs, and future-focused ESG topics."
+      }
+    },
+    "resources": {
+      "learning": "Learning Hub",
+      "practice": "Practice & Implementation",
+      "books": "Books",
+      "videos": "Videos",
+      "glossary": "Glossary",
+      "developers": "Developers"
+    }
   },
   "Contents": {
     "title": "Contents",

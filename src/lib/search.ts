@@ -14,27 +14,51 @@ export interface SearchResult {
 }
 
 /**
+ * Resolve localized title/description from page record
+ */
+function resolveLocalizedContent<
+  T extends { title: string; title_zh?: string | null; title_hi?: string | null; description?: string | null; description_zh?: string | null; description_hi?: string | null }
+>(record: T, locale: string): { title: string; description: string | undefined } {
+  const isZh = locale === "zh";
+  const isHi = locale === "hi";
+  
+  const title = isZh && record.title_zh 
+    ? record.title_zh 
+    : (isHi && record.title_hi ? record.title_hi : record.title);
+    
+  const description = isZh && record.description_zh 
+    ? record.description_zh 
+    : (isHi && record.description_hi ? record.description_hi : record.description || undefined);
+    
+  return { title, description };
+}
+
+/**
  * Full-text keyword search using BM25 ranking.
  * Input is sanitized to prevent SurrealQL injection.
  */
-export async function keywordSearch(query: string): Promise<SearchResult[]> {
+export async function keywordSearch(query: string, locale?: string): Promise<SearchResult[]> {
   // Truncate excessively long queries
   const trimmed = query.slice(0, 500);
   const escaped = sanitize(trimmed);
   
-  // Search pages
+  // Search pages (include localized fields)
   const pageResults = await queryHttp<{
     id: string;
     title: string;
+    title_zh: string | null;
+    title_hi: string | null;
     permalink: string;
     description: string | null;
+    description_zh: string | null;
+    description_hi: string | null;
     section: string | null;
     relevance: number;
   }>(
-    `SELECT id, title, permalink, description, section, 
+    `SELECT id, title, title_zh, title_hi, permalink, description, description_zh, description_hi, section, 
       search::score(0) + search::score(1) AS relevance 
     FROM page 
-    WHERE title @0@ '${escaped}' OR content @1@ '${escaped}' 
+    WHERE title @0@ '${escaped}' OR content @1@ '${escaped}' OR title_zh @0@ '${escaped}' OR title_hi @0@ '${escaped}' OR content_zh @1@ '${escaped}' OR content_hi @1@ '${escaped}'
     ORDER BY relevance DESC 
     LIMIT 30;`
   );
@@ -58,11 +82,12 @@ export async function keywordSearch(query: string): Promise<SearchResult[]> {
   const results: SearchResult[] = [];
 
   for (const r of pageResults) {
+    const localized = resolveLocalizedContent(r, locale || "en");
     results.push({
       id: r.id,
-      title: r.title,
+      title: localized.title,
       permalink: r.permalink,
-      description: r.description || undefined,
+      description: localized.description,
       section: r.section || undefined,
       relevance: r.relevance,
       source_type: "page",
@@ -91,7 +116,8 @@ export async function keywordSearch(query: string): Promise<SearchResult[]> {
  */
 export async function semanticSearch(
   embedding: number[],
-  k: number = 15
+  k: number = 15,
+  locale?: string
 ): Promise<SearchResult[]> {
   // Validate embedding
   if (!Array.isArray(embedding) || embedding.length !== 384) {
@@ -114,12 +140,16 @@ export async function semanticSearch(
     const pageResults = await queryHttp<{
       id: string;
       title: string;
+      title_zh: string | null;
+      title_hi: string | null;
       permalink: string;
       description: string | null;
+      description_zh: string | null;
+      description_hi: string | null;
       section: string | null;
       distance: number;
     }>(
-      `SELECT id, title, permalink, description, section,
+      `SELECT id, title, title_zh, title_hi, permalink, description, description_zh, description_hi, section,
         vector::distance::knn() AS distance
       FROM page
       WHERE embedding <|${safeK}, 100|> ${embStr}
@@ -128,11 +158,12 @@ export async function semanticSearch(
     );
 
     for (const r of pageResults) {
+      const localized = resolveLocalizedContent(r, locale || "en");
       results.push({
         id: r.id,
-        title: r.title,
+        title: localized.title,
         permalink: r.permalink,
-        description: r.description || undefined,
+        description: localized.description,
         section: r.section || undefined,
         distance: r.distance,
         source_type: "page",

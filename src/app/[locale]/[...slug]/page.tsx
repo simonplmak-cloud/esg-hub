@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const permalink = buildPermalink(slug);
-  const page = await getPageByPermalink(permalink);
+  const page = await getPageByPermalink(permalink, locale);
 
   if (!page) {
     if (!isDbConfigured()) {
@@ -115,7 +115,7 @@ export default async function ContentPage({ params }: PageProps) {
   }
 
   const permalink = buildPermalink(slug);
-  const page = await getPageByPermalink(permalink);
+  const page = await getPageByPermalink(permalink, locale);
 
   if (!page) {
     if (!isDbConfigured()) {
@@ -166,7 +166,7 @@ export default async function ContentPage({ params }: PageProps) {
 
   let childPages: Awaited<ReturnType<typeof getPagesBySection>> = [];
   if (page.section) {
-    childPages = await getPagesBySection(page.section);
+    childPages = await getPagesBySection(page.section, locale);
     childPages = childPages.filter(
       (p) => p.permalink !== page.permalink && !p.redirect_to
     );
