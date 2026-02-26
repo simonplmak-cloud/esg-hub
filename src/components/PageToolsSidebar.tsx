@@ -37,7 +37,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
   const fetchCrossReferences = useCallback(async () => {
     setLoading(true);
     setError(null);
-    setLiveStatus("Loading related content...");
+    setLiveStatus(t("loadingRelated"));
 
     try {
       // Fetch related pages (automatic, max 15)
@@ -68,11 +68,11 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
       const relatedCount = relatedData.length;
       const backlinkCount = backlinksData.length;
       setLiveStatus(
-        `Content loaded. Found ${relatedCount} related topic${relatedCount !== 1 ? 's' : ''} and ${backlinkCount} page${backlinkCount !== 1 ? 's' : ''} that link here.`
+        t("contentLoaded", { topics: relatedCount, pages: backlinkCount })
       );
     } catch (err) {
       console.error("Error fetching cross-references:", err);
-      const errorMessage = "Failed to load related content. Please try again later.";
+      const errorMessage = t("failedToLoad");
       setError(errorMessage);
       setLiveStatus(`Error: ${errorMessage}`);
     } finally {
@@ -137,7 +137,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
               paddingBottom: "0.25rem",
             }}
           >
-            Contents
+            {t("contents")}
           </h3>
           <nav aria-label="Page contents">
             <ul
@@ -189,7 +189,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
               paddingBottom: "0.25rem",
             }}
           >
-            Cross-Pillar Connections
+            {t("crossPillarConnections")}
           </h3>
           <div
             style={{
@@ -229,7 +229,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
               fontStyle: "italic",
             }}
           >
-            This article connects to multiple ESG pillars
+            {t("crossPillarDesc")}
           </p>
         </section>
       )}
@@ -249,7 +249,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
             paddingBottom: "0.25rem",
           }}
         >
-          Applicable Standards
+          {t("applicableStandards")}
         </h3>
         {standards.length > 0 ? (
           <ul
@@ -288,7 +288,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
               fontStyle: "italic",
             }}
           >
-            No specific standards apply to this topic.
+            {t("noStandards")}
           </p>
         )}
       </section>
@@ -312,7 +312,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
             paddingBottom: "0.25rem",
           }}
         >
-          Related Topics
+          {t("relatedTopics")}
           {!loading && relatedPages.length > 0 && (
             <span
               style={{
@@ -322,7 +322,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
                 marginLeft: "0.5rem",
               }}
             >
-              ({relatedPages.length})
+              {t("relatedCount", { count: relatedPages.length })}
             </span>
           )}
         </h3>
@@ -345,15 +345,15 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
                 cursor: loading ? "not-allowed" : "pointer",
                 opacity: loading ? 0.7 : 1,
               }}
-              aria-label={`Retry loading related content${retryCount > 0 ? ` (attempt ${retryCount + 1})` : ''}`}
+              aria-label={t("retryLoading")}
             >
-              {loading ? "Retrying..." : retryCount > 0 ? `Try Again (${retryCount + 1})` : "Try Again"}
+              {loading ? t("retrying") : retryCount > 0 ? t("tryAgainCount", { count: retryCount + 1 }) : t("tryAgain")}
             </button>
           </div>
         ) : loading ? (
-          <div role="status" aria-label="Loading related topics">
+          <div role="status" aria-label={t("loadingTopics")}>
             <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>
-              Loading related topics...
+              {t("loadingTopics")}
             </p>
           </div>
         ) : relatedPages.length > 0 ? (
@@ -406,7 +406,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
               fontStyle: "italic",
             }}
           >
-            No related topics found.
+            {t("noRelatedTopics")}
           </p>
         )}
       </section>
@@ -427,7 +427,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
               paddingBottom: "0.25rem",
             }}
           >
-            What Links Here
+            {t("whatLinksHere")}
             <span
               style={{
                 fontSize: "0.75rem",
@@ -485,7 +485,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
             paddingBottom: "0.25rem",
           }}
         >
-          Page Tools
+          {t("pageTools")}
         </h3>
         <ul
           style={{
@@ -503,7 +503,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
                 fontSize: "0.85rem",
               }}
             >
-              Download as PDF
+              {t("downloadPdf")}
             </a>
           </li>
           <li style={{ marginBottom: "0.5rem" }}>
@@ -515,7 +515,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
                 fontSize: "0.85rem",
               }}
             >
-              Cite this page
+              {t("citeThisPage")}
             </a>
           </li>
           <li style={{ marginBottom: "0.5rem" }}>
@@ -527,7 +527,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
                 fontSize: "0.85rem",
               }}
             >
-              Find similar
+              {t("findSimilar")}
             </Link>
           </li>
           <li>
@@ -539,7 +539,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
                 fontSize: "0.85rem",
               }}
             >
-              API Access
+              {t("apiAccess")}
             </Link>
           </li>
         </ul>

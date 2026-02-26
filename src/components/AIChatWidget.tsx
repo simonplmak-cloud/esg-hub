@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 
 interface ChatMessage {
@@ -10,6 +11,7 @@ interface ChatMessage {
 }
 
 export default function AIChatWidget() {
+  const t = useTranslations("AIChat");
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -127,7 +129,7 @@ export default function AIChatWidget() {
     setLoading(true);
     
     // Announce to screen readers
-    setLiveMessage("Message sent. Waiting for response...");
+    setLiveMessage(t("messageSent"));
 
     try {
       const res = await fetch("/api/ai-chat", {
@@ -148,22 +150,22 @@ export default function AIChatWidget() {
           reasoning: data.reasoning,
         };
         setMessages((prev) => [...prev, assistantMessage]);
-        setLiveMessage(`Assistant responded: ${data.message.substring(0, 100)}${data.message.length > 100 ? "..." : ""}`);
+        setLiveMessage(t("assistantResponded") + ": " + data.message.substring(0, 100) + (data.message.length > 100 ? "..." : ""));
       } else {
         const errorMessage = {
           role: "assistant" as const,
-          content: data.error || "Sorry, something went wrong. Please try again.",
+          content: data.error || t("errorOccurred"),
         };
         setMessages((prev) => [...prev, errorMessage]);
-        setLiveMessage("Error: Failed to get response");
+        setLiveMessage(t("errorGettingResponse"));
       }
     } catch {
       const errorMessage = {
         role: "assistant" as const,
-        content: "Network error. Please check your connection and try again.",
+        content: t("networkError"),
       };
       setMessages((prev) => [...prev, errorMessage]);
-      setLiveMessage("Error: Network connection failed");
+      setLiveMessage(t("networkConnectionFailed"));
     } finally {
       setLoading(false);
     }
@@ -206,10 +208,10 @@ export default function AIChatWidget() {
       <button
         className="ai-chat-toggle"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
+        aria-label={isOpen ? t("closeChat") : t("openChat")}
         aria-expanded={isOpen}
         aria-controls="ai-chat-panel"
-        title="Ask ESG Hub AI"
+        title={t("askAi")}
       >
         {isOpen ? (
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -230,7 +232,7 @@ export default function AIChatWidget() {
           id="ai-chat-panel"
           className="ai-chat-panel" 
           role="dialog" 
-          aria-label="ESG Hub AI Assistant"
+          aria-label={t("title")}
           aria-modal="true"
         >
           {/* Header */}
@@ -252,8 +254,8 @@ export default function AIChatWidget() {
                 cursor: "pointer",
                 padding: "0.2em",
               }}
-              aria-label="Close chat (Escape)"
-              title="Close chat (Escape)"
+              aria-label={t("closeChatEscape")}
+              title={t("closeChatEscape")}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -268,16 +270,15 @@ export default function AIChatWidget() {
             role="log"
             aria-live="polite"
             aria-relevant="additions"
-            aria-label="Chat messages"
+            aria-label={t("chatMessages")}
           >
             {messages.length === 0 && (
               <div style={{ color: "var(--color-text-muted)", fontSize: "0.85rem", textAlign: "center", padding: "1.5rem 0.5rem" }}>
                 <div style={{ marginBottom: "0.5rem", fontWeight: 600, color: "var(--color-text-secondary)" }}>
-                  Ask me about ESG topics
+                  {t("askMeAnything")}
                 </div>
                 <div style={{ fontSize: "0.8rem", lineHeight: 1.5 }}>
-                  I can help with ESG standards, frameworks, climate risk, sustainability reporting, and more.
-                  Powered by DeepSeek reasoning.
+                  {t("chatDescription")}
                 </div>
               </div>
             )}
@@ -287,7 +288,7 @@ export default function AIChatWidget() {
                 key={i} 
                 className={`ai-msg ai-msg-${msg.role}`}
                 role={msg.role === "assistant" ? "article" : undefined}
-                aria-label={msg.role === "assistant" ? "Assistant message" : "Your message"}
+                aria-label={msg.role === "assistant" ? t("assistantMessage") : t("yourMessage")}
               >
                 <div className="ai-msg-bubble">
                   {msg.role === "assistant" ? (
@@ -346,7 +347,7 @@ export default function AIChatWidget() {
                             >
                               <polyline points="9 18 15 12 9 6" />
                             </svg>
-                            {showReasoning[i] ? "Hide" : "Show"} reasoning
+                            {showReasoning[i] ? t("hideReasoning") : t("showReasoning")}
                           </button>
                           {showReasoning[i] && (
                             <div
@@ -384,8 +385,8 @@ export default function AIChatWidget() {
                 aria-live="polite"
               >
                 <div className="ai-msg-bubble ai-msg-thinking">
-                  <span className="visually-hidden">Assistant is thinking</span>
-                  <span aria-hidden="true">Thinking...</span>
+                  <span className="visually-hidden">{t("assistantThinking")}</span>
+                  <span aria-hidden="true">{t("thinkingDots")}</span>
                 </div>
               </div>
             )}
@@ -401,18 +402,18 @@ export default function AIChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about ESG topics..."
+              placeholder={t("messagePlaceholder")}
               disabled={loading}
               maxLength={2000}
-              aria-label="Message input"
+              aria-label={t("messageInput")}
               aria-describedby="ai-chat-help"
             />
             <button 
               onClick={sendMessage} 
               disabled={loading || !input.trim()}
-              aria-label={loading ? "Sending message" : "Send message"}
+              aria-label={loading ? t("sending") : t("sendMessage")}
             >
-              {loading ? "..." : "Send"}
+              {loading ? "..." : t("send")}
             </button>
           </div>
           
@@ -427,7 +428,7 @@ export default function AIChatWidget() {
               overflow: "hidden",
             }}
           >
-            Type your message and press Enter to send. Press Escape to close the chat.
+            {t("typeAndEnter")}
           </div>
         </div>
       )}
