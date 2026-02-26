@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AIChatWidget from "@/components/AIChatWidget";
+import { Analytics } from "@vercel/analytics/next";
 import "@/app/globals.css";
 
 export const dynamic = "force-dynamic";
@@ -94,6 +95,7 @@ export default async function LocaleLayout({
           <Footer />
           <AIChatWidget />
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
