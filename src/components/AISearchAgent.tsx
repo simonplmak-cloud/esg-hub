@@ -138,7 +138,6 @@ export default function AISearchAgent() {
   const locale = useLocale();
   const t = useTranslations("AISearch");
   const tSearch = useTranslations("Search");
-  const tCommon = useTranslations("Common");
   const initialQuery = searchParams?.get("q") || "";
 
   const [query, setQuery] = useState(initialQuery);

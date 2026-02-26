@@ -78,7 +78,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
     } finally {
       setLoading(false);
     }
-  }, [page.id]);
+  }, [page.id, t]);
 
   useEffect(() => {
     if (page.id) {

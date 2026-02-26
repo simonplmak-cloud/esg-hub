@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useTranslations } from "next-intl";
 
-const QUICK_QUERIES_EN = [
+// Keep English for all locales - ESG terminology is standardized internationally
+const QUICK_QUERIES = [
   "IFRS S2 climate disclosures",
   "Scope 3 emissions",
   "GRI Standards",
@@ -19,8 +20,6 @@ export default function HomeSearchBox() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Search");
-  
-  const QUICK_QUERIES = locale === "en" ? QUICK_QUERIES_EN : QUICK_QUERIES_EN;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -164,7 +164,7 @@ export default function Header() {
   return (
     <header role="banner">
       <a href="#main-content" className="skip-link">
-        Skip to main content
+        {t("skipToMain")}
       </a>
 
       {/* Primary navigation bar */}
