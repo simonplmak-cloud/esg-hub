@@ -49,14 +49,8 @@ jobs:
           TEST_BASE_URL: http://localhost:3000
         continue-on-error: true
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build for Vercel
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build check (type check + next build)
+        run: npx tsc --noEmit && npm run build
         env:
           SURREAL_ENDPOINT: ${{ secrets.SURREAL_ENDPOINT }}
           SURREAL_USERNAME: ${{ secrets.SURREAL_USERNAME }}
@@ -64,10 +58,7 @@ jobs:
           SURREAL_NAMESPACE: ${{ secrets.SURREAL_NAMESPACE }}
           SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
 
-      - name: Deploy to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Output Deployment URL
+      - name: Deployment via Vercel GitHub Integration
         run: |
-          echo "✅ Deployment complete!"
-          echo "Site URL: https://hidden-harbor.vercel.app"
+          echo "✅ Build passed — Vercel GitHub integration will handle production deployment automatically."
+          echo "Site URL: https://esg-hub.ascent.partners"
