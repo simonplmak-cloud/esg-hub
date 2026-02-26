@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface SearchResult {
   id: string;
@@ -131,6 +131,7 @@ export default function SearchClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("Search");
   const initialQuery = searchParams?.get("q") || "";
   const initialMode = searchParams?.get("mode") === "semantic" ? "semantic" : "keyword";
 
@@ -232,9 +233,9 @@ export default function SearchClient() {
     try {
       if (searchMode === "semantic") {
         try {
-          setEmbeddingStatus("Generating embedding...");
+          setEmbeddingStatus(t("generatingEmbedding"));
           const embedding = await generateEmbedding(q);
-          setEmbeddingStatus("Searching...");
+          setEmbeddingStatus(t("searching"));
 
           const res = await fetch("/api/semantic-search", {
             method: "POST",
@@ -246,7 +247,7 @@ export default function SearchClient() {
           setEmbeddingStatus("");
         } catch {
           // Fallback to keyword search
-          setEmbeddingStatus("AI search unavailable, using keyword search...");
+          setEmbeddingStatus(t("aiSearchUnavailable"));
           const res = await fetch(`/api/keyword-search?q=${encodeURIComponent(q)}&locale=${locale}`);
           const data = await res.json();
           setResults(data.results || []);
@@ -297,7 +298,7 @@ export default function SearchClient() {
             marginBottom: "0.4rem",
           }}
         >
-          Enter a topic, framework, or keyword
+          {t("searchDescription")}
         </label>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <input
@@ -305,8 +306,8 @@ export default function SearchClient() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="e.g. climate change, GRI, TCFD..."
-            aria-label="Search query"
+            placeholder={t("trySearching")}
+            aria-label={t("searchButton")}
             style={{
               flex: 1,
               padding: "0.6em 0.8em",
@@ -334,7 +335,7 @@ export default function SearchClient() {
               opacity: loading ? 0.7 : 1,
             }}
           >
-            {loading ? "Searching..." : "Search"}
+            {loading ? t("searching") : t("searchButton")}
           </button>
         </div>
 
@@ -356,7 +357,7 @@ export default function SearchClient() {
               fontWeight: 500,
             }}
           >
-            Search mode:
+            {t("searchMode")}
           </span>
           <div
             style={{
@@ -382,7 +383,7 @@ export default function SearchClient() {
               }}
               aria-pressed={mode === "keyword"}
             >
-              Keyword (BM25)
+              {t("keywordSearch")}
             </button>
             <button
               type="button"
@@ -402,7 +403,7 @@ export default function SearchClient() {
               }}
               aria-pressed={mode === "semantic"}
             >
-              Semantic (AI)
+              {t("semanticSearch")}
             </button>
           </div>
           {mode === "semantic" && (
@@ -416,8 +417,8 @@ export default function SearchClient() {
             >
               {embeddingStatus ||
                 (embeddingReady
-                  ? "AI model ready — finds conceptually related content"
-                  : "Finds conceptually related content using vector embeddings")}
+                  ? t("aiModelReady")
+                  : t("semanticDescription"))}
             </span>
           )}
         </div>
@@ -435,7 +436,7 @@ export default function SearchClient() {
                 marginBottom: "1rem",
               }}
             >
-              Searching...
+              {t("searching")}
             </p>
           ) : (
             <p
@@ -447,8 +448,8 @@ export default function SearchClient() {
               }}
             >
               {results.length === 0
-                ? `No results found for "${query}".`
-                : `${results.length} result${results.length !== 1 ? "s" : ""} for "${query}"`}
+                ? t("noResults", { query })
+                : t("resultsCount", { count: results.length, query })}
             </p>
           )}
 
@@ -466,7 +467,7 @@ export default function SearchClient() {
                   marginBottom: "0.75rem",
                 }}
               >
-                ESG Hub Articles ({pageResults.length})
+                {t("articles", { count: pageResults.length })}
               </h2>
               <div
                 style={{
@@ -496,7 +497,7 @@ export default function SearchClient() {
                   marginBottom: "0.75rem",
                 }}
               >
-                External Resources ({externalResults.length})
+                {t("resources", { count: externalResults.length })}
               </h2>
               <p
                 style={{
@@ -506,8 +507,7 @@ export default function SearchClient() {
                   marginBottom: "0.75rem",
                 }}
               >
-                Curated content from authoritative ESG sources (OECD, ILO, GRI,
-                IFRS, HKEX, EPA, and more).
+                {t("resourcesDescription")}
               </p>
               <div
                 style={{
@@ -535,14 +535,10 @@ export default function SearchClient() {
           }}
         >
           <p style={{ fontSize: "1.05rem", marginBottom: "0.5rem" }}>
-            Search across 300+ ESG topics and 240+ external authoritative
-            sources.
+            {t("searchDescription")}
           </p>
           <p style={{ fontSize: "0.88rem", marginBottom: "1rem" }}>
-            Try searching for{" "}
-            <Link href={`/${locale}/search?q=climate+change`}>climate change</Link>,{" "}
-            <Link href={`/${locale}/search?q=GRI`}>GRI</Link>, or{" "}
-            <Link href={`/${locale}/search?q=TCFD`}>TCFD</Link>.
+            {t("trySearching")}
           </p>
           <div
             style={{
@@ -564,24 +560,20 @@ export default function SearchClient() {
                 marginBottom: "0.5rem",
               }}
             >
-              Search Modes
+              {t("searchModes")}
             </h3>
             <div style={{ fontSize: "0.88rem", lineHeight: 1.65 }}>
               <p style={{ margin: "0.4em 0" }}>
                 <strong style={{ fontFamily: "var(--font-heading)" }}>
-                  Keyword (BM25):
+                  {t("keywordSearch")}:
                 </strong>{" "}
-                Traditional full-text search. Matches exact terms in titles and
-                content using BM25 ranking.
+                {t("keywordModeDesc")}
               </p>
               <p style={{ margin: "0.4em 0" }}>
                 <strong style={{ fontFamily: "var(--font-heading)" }}>
-                  Semantic (AI):
+                  {t("semanticSearch")}:
                 </strong>{" "}
-                AI-powered search using vector embeddings. Finds conceptually
-                related content even when exact keywords differ. Powered by
-                SurrealDB HNSW vector index. The AI model loads in your browser
-                (first use may take 10-15 seconds).
+                {t("semanticModeDesc")}
               </p>
             </div>
           </div>
