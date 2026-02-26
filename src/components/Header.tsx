@@ -201,7 +201,7 @@ export default function Header() {
                         {category.links.map((link) => (
                           <li key={link.href} className="category-item" role="none">
                             <Link
-                              href={link.href}
+                              href={`/${locale}${link.href}`}
                               onClick={() => setContentsOpen(false)}
                               role="menuitem"
                               className={`category-link ${isActive(link.href) ? 'active' : ''}`}
@@ -224,7 +224,7 @@ export default function Header() {
                   {QUICK_LINKS.map((link) => (
                     <Link
                       key={link.href}
-                      href={link.href}
+                      href={`/${locale}${link.href}`}
                       onClick={() => setContentsOpen(false)}
                       className="quick-link"
                     >
@@ -305,7 +305,7 @@ export default function Header() {
               {category.links.map((link) => (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={`/${locale}${link.href}`}
                   onClick={() => setMenuOpen(false)}
                   className="mobile-link"
                 >
@@ -319,7 +319,7 @@ export default function Header() {
             {QUICK_LINKS.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                href={`/${locale}${link.href}`}
                 onClick={() => setMenuOpen(false)}
                 className="mobile-quick-link"
               >

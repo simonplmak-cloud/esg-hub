@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { getAllPages } from "@/lib/pages";
 import { formatPermalink } from "@/lib/utils";
 
-const BASE_URL = "https://esg-hub-six.vercel.app";
+const BASE_URL = "https://esg-hub.ascent.partners";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = await getAllPages();

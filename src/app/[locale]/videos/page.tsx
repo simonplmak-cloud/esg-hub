@@ -135,8 +135,8 @@ async function getVideoReferencingPages(): Promise<
 
 export default async function VideosPage({ params }: Props) {
   const { locale } = await params;
-  const videoPage = await getPageByPermalink("/videos/");
-  const learningVideoPage = await getPageByPermalink("/learning/videos/");
+  const videoPage = await getPageByPermalink("/videos/", locale);
+  const learningVideoPage = await getPageByPermalink("/learning/videos/", locale);
 
   const mainContent = videoPage?.content || "";
   const learningContent = learningVideoPage?.content || "";

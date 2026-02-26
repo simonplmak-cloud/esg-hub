@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 export default function NotFound() {
+  const locale = useLocale();
   return (
     <div
       className="content-wrapper"
@@ -26,7 +30,7 @@ export default function NotFound() {
       </p>
       <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
         <Link
-          href="/en/"
+          href={`/${locale}/`}
           style={{
             display: "inline-block",
             padding: "0.6em 1.5em",
@@ -42,7 +46,7 @@ export default function NotFound() {
           Go to Homepage
         </Link>
         <Link
-          href="/en/search"
+          href={`/${locale}/search`}
           style={{
             display: "inline-block",
             padding: "0.6em 1.5em",
