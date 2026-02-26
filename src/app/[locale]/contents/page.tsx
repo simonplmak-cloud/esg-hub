@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { getAllPages } from "@/lib/pages";
 
@@ -8,9 +9,11 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Contents" });
+  
   return {
-    title: "Contents — ESG Hub",
-    description: "Complete directory of ESG Hub content organized by subject, type, and pillar.",
+    title: t("title"),
+    description: t("description"),
     alternates: {
       canonical: `https://esg-hub.ascent.partners/${locale}/contents`,
     },
@@ -19,6 +22,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ContentsPage({ params }: Props) {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Contents" });
+  const tPillars = await getTranslations({ locale, namespace: "Pillars" });
+  
   const pages = await getAllPages();
   
   const bySection = pages.reduce((acc, page) => {
@@ -42,41 +48,40 @@ export default async function ContentsPage({ params }: Props) {
         <ol className="breadcrumb">
           <li><Link href={`/${locale}/`}>ESG Hub</Link></li>
           <li>›</li>
-          <li aria-current="page">Contents</li>
+          <li aria-current="page">{t("title")}</li>
         </ol>
       </nav>
       
-      <h1>Contents</h1>
+      <h1>{t("title")}</h1>
       
       <p className="contents-description">
-        Complete directory of the ESG Hub knowledge base. 
-        {totalCount} articles organized by subject, type, and ESG pillar.
+        {t("description")}
       </p>
       
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-value" style={{ color: "var(--color-section-env)" }}>{pillarCounts.E}</div>
-          <div className="stat-label">Environmental Articles</div>
+          <div className="stat-label">{tPillars("environmental")}</div>
         </div>
         <div className="stat-card">
           <div className="stat-value" style={{ color: "var(--color-section-social)" }}>{pillarCounts.S}</div>
-          <div className="stat-label">Social Articles</div>
+          <div className="stat-label">{tPillars("social")}</div>
         </div>
         <div className="stat-card">
           <div className="stat-value" style={{ color: "var(--color-section-gov)" }}>{pillarCounts.G}</div>
-          <div className="stat-label">Governance Articles</div>
+          <div className="stat-label">{tPillars("governance")}</div>
         </div>
         <div className="stat-card">
           <div className="stat-value">{totalCount}</div>
-          <div className="stat-label">Total Articles</div>
+          <div className="stat-label">{t("totalArticles")}</div>
         </div>
       </div>
       
-      <h2 id="by-subject">Browse by Subject</h2>
+      <h2 id="by-subject">{t("browseBySubject")}</h2>
       
       <div style={{ marginBottom: "3rem" }}>
         <section className="section-card">
-          <h3 className="section-heading env">ESG Pillars</h3>
+          <h3 className="section-heading env">{t("esgPillars")}</h3>
           <div className="section-links">
             <Link href={`/${locale}/environmental`} className="section-link">
               <span className="section-link-title">Environmental</span>
@@ -94,7 +99,7 @@ export default async function ContentsPage({ params }: Props) {
         </section>
 
         <section className="section-card">
-          <h3 className="section-heading standards">Standards & Frameworks</h3>
+          <h3 className="section-heading standards">{t("standardsFrameworks")}</h3>
           <div className="section-links">
             <Link href={`/${locale}/standards`} className="section-link">
               <span className="section-link-title">Standards & Frameworks</span>
@@ -112,7 +117,7 @@ export default async function ContentsPage({ params }: Props) {
         </section>
 
         <section className="section-card">
-          <h3 className="section-heading finance">Finance & Investment</h3>
+          <h3 className="section-heading finance">{t("financeInvestment")}</h3>
           <div className="section-links">
             <Link href={`/${locale}/finance`} className="section-link">
               <span className="section-link-title">ESG Finance</span>
@@ -130,7 +135,7 @@ export default async function ContentsPage({ params }: Props) {
         </section>
 
         <section className="section-card">
-          <h3 className="section-heading biodiversity">Sustainability Topics</h3>
+          <h3 className="section-heading biodiversity">{t("sustainabilityTopics")}</h3>
           <div className="section-links">
             <Link href={`/${locale}/biodiversity`} className="section-link">
               <span className="section-link-title">Biodiversity & Nature</span>
@@ -148,7 +153,7 @@ export default async function ContentsPage({ params }: Props) {
         </section>
 
         <section className="section-card">
-          <h3 className="section-heading learning">Learning & Practice</h3>
+          <h3 className="section-heading learning">{t("learningPractice")}</h3>
           <div className="section-links">
             <Link href={`/${locale}/learning`} className="section-link">
               <span className="section-link-title">Learning Hub</span>

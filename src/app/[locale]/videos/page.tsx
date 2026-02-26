@@ -1,10 +1,10 @@
 import { Metadata } from "next";
-import Image from "next/image";
-import { getPageByPermalink } from "@/lib/pages";
-import { formatPermalink } from "@/lib/utils";
-import { queryHttp } from "@/lib/surrealdb";
-import MarkdownContent from "@/components/MarkdownContent";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import Image from "next/image";
+import { queryHttp } from "@/lib/surrealdb";
+import { getPageByPermalink } from "@/lib/pages";
+import MarkdownContent from "@/components/MarkdownContent";
 
 interface Props {
   params: Promise<{ locale: string }>;
@@ -12,10 +12,11 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Videos" });
+  
   return {
-    title: "ESG Video Library",
-    description:
-      "Curated collection of educational ESG videos, webinars, and expert interviews covering environmental, social, and governance topics.",
+    title: t("title"),
+    description: t("description"),
     alternates: { canonical: `https://esg-hub.ascent.partners/${locale}/videos` },
     openGraph: {
       title: "ESG Video Library — ESG Hub",
@@ -135,6 +136,10 @@ async function getVideoReferencingPages(): Promise<
 
 export default async function VideosPage({ params }: Props) {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Videos" });
+  const tNav = await getTranslations({ locale, namespace: "Navigation" });
+  const tCommon = await getTranslations({ locale, namespace: "Common" });
+  
   const videoPage = await getPageByPermalink("/videos/", locale);
   const learningVideoPage = await getPageByPermalink("/learning/videos/", locale);
 
@@ -148,16 +153,14 @@ export default async function VideosPage({ params }: Props) {
   return (
     <div className="wide-wrapper">
       <nav className="breadcrumbs" aria-label="Breadcrumb">
-        <Link href={`/${locale}/`}>Home</Link>
+        <Link href={`/${locale}/`}>{tCommon("home")}</Link>
         <span className="separator" aria-hidden="true">/</span>
-        <span aria-current="page">Videos</span>
+        <span aria-current="page">{tNav("videos")}</span>
       </nav>
 
-      <h1>ESG Video Library</h1>
+      <h1>{t("title")}</h1>
       <p style={{ color: "var(--color-text-secondary)", marginBottom: "1.5rem", maxWidth: "720px" }}>
-        A curated collection of educational videos, webinars, conference
-        presentations, and expert interviews covering the full spectrum of ESG
-        topics.
+        {t("description")}
       </p>
 
       {Array.from(categories.entries()).map(([category, vids]) => (
@@ -230,7 +233,7 @@ export default async function VideosPage({ params }: Props) {
 
       {learningContent && (
         <section style={{ marginTop: "2rem" }}>
-          <h2>ESG Video Channels &amp; Resources</h2>
+          <h2>{t("videoChannels")}</h2>
           <div className="prose" style={{ maxWidth: "var(--content-max-width)" }}>
             <MarkdownContent content={cleanVideoMarkdown(learningContent)} />
           </div>
@@ -239,9 +242,9 @@ export default async function VideosPage({ params }: Props) {
 
       {crossRefs.length > 0 && (
         <section style={{ marginTop: "2.5rem", borderTop: "1px solid var(--color-border-light)", paddingTop: "1.5rem" }}>
-          <h2>Pages with Video Content</h2>
+          <h2>{t("pagesWithVideo")}</h2>
           <p style={{ color: "var(--color-text-muted)", fontSize: "0.88rem", marginBottom: "1rem" }}>
-            These articles across the ESG Hub also include embedded video content and references.
+            {t("pagesWithVideoDesc")}
           </p>
           <div
             style={{
@@ -253,7 +256,7 @@ export default async function VideosPage({ params }: Props) {
             {crossRefs.map((ref) => (
               <Link
                 key={ref.permalink}
-                href={`/${locale}${formatPermalink(ref.permalink) || "/"}`}
+                href={`/${locale}${ref.permalink || "/"}`}
                 className="topic-card"
               >
                 <div

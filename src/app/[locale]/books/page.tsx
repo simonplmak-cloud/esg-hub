@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { getPageByPermalink } from "@/lib/pages";
 import { queryHttp } from "@/lib/surrealdb";
 import MarkdownContent from "@/components/MarkdownContent";
@@ -11,10 +12,11 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Books" });
+  
   return {
-    title: "ESG Books & Literature",
-    description:
-      "Comprehensive ESG book collection with downloadable PDF resources covering IFRS, GRI, TNFD, carbon credits, and more. By Ascent Partners Foundation.",
+    title: t("title"),
+    description: t("description"),
     alternates: { canonical: `https://esg-hub.ascent.partners/${locale}/books` },
     openGraph: {
       title: "ESG Books & Literature — ESG Hub",
@@ -90,6 +92,9 @@ function formatFileSize(bytes: number): string {
 
 export default async function BooksPage({ params }: Props) {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Books" });
+  const tNav = await getTranslations({ locale, namespace: "Navigation" });
+  const tCommon = await getTranslations({ locale, namespace: "Common" });
   
   let books: Book[] = [];
   try {
@@ -112,12 +117,12 @@ export default async function BooksPage({ params }: Props) {
   return (
     <div className="wide-wrapper">
       <nav className="breadcrumbs" aria-label="Breadcrumb">
-        <Link href={`/${locale}/`}>Home</Link>
+        <Link href={`/${locale}/`}>{tCommon("home")}</Link>
         <span className="separator" aria-hidden="true">/</span>
-        <span aria-current="page">Books</span>
+        <span aria-current="page">{tNav("books")}</span>
       </nav>
 
-      <h1>ESG Literature &amp; Resources</h1>
+      <h1>{t("literatureTitle")}</h1>
       <p style={{ color: "var(--color-text-secondary)", marginBottom: "1.5rem", maxWidth: "720px" }}>
         Comprehensive collection of ESG books, guides, and reference documents
         by Ascent Partners Foundation. Download full PDF versions of our
@@ -241,16 +246,16 @@ export default async function BooksPage({ params }: Props) {
                         <polyline points="7 10 12 15 17 10" />
                         <line x1="12" y1="15" x2="12" y2="3" />
                       </svg>
-                      Download PDF
+                      {t("downloadPdf")}
                       {book.pdf_size > 0 && (
                         <span style={{ opacity: 0.8, fontSize: "0.75rem" }}>
-                          ({formatFileSize(book.pdf_size)})
+                          {t("fileSize", { size: formatFileSize(book.pdf_size) })}
                         </span>
                       )}
                     </a>
                   ) : (
                     <span style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", fontStyle: "italic" }}>
-                      PDF coming soon
+                      {t("pdfComingSoon")}
                     </span>
                   )}
                 </div>
@@ -263,15 +268,15 @@ export default async function BooksPage({ params }: Props) {
       {books.length === 0 && (
         <section style={{ marginBottom: "2.5rem" }}>
           <p style={{ color: "var(--color-text-muted)", fontStyle: "italic" }}>
-            Unable to load book catalog. Please try again later.
+            {t("unableToLoad")}
           </p>
         </section>
       )}
 
       <section style={{ marginBottom: "2.5rem" }}>
-        <h2>Standards &amp; Framework Documents</h2>
+        <h2>{t("standardsDocs")}</h2>
         <p style={{ color: "var(--color-text-muted)", fontSize: "0.88rem", marginBottom: "0.8rem" }}>
-          Official publications from standard-setting bodies and international organizations.
+          {t("standardsDesc")}
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           {EXTERNAL_BOOKS.map((book) => (

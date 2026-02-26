@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import { getPageByPermalink, getPagesBySection, isDbConfigured } from "@/lib/pages";
 import { extractHeadings } from "@/lib/markdown";
@@ -99,6 +100,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ContentPage({ params }: PageProps) {
   const { locale, slug } = await params;
+  const t = await getTranslations({ locale, namespace: "DynamicPage" });
+  const tPages = await getTranslations({ locale, namespace: "Pages" });
+  const tPillars = await getTranslations({ locale, namespace: "Pillars" });
+  
   const slugPath = slug.join("/");
 
   const devRoute = DEVELOPER_ROUTES[slugPath];
@@ -122,12 +127,10 @@ export default async function ContentPage({ params }: PageProps) {
       return (
         <div className="content-wrapper" id="main-content" style={{ textAlign: "center", padding: "3rem 1rem" }}>
           <h1 style={{ borderBottom: "none", fontSize: "1.8rem" }}>
-            Content Temporarily Unavailable
+            {tPages("contentUnavailable")}
           </h1>
           <p style={{ fontSize: "1rem", color: "var(--color-text-secondary)", maxWidth: "480px", margin: "1rem auto", lineHeight: 1.6 }}>
-            We&apos;re experiencing technical difficulties with our content database.
-            <br />
-            Please try again later or visit our homepage.
+            {tPages("technicalDifficulties")}
           </p>
           <Link
             href={`/${locale}/`}
@@ -143,7 +146,7 @@ export default async function ContentPage({ params }: PageProps) {
               fontSize: "0.92rem",
             }}
           >
-            Go to Homepage
+            {tPages("goHome")}
           </Link>
         </div>
       );
@@ -186,7 +189,7 @@ export default async function ContentPage({ params }: PageProps) {
           {page.connects_to && page.connects_to.length > 1 && (
             <div className="cross-pillar-banner">
               <span className="cross-pillar-label">
-                Cross-Pillar Article:
+                {t("crossPillarArticle")}
               </span>
               {page.connects_to.map((pillar, i) => (
                 <span key={pillar}>
@@ -195,9 +198,9 @@ export default async function ContentPage({ params }: PageProps) {
                     href={pillar === "E" ? `/${locale}/environmental` : pillar === "S" ? `/${locale}/social` : `/${locale}/governance`}
                     className={`cross-pillar-link ${pillar.toLowerCase()}`}
                   >
-                    {pillar === "E" && "Environmental"}
-                    {pillar === "S" && "Social"}
-                    {pillar === "G" && "Governance"}
+                    {pillar === "E" && tPillars("environmental")}
+                    {pillar === "S" && tPillars("social")}
+                    {pillar === "G" && tPillars("governance")}
                   </Link>
                 </span>
               ))}
@@ -222,7 +225,7 @@ export default async function ContentPage({ params }: PageProps) {
           <div className="page-meta">
             {page.section && (
               <span className="page-meta-item">
-                <span style={{ fontWeight: 600 }}>Section:</span>{" "}
+                <span style={{ fontWeight: 600 }}>{t("section")}</span>{" "}
                 <Link
                   href={`/${locale}/${page.section}`}
                   style={{ color: "var(--color-link)", textDecoration: "none" }}
@@ -233,7 +236,7 @@ export default async function ContentPage({ params }: PageProps) {
           )}
             {page.keywords && (
               <span className="page-meta-item">
-                <span style={{ fontWeight: 600 }}>Topics:</span>{" "}
+                <span style={{ fontWeight: 600 }}>{t("topics")}</span>{" "}
                 {page.keywords}
               </span>
             )}
@@ -260,7 +263,7 @@ export default async function ContentPage({ params }: PageProps) {
 
         {childPages.length > 0 && (
           <div style={{ marginTop: "2rem" }}>
-            <h2>Topics in this section</h2>
+            <h2>{t("topicsInSection")}</h2>
             <div
               style={{
                 display: "grid",
@@ -307,7 +310,7 @@ export default async function ContentPage({ params }: PageProps) {
 
         {!isHubPage && childPages.length > 0 && (
           <div className="related-pages">
-            <h2>Related pages</h2>
+            <h2>{t("relatedPages")}</h2>
             <ul style={{ paddingLeft: "1.4em", margin: "0.5rem 0" }}>
               {childPages.slice(0, 8).map((child) => (
                 <li key={child.permalink} style={{ margin: "0.25rem 0" }}>
