@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 
 export default function NotFound() {
   const locale = useLocale();
+  const t = useTranslations("Pages");
+  
   return (
     <div
       className="content-wrapper"
@@ -15,7 +18,7 @@ export default function NotFound() {
       }}
     >
       <h1 style={{ borderBottom: "none", fontSize: "2rem" }}>
-        Page Not Found
+        {t("notFound")}
       </h1>
       <p
         style={{
@@ -26,7 +29,7 @@ export default function NotFound() {
           lineHeight: 1.6,
         }}
       >
-        The page you are looking for does not exist or may have been moved.
+        {t("notFoundDesc")}
       </p>
       <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
         <Link
@@ -43,7 +46,7 @@ export default function NotFound() {
             fontSize: "0.92rem",
           }}
         >
-          Go to Homepage
+          {t("goHome")}
         </Link>
         <Link
           href={`/${locale}/search`}
@@ -59,7 +62,7 @@ export default function NotFound() {
             fontSize: "0.92rem",
           }}
         >
-          Search ESG Hub
+          {t("searchEsg")}
         </Link>
       </div>
     </div>

@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
   const locale = useLocale();
+  const t = useTranslations("Footer");
   
   return (
     <footer 
@@ -30,7 +32,7 @@ export default function Footer() {
         }}
       >
         <div>
-          <span style={{ fontWeight: 600 }}>ESG Hub</span> — An open-access encyclopedia of ESG knowledge
+          <span style={{ fontWeight: 600 }}>ESG Hub</span> — {t("tagline")}
         </div>
         
         <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
@@ -38,13 +40,13 @@ export default function Footer() {
             href={`/${locale}/about`} 
             style={{ color: "var(--color-text-muted)", textDecoration: "none" }}
           >
-            About
+            {t("about")}
           </Link>
           <Link 
             href={`/${locale}/developers`} 
             style={{ color: "var(--color-text-muted)", textDecoration: "none" }}
           >
-            Developers
+            {t("developers")}
           </Link>
           <a
             href="https://github.com/simonplmak-cloud/esg-hub"
@@ -52,7 +54,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             style={{ color: "var(--color-text-muted)", textDecoration: "none" }}
           >
-            GitHub
+            {t("github")}
           </a>
           <span>|</span>
           <a
@@ -61,10 +63,10 @@ export default function Footer() {
             rel="noopener noreferrer"
             style={{ color: "var(--color-text-muted)", textDecoration: "none" }}
           >
-            CC BY-SA 4.0
+            {t("license")}
           </a>
           <span>|</span>
-          <span>Copyright {new Date().getFullYear()} Ascent Partners Foundation</span>
+          <span>{t("copyright", { year: new Date().getFullYear() })}</span>
         </div>
       </div>
     </footer>

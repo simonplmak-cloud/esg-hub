@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 interface OpenAlexWork {
   id: string;
@@ -78,6 +79,7 @@ export default function OpenAlexResearch({ title, keywords }: OpenAlexResearchPr
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const t = useTranslations("OpenAlex");
 
   const searchQuery = useMemo(() => buildSearchQuery(title, keywords), [title, keywords]);
 
@@ -157,7 +159,7 @@ export default function OpenAlexResearch({ title, keywords }: OpenAlexResearchPr
           >
             <polyline points="9 18 15 12 9 6" />
           </svg>
-          Related Academic Research
+          {t("relatedResearch")}
           <span
             style={{
               fontSize: "0.72rem",
@@ -166,14 +168,14 @@ export default function OpenAlexResearch({ title, keywords }: OpenAlexResearchPr
               marginLeft: "0.3rem",
             }}
           >
-            via OpenAlex
+            {t("viaOpenAlex")}
           </span>
         </span>
       </h2>
 
       {loading && (
         <div style={{ color: "var(--color-text-muted)", fontSize: "0.85rem", fontStyle: "italic" }}>
-          Loading research papers...
+          {t("loadingPapers")}
         </div>
       )}
 
@@ -201,16 +203,7 @@ export default function OpenAlexResearch({ title, keywords }: OpenAlexResearchPr
             </a>
           ))}
           <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", marginTop: "0.3rem" }}>
-            Data sourced from{" "}
-            <a
-              href="https://openalex.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "var(--color-link)" }}
-            >
-              OpenAlex
-            </a>
-            , an open catalog of the global research system.
+            {t("dataSourced")}
           </div>
         </div>
       )}
@@ -225,7 +218,7 @@ export default function OpenAlexResearch({ title, keywords }: OpenAlexResearchPr
           }}
           onClick={() => setExpanded(true)}
         >
-          {papers.length} related papers found. Click to expand.
+          {t("papersFound", { count: papers.length })}
         </p>
       )}
     </section>

@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 
-const QUICK_QUERIES = [
+const QUICK_QUERIES_EN = [
   "IFRS S2 climate disclosures",
   "Scope 3 emissions",
   "GRI Standards",
@@ -17,6 +18,9 @@ export default function HomeSearchBox() {
   const [query, setQuery] = useState("");
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("Search");
+  
+  const QUICK_QUERIES = locale === "en" ? QUICK_QUERIES_EN : QUICK_QUERIES_EN;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +75,7 @@ export default function HomeSearchBox() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Ask about ESG topics, standards, frameworks..."
+            placeholder={t("placeholder")}
             aria-label="Search ESG Hub"
             style={{
               flex: 1,
@@ -106,7 +110,7 @@ export default function HomeSearchBox() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
             </svg>
-            Ask AI
+            {t("searchButton")}
           </button>
         </div>
       </form>

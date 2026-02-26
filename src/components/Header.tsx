@@ -5,8 +5,40 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { CONTENTS_MENU, QUICK_LINKS } from "@/data/sections";
 import LanguageSwitcher from "./LanguageSwitcher";
+
+const CATEGORY_KEYS: Record<string, string> = {
+  pillars: "esgPillars",
+  standards: "standardsRegulations",
+  finance: "financeInvestment",
+  topics: "sustainabilityTopics",
+  professional: "professionalDevelopment",
+  resources: "resources",
+};
+
+const LINK_KEYS: Record<string, string> = {
+  "/environmental": "environmental",
+  "/social": "social",
+  "/governance": "governance",
+  "/standards": "standardsFrameworks",
+  "/hk-apac": "regionalRegulations",
+  "/ratings": "esgRatings",
+  "/finance": "climateFinance",
+  "/climate-finance": "climateFinance",
+  "/biodiversity": "biodiversityNature",
+  "/emerging-topics": "emergingTopics",
+  "/sdg": "unSdgs",
+  "/learning": "learningHub",
+  "/practice": "practiceImplementation",
+  "/learning/esg-fundamentals": "esgFundamentals",
+  "/glossary": "glossary",
+  "/books": "books",
+  "/videos": "videos",
+  "/developers": "developers",
+  "/contents": "contents",
+};
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,6 +46,15 @@ export default function Header() {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const pathname = usePathname() || "/";
   const locale = useLocale();
+  const t = useTranslations("Navigation");
+
+  const translateKey = (key: string, fallback: string): string => {
+    try {
+      return t(key);
+    } catch {
+      return fallback;
+    }
+  };
   
   // Refs for focus management
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -162,7 +203,7 @@ export default function Header() {
               aria-haspopup="true"
               className="nav-button contents-button"
             >
-              Contents
+              {t("contents")}
               <span className="dropdown-arrow" aria-hidden="true">
                 {contentsOpen ? "▲" : "▼"}
               </span>
@@ -178,24 +219,24 @@ export default function Header() {
               >
                 {/* Current Page URL Display */}
                 <div className="url-display">
-                  <div className="url-label">Current Page URL</div>
+                  <div className="url-label">{t("currentPageUrl")}</div>
                   <div className="url-value">
                     {getCurrentUrl()}
                   </div>
                   <button 
                     onClick={copyUrlToClipboard}
                     className="url-copy-button"
-                    aria-label="Copy page URL to clipboard"
+                    aria-label={t("copyUrlToClipboard")}
                   >
-                    {copiedUrl ? "✓ Copied!" : "Copy URL"}
+                    {copiedUrl ? t("copyUrlCopied") : t("copyUrl")}
                   </button>
                 </div>
 
                 <div className="contents-grid">
-                  {Object.values(CONTENTS_MENU).map((category) => (
-                    <div key={category.title} role="group" aria-label={category.title}>
+                  {Object.entries(CONTENTS_MENU).map(([key, category]) => (
+                    <div key={key} role="group" aria-label={category.title}>
                       <h3 className="category-heading">
-                        {category.title}
+                        {translateKey(CATEGORY_KEYS[key], category.title)}
                       </h3>
                       <ul className="category-list" role="menu">
                         {category.links.map((link) => (
@@ -206,7 +247,7 @@ export default function Header() {
                               role="menuitem"
                               className={`category-link ${isActive(link.href) ? 'active' : ''}`}
                             >
-                              {link.label}
+                              {LINK_KEYS[link.href] ? translateKey(LINK_KEYS[link.href], link.label) : link.label}
                             </Link>
                             {link.description && (
                               <span className="category-description">
@@ -228,7 +269,7 @@ export default function Header() {
                       onClick={() => setContentsOpen(false)}
                       className="quick-link"
                     >
-                      {link.label}
+                      {LINK_KEYS[link.href] ? translateKey(LINK_KEYS[link.href], link.label) : link.label}
                     </Link>
                   ))}
                 </div>
@@ -243,13 +284,13 @@ export default function Header() {
               href={`/${locale}/developers`}
               className={`quick-link-nav ${isActive("/developers") ? 'active' : ''}`}
             >
-              Developers
+              {t("developers")}
             </Link>
             <Link
               href={`/${locale}/glossary`}
               className={`quick-link-nav ${isActive("/glossary") ? 'active' : ''}`}
             >
-              Glossary
+              {t("glossary")}
             </Link>
           </div>
 
@@ -265,9 +306,9 @@ export default function Header() {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             aria-haspopup="true"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-label={menuOpen ? t("closeMenu") : t("openMenu")}
           >
-            {menuOpen ? "Close" : "Menu"}
+            {menuOpen ? t("closeMenu") : t("menu")}
           </button>
         </div>
       </nav>
@@ -284,23 +325,23 @@ export default function Header() {
         >
           {/* Current Page URL Display - Mobile */}
           <div className="url-display-mobile">
-            <div className="url-label">Current Page URL</div>
+            <div className="url-label">{t("currentPageUrl")}</div>
             <div className="url-value">
               {getCurrentUrl()}
             </div>
             <button 
               onClick={copyUrlToClipboard}
               className="url-copy-button"
-              aria-label="Copy page URL to clipboard"
+              aria-label={t("copyUrlToClipboard")}
             >
-              {copiedUrl ? "✓ Copied!" : "Copy URL"}
+              {copiedUrl ? t("copyUrlCopied") : t("copyUrl")}
             </button>
           </div>
 
-          {Object.values(CONTENTS_MENU).map((category) => (
-            <div key={category.title} className="mobile-category">
+          {Object.entries(CONTENTS_MENU).map(([key, category]) => (
+            <div key={key} className="mobile-category">
               <div className="mobile-category-heading">
-                {category.title}
+                {translateKey(CATEGORY_KEYS[key], category.title)}
               </div>
               {category.links.map((link) => (
                 <Link
@@ -309,7 +350,7 @@ export default function Header() {
                   onClick={() => setMenuOpen(false)}
                   className="mobile-link"
                 >
-                  {link.label}
+                  {LINK_KEYS[link.href] ? translateKey(LINK_KEYS[link.href], link.label) : link.label}
                 </Link>
               ))}
             </div>
@@ -323,7 +364,7 @@ export default function Header() {
                 onClick={() => setMenuOpen(false)}
                 className="mobile-quick-link"
               >
-                {link.label}
+                {LINK_KEYS[link.href] ? translateKey(LINK_KEYS[link.href], link.label) : link.label}
               </Link>
             ))}
           </div>
