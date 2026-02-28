@@ -11,12 +11,14 @@ function getEnvVars() {
   // SURREAL_NAMESPACE is hardcoded as the project default ("esg_hub") so that
   // a shell-level SURREAL_NAMESPACE from another project (e.g. "valuation")
   // can never shadow it. All other credentials remain env-var driven.
+  // .trim() guards against trailing newlines from how secrets were stored
+  // (e.g. `echo "value" | gh secret set` appends a newline to the value).
   return {
-    endpoint: process.env.SURREAL_ENDPOINT || "",
-    username: process.env.SURREAL_USERNAME || "",
-    password: process.env.SURREAL_PASSWORD || "",
+    endpoint: (process.env.SURREAL_ENDPOINT || "").trim(),
+    username: (process.env.SURREAL_USERNAME || "").trim(),
+    password: (process.env.SURREAL_PASSWORD || "").trim(),
     namespace: "esg_hub",
-    database: process.env.SURREAL_DATABASE || "",
+    database: (process.env.SURREAL_DATABASE || "").trim(),
   };
 }
 
