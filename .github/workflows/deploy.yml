@@ -52,6 +52,12 @@ jobs:
 
       - name: Deploy to Vercel Production
         id: deploy
+        env:
+          # Override git author so Vercel resolves the deployer as the token
+          # owner (simonplmak-cloud) rather than the commit author, which may
+          # be a GitHub account not yet linked to the Vercel team.
+          VERCEL_GIT_COMMIT_AUTHOR_LOGIN: simonplmak-cloud
+          VERCEL_GIT_COMMIT_AUTHOR_NAME: simonplmak-cloud
         run: |
           DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }})
           echo "deploy_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
