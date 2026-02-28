@@ -8,7 +8,7 @@
  * - Required fields are present
  */
 
-const SURREAL_ENDPOINT = process.env.SURREAL_ENDPOINT || "https://valuation-webap-06dvm6i94trq92goln8f5gebnk.aws-euw1.surreal.cloud";
+const SURREAL_ENDPOINT = process.env.SURREAL_ENDPOINT || "";
 const SURREAL_USERNAME = process.env.SURREAL_USERNAME || "root";
 const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "ValuationApp2026!";
 const SURREAL_NAMESPACE = process.env.SURREAL_NAMESPACE || "esg_hub";
@@ -68,12 +68,14 @@ async function verifySchema() {
     }
 
     // Check for duplicate permalinks
+    // SurrealDB does not support HAVING — filter after aggregation using a nested SELECT
     console.log("\n5. Checking for duplicate permalinks...");
     const duplicates = await querySurreal(`
-      SELECT permalink, count() AS cnt FROM page 
-      WHERE permalink IS NOT NONE 
-      GROUP BY permalink 
-      HAVING cnt > 1
+      SELECT permalink, cnt FROM (
+        SELECT permalink, count() AS cnt FROM page
+        WHERE permalink IS NOT NONE
+        GROUP BY permalink
+      ) WHERE cnt > 1
     `);
     const dupList = duplicates[0]?.result || [];
     if (dupList.length > 0) {
@@ -102,7 +104,7 @@ async function verifySchema() {
     // Summary
     console.log("\n📊 Summary:");
     console.log(`   Total pages: ${(await querySurreal("SELECT count() FROM page GROUP ALL;"))[0]?.result?.[0]?.count || 0}`);
-    console.log(`   Total sections: ${(await querySurreal("SELECT count() FROM page GROUP BY section;"))[0]?.result?.length || 0}`);
+    console.log(`   Total sections: ${(await querySurreal("SELECT section, count() FROM page WHERE section IS NOT NONE GROUP BY section;"))[0]?.result?.length || 0}`);
 
     // Recommendations
     console.log("\n📝 Recommendations:");
