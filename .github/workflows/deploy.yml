@@ -45,6 +45,7 @@ jobs:
         # Vercel's API creates a deployment from the git SHA, building on
         # Vercel's own infrastructure with full system env vars — avoids the
         # "WARN! Build not running on Vercel" issue that breaks SSR/framework detection.
+        # repoId 1160033656 = simonplmak-cloud/esg-hub (from vercel project link config)
         id: trigger
         run: |
           RESPONSE=$(curl -s -X POST "https://api.vercel.com/v13/deployments?teamId=${{ secrets.VERCEL_ORG_ID }}" \
@@ -56,7 +57,7 @@ jobs:
               "target": "production",
               "gitSource": {
                 "type": "github",
-                "repoId": "'"$(curl -s https://api.github.com/repos/${{ github.repository }} -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" | python3 -c "import sys,json; print(json.load(sys.stdin)['\''id'\''])")"'",
+                "repoId": "1160033656",
                 "ref": "${{ github.ref_name }}",
                 "sha": "${{ github.sha }}"
               }
