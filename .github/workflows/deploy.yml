@@ -4,12 +4,8 @@ on:
   push:
     branches: [main]
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
 jobs:
-  deploy:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -41,33 +37,75 @@ jobs:
           SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
         continue-on-error: true
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }}
-
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }}
-
-      - name: Deploy to Vercel Production
-        id: deploy
+  deploy:
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - name: Trigger Vercel production deployment via API
+        # Vercel's API creates a deployment from the git SHA, building on
+        # Vercel's own infrastructure with full system env vars — avoids the
+        # "WARN! Build not running on Vercel" issue that breaks SSR/framework detection.
+        id: trigger
         run: |
-          # Rewrite the HEAD commit author to the Vercel team owner so Vercel's
-          # git-author membership check passes. The token owner (simonplmak-cloud /
-          # simon.pl.mak@gmail.com) is the sole AP Team member on Vercel.
-          git config user.email "simon.pl.mak@gmail.com"
-          git config user.name "simonplmak-cloud"
-          git commit --amend --reset-author --no-edit
-          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }})
-          echo "deploy_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
-          echo "✅ Deployed to: $DEPLOY_URL"
+          RESPONSE=$(curl -s -X POST "https://api.vercel.com/v13/deployments?teamId=${{ secrets.VERCEL_ORG_ID }}" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "esg-hub",
+              "project": "${{ secrets.VERCEL_PROJECT_ID }}",
+              "target": "production",
+              "gitSource": {
+                "type": "github",
+                "repoId": "'"$(curl -s https://api.github.com/repos/${{ github.repository }} -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" | python3 -c "import sys,json; print(json.load(sys.stdin)['\''id'\''])")"'",
+                "ref": "${{ github.ref_name }}",
+                "sha": "${{ github.sha }}"
+              }
+            }')
+          echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print('id:', d.get('id')); print('url:', d.get('url')); print('error:', d.get('error'))"
+          DEPLOY_ID=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))")
+          DEPLOY_URL=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('url',''))")
+          echo "deploy_id=$DEPLOY_ID" >> $GITHUB_OUTPUT
+          echo "deploy_url=https://$DEPLOY_URL" >> $GITHUB_OUTPUT
+
+      - name: Wait for deployment to be ready
+        run: |
+          DEPLOY_ID="${{ steps.trigger.outputs.deploy_id }}"
+          echo "Waiting for deployment $DEPLOY_ID..."
+          for i in $(seq 1 30); do
+            STATE=$(curl -s "https://api.vercel.com/v13/deployments/${DEPLOY_ID}?teamId=${{ secrets.VERCEL_ORG_ID }}" \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+              | python3 -c "import sys,json; print(json.load(sys.stdin).get('readyState','UNKNOWN'))")
+            echo "  attempt $i: $STATE"
+            if [ "$STATE" = "READY" ]; then
+              echo "✅ Deployment is ready: ${{ steps.trigger.outputs.deploy_url }}"
+              exit 0
+            elif [ "$STATE" = "ERROR" ] || [ "$STATE" = "CANCELED" ]; then
+              echo "❌ Deployment failed with state: $STATE"
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "⏱ Timed out waiting for deployment"
+          exit 1
 
       - name: Install Playwright Browsers
         run: npx playwright install chromium
 
-      - name: Run E2E Tests against deployment
+      - name: Checkout for E2E tests
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js for E2E
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies for E2E
+        run: npm ci
+
+      - name: Run E2E Tests against live deployment
         run: npx playwright test
         env:
-          BASE_URL: ${{ steps.deploy.outputs.deploy_url }}
+          BASE_URL: ${{ steps.trigger.outputs.deploy_url }}
+          CI: "true"
         continue-on-error: true
