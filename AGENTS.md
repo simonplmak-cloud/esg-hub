@@ -117,40 +117,44 @@ export async function GET(request: NextRequest) {
 
 ## Environment Variables
 
-All environment variables must be set at the **global/shell level** - NOT in project-level `.env` files.
+Most credentials are set at the **global/shell level** (`~/.bashrc`). Only `SURREAL_NAMESPACE` is project-specific and lives in a local `.env` file.
 
 ### Required Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `SURREAL_ENDPOINT` | SurrealDB connection URL | `https://xxx.surreal.cloud` |
-| `SURREAL_USERNAME` | Database username | `root` |
-| `SURREAL_PASSWORD` | Database password | (secret) |
-| `SURREAL_NAMESPACE` | Database namespace | `esg_hub` |
-| `SURREAL_DATABASE` | Database name | `main` |
-| `DEEPSEEK_API_KEY` | DeepSeek API key for AI features | (secret) |
-| `OPENROUTER_API_KEY` | OpenRouter API key (optional) | (secret) |
-| `GITHUB_TOKEN` | GitHub personal access token | (secret) |
+| Variable | Where set | Description | Value |
+|----------|-----------|-------------|-------|
+| `SURREAL_ENDPOINT` | `~/.bashrc` | SurrealDB connection URL | shared cloud instance |
+| `SURREAL_USERNAME` | `~/.bashrc` | Database username | `root` |
+| `SURREAL_PASSWORD` | `~/.bashrc` | Database password | (secret) |
+| `SURREAL_DATABASE` | `~/.bashrc` | Database name | `main` |
+| `SURREAL_NAMESPACE` | `.env` (this project) | Database namespace | `esg_hub` |
+| `DEEPSEEK_API_KEY` | `~/.bashrc` | DeepSeek API key for AI features | (secret) |
+| `OPENROUTER_API_KEY` | `~/.bashrc` | OpenRouter API key (optional) | (secret) |
+| `GITHUB_TOKEN` | `~/.bashrc` | GitHub personal access token | (secret) |
 
 ### Setup
 
-1. Set variables in shell profile (`~/.bashrc`, `~/.zshrc`, or similar):
+1. Shared credentials are already set in `~/.bashrc`. For any new machine, add:
 ```bash
 export SURREAL_ENDPOINT="https://..."
 export SURREAL_USERNAME="root"
 export SURREAL_PASSWORD="your_password"
-export SURREAL_NAMESPACE="esg_hub"
 export SURREAL_DATABASE="main"
 export DEEPSEEK_API_KEY="your_key"
 export GITHUB_TOKEN="ghp_xxx"
 ```
 
-2. For GitHub CLI, authenticate once:
+2. The project `.env` file sets the namespace override (already present in repo working copy, gitignored):
+```bash
+SURREAL_NAMESPACE=esg_hub
+```
+
+3. For GitHub CLI, authenticate once:
 ```bash
 echo "$GITHUB_TOKEN" | gh auth login --scopes repo --with-token
 ```
 
-3. Verify setup:
+4. Verify setup:
 ```bash
 gh auth status           # GitHub CLI
 npm run verify:db       # Database connection
@@ -158,12 +162,13 @@ npm run verify:db       # Database connection
 
 ### Vercel Deployment
 
-Set variables in Vercel dashboard: **Project Settings → Environment Variables**
+Set all variables in Vercel dashboard: **Project Settings → Environment Variables**
 
 ### Important
-- **NEVER create `.env` files in the project** - all vars are global/shell level
-- `.env*` is already in `.gitignore` to prevent accidental commits
-- Store secrets in password manager for disaster recovery
+- **NEVER commit `.env` files** — `.env*` is in `.gitignore`
+- The `.env` file in this project only contains `SURREAL_NAMESPACE` — no secrets
+- All actual secrets live in `~/.bashrc` (shell level) or Vercel dashboard
+- Store secrets in a password manager for disaster recovery
 
 ## Performance
 - Use `cache: "no-store"` for dynamic queries

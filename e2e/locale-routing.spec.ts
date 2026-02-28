@@ -32,44 +32,48 @@ test.describe("Locale Routing", () => {
     await page.goto("/en/search");
     await expect(page.locator("h1").first()).toContainText("Search");
 
+    // Non-English locales render translated headings — verify page loads, not text
     await page.goto("/zh/search");
-    await expect(page.locator("h1").first()).toContainText("Search");
+    await expect(page.locator("h1").first()).toBeVisible();
 
     await page.goto("/hi/search");
-    await expect(page.locator("h1").first()).toContainText("Search");
+    await expect(page.locator("h1").first()).toBeVisible();
   });
 
   test("static pages work with locale - books", async ({ page }) => {
     await page.goto("/en/books");
     await expect(page.locator("h1").first()).toContainText("ESG Literature");
 
+    // Non-English locales render translated headings — verify page loads, not text
     await page.goto("/zh/books");
-    await expect(page.locator("h1").first()).toContainText("ESG Literature");
+    await expect(page.locator("h1").first()).toBeVisible();
 
     await page.goto("/hi/books");
-    await expect(page.locator("h1").first()).toContainText("ESG Literature");
+    await expect(page.locator("h1").first()).toBeVisible();
   });
 
   test("static pages work with locale - videos", async ({ page }) => {
     await page.goto("/en/videos");
     await expect(page.locator("h1").first()).toContainText("ESG Video Library");
 
+    // Non-English locales render translated headings — verify page loads, not text
     await page.goto("/zh/videos");
-    await expect(page.locator("h1").first()).toContainText("ESG Video Library");
+    await expect(page.locator("h1").first()).toBeVisible();
 
     await page.goto("/hi/videos");
-    await expect(page.locator("h1").first()).toContainText("ESG Video Library");
+    await expect(page.locator("h1").first()).toBeVisible();
   });
 
   test("static pages work with locale - contents", async ({ page }) => {
     await page.goto("/en/contents");
     await expect(page.locator("h1").first()).toContainText("Contents");
 
+    // Non-English locales render translated headings — verify page loads, not text
     await page.goto("/zh/contents");
-    await expect(page.locator("h1").first()).toContainText("Contents");
+    await expect(page.locator("h1").first()).toBeVisible();
 
     await page.goto("/hi/contents");
-    await expect(page.locator("h1").first()).toContainText("Contents");
+    await expect(page.locator("h1").first()).toBeVisible();
   });
 
   test("language switcher changes locale", async ({ page }) => {

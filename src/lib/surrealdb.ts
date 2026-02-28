@@ -8,11 +8,14 @@ import Surreal from "surrealdb";
 let dbInstance: Surreal | null = null;
 
 function getEnvVars() {
+  // SURREAL_NAMESPACE is hardcoded as the project default ("esg_hub") so that
+  // a shell-level SURREAL_NAMESPACE from another project (e.g. "valuation")
+  // can never shadow it. All other credentials remain env-var driven.
   return {
     endpoint: process.env.SURREAL_ENDPOINT || "",
     username: process.env.SURREAL_USERNAME || "",
     password: process.env.SURREAL_PASSWORD || "",
-    namespace: process.env.SURREAL_NAMESPACE || "",
+    namespace: "esg_hub",
     database: process.env.SURREAL_DATABASE || "",
   };
 }
@@ -104,7 +107,7 @@ export async function queryHttp<T = unknown>(
 
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
-    console.error(`[SurrealDB] HTTP ${res.status}: ${errorText}`);
+    console.error(`[SurrealDB] HTTP ${res.status} — ns=${env.namespace} db=${env.database} endpoint=${env.endpoint.substring(0, 40)}: ${errorText}`);
     throw new Error(`Database query failed (HTTP ${res.status})`);
   }
 
@@ -112,7 +115,7 @@ export async function queryHttp<T = unknown>(
   
   // Handle JSON-RPC response format
   if (resBody.error) {
-    console.error("[SurrealDB] RPC error:", JSON.stringify(resBody.error));
+    console.error("[SurrealDB] RPC error:", JSON.stringify(resBody.error), `— ns=${env.namespace} db=${env.database}`);
     throw new Error(`Database query returned an error: ${resBody.error.message}`);
   }
 

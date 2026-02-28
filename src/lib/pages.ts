@@ -64,10 +64,20 @@ export function isDbConfigured(): boolean {
   const hasEndpoint = !!process.env.SURREAL_ENDPOINT;
   const hasUsername = !!process.env.SURREAL_USERNAME;
   const hasPassword = !!process.env.SURREAL_PASSWORD;
-  const hasNamespace = !!process.env.SURREAL_NAMESPACE;
+  // SURREAL_NAMESPACE is hardcoded in surrealdb.ts ("esg_hub") — always present
   const hasDatabase = !!process.env.SURREAL_DATABASE;
-  
-  return hasEndpoint && hasUsername && hasPassword && hasNamespace && hasDatabase;
+
+  if (!hasEndpoint || !hasUsername || !hasPassword || !hasDatabase) {
+    console.error("[pages] DB misconfigured — missing env vars:", {
+      SURREAL_ENDPOINT: hasEndpoint ? "set" : "MISSING",
+      SURREAL_USERNAME: hasUsername ? "set" : "MISSING",
+      SURREAL_PASSWORD: hasPassword ? "set" : "MISSING",
+      SURREAL_NAMESPACE: "esg_hub (hardcoded)",
+      SURREAL_DATABASE: hasDatabase ? process.env.SURREAL_DATABASE : "MISSING",
+    });
+  }
+
+  return hasEndpoint && hasUsername && hasPassword && hasDatabase;
 }
 
 /**

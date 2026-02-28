@@ -6,15 +6,13 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   output: "standalone",
   reactStrictMode: true,
-  experimental: {
-    outputFileTracingExcludes: {
-      "*": [
-        "node_modules/onnxruntime-node/**",
-        "node_modules/@huggingface/transformers/**",
-        "node_modules/sharp/**",
-        "node_modules/@img/**",
-      ],
-    },
+  outputFileTracingExcludes: {
+    "*": [
+      "node_modules/onnxruntime-node/**",
+      "node_modules/@huggingface/transformers/**",
+      "node_modules/sharp/**",
+      "node_modules/@img/**",
+    ],
   },
   images: {
     remotePatterns: [
