@@ -299,7 +299,15 @@
     "restBestFor": "REST API——最适合Web应用程序、移动应用和传统集成。",
     "mcpBestFor": "MCP服务器——最适合AI驱动的工作流程、研究助手和代理系统。",
     "knowledgeBase": "知识库一览",
-    "apiEndpoints": "API端点"
+    "apiEndpoints": "API端点",
+    "heroDesc": "通过编程方式访问ESG枢纽知识库。通过REST API查询307篇ESG文章和244个精选外部资源，或通过模型上下文协议（MCP）服务器连接AI代理。",
+    "restCardDesc": "通过简单的HTTP API查询页面、资源并搜索知识库。支持全文关键词搜索和语义向量搜索。",
+    "mcpCardDesc": "通过模型上下文协议将AI助手（Claude、Cursor、Windsurf）连接到ESG枢纽。五种用于搜索、浏览和阅读ESG内容的工具。",
+    "esgArticlesLabel": "ESG文章",
+    "externalResourcesLabel": "外部资源",
+    "sectionsLabel": "部分",
+    "sourceDomainsLabel": "来源域名",
+    "searchModesLabel": "搜索模式"
   },
   "ApiDocs": {
     "gettingStarted": "入门",

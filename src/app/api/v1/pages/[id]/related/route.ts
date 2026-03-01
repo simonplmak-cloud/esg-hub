@@ -3,6 +3,8 @@ import { getPageByPermalink, isDbConfigured, DB_ERROR } from "@/lib/pages";
 import { queryHttp } from "@/lib/surrealdb";
 import { formatPermalink } from "@/lib/utils";
 
+export const runtime = "nodejs";
+
 interface RelatedPage {
   id: string;
   title: string;

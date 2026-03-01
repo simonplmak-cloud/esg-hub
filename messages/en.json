@@ -299,7 +299,15 @@
     "restBestFor": "REST API — Best for web applications, mobile apps, and traditional integrations.",
     "mcpBestFor": "MCP Server — Best for AI-powered workflows, research assistants, and agentic systems.",
     "knowledgeBase": "Knowledge Base at a Glance",
-    "apiEndpoints": "API Endpoints"
+    "apiEndpoints": "API Endpoints",
+    "heroDesc": "Access the ESG Hub knowledge base programmatically. Query 307 ESG articles and 244 curated external resources via our REST API, or connect AI agents through the Model Context Protocol (MCP) server.",
+    "restCardDesc": "Query pages, resources, and search the knowledge base with a simple HTTP API. Supports full-text keyword search and semantic vector search.",
+    "mcpCardDesc": "Connect AI assistants (Claude, Cursor, Windsurf) to the ESG Hub via the Model Context Protocol. Five tools for searching, browsing, and reading ESG content.",
+    "esgArticlesLabel": "ESG Articles",
+    "externalResourcesLabel": "External Resources",
+    "sectionsLabel": "Sections",
+    "sourceDomainsLabel": "Source Domains",
+    "searchModesLabel": "Search Modes"
   },
   "ApiDocs": {
     "gettingStarted": "Getting Started",

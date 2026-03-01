@@ -17,7 +17,7 @@ interface SearchResult {
   source_type: "page" | "external";
 }
 
-function ResultCard({ result, locale }: { result: SearchResult; locale: string }) {
+function ResultCard({ result, locale, tExternal, tSimilarity }: { result: SearchResult; locale: string; tExternal: string; tSimilarity: (percent: string) => string }) {
   const isExternal = result.source_type === "external";
   const href = isExternal
     ? result.url || "#"
@@ -64,7 +64,7 @@ function ResultCard({ result, locale }: { result: SearchResult; locale: string }
               flexShrink: 0,
             }}
           >
-            External
+            {tExternal}
           </span>
         )}
       </div>
@@ -103,7 +103,7 @@ function ResultCard({ result, locale }: { result: SearchResult; locale: string }
               fontStyle: "italic",
             }}
           >
-            Similarity: {((1 - result.distance) * 100).toFixed(0)}%
+            {tSimilarity(((1 - result.distance) * 100).toFixed(0))}
           </span>
         )}
       </div>
@@ -282,7 +282,7 @@ export default function SearchClient() {
   return (
     <div className="content-wrapper" id="main-content">
       <h1 style={{ borderBottom: "none", marginBottom: "0.5rem" }}>
-        Search ESG Hub
+        {t("searchButton")}
       </h1>
 
       <form onSubmit={handleSubmit} role="search" style={{ marginBottom: "1.5rem" }}>
@@ -476,7 +476,7 @@ export default function SearchClient() {
                 }}
               >
                 {pageResults.map((result) => (
-                  <ResultCard key={result.id} result={result} locale={locale} />
+                  <ResultCard key={result.id} result={result} locale={locale} tExternal={t("external")} tSimilarity={(pct) => t("similarity", { percent: pct })} />
                 ))}
               </div>
             </div>
@@ -516,7 +516,7 @@ export default function SearchClient() {
                 }}
               >
                 {externalResults.map((result) => (
-                  <ResultCard key={result.id} result={result} locale={locale} />
+                  <ResultCard key={result.id} result={result} locale={locale} tExternal={t("external")} tSimilarity={(pct) => t("similarity", { percent: pct })} />
                 ))}
               </div>
             </div>

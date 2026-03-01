@@ -1,12 +1,5 @@
+import { getTranslations } from "next-intl/server";
 import { CodeBlock, TabbedCodeBlock, SidebarNav, Callout } from "./CodeBlock";
-
-const SIDEBAR_ITEMS = [
-  { id: "getting-started", label: "Getting Started" },
-  { id: "authentication", label: "Authentication" },
-  { id: "endpoints", label: "Endpoints", href: "#endpoints" },
-  { id: "errors", label: "Error Handling", href: "#errors" },
-  { id: "limits", label: "Rate Limits", href: "#limits" },
-];
 
 const BASE = "https://esg-hub.ascent.partners";
 
@@ -15,6 +8,14 @@ function EndpointSection({
   path,
   description,
   params,
+  paramsLabel,
+  nameLabel,
+  typeLabel,
+  requiredLabel,
+  optionalLabel,
+  descriptionLabel,
+  requestExampleLabel,
+  responseLabel,
   example,
   response,
   id,
@@ -23,6 +24,14 @@ function EndpointSection({
   path: string;
   description: string;
   params?: { name: string; type: string; required: boolean; description: string }[];
+  paramsLabel: string;
+  nameLabel: string;
+  typeLabel: string;
+  requiredLabel: string;
+  optionalLabel: string;
+  descriptionLabel: string;
+  requestExampleLabel: string;
+  responseLabel: string;
   example: string;
   response: string;
   id?: string;
@@ -62,15 +71,15 @@ function EndpointSection({
       {params && params.length > 0 && (
         <div style={{ marginBottom: "1rem" }}>
           <h4 style={{ fontSize: "0.8rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Parameters
+            {paramsLabel}
           </h4>
           <table style={{ width: "100%", fontSize: "0.85rem", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "2px solid var(--color-border)", textAlign: "left" }}>
-                <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Name</th>
-                <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Type</th>
-                <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Required</th>
-                <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Description</th>
+                <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>{nameLabel}</th>
+                <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>{typeLabel}</th>
+                <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>{requiredLabel}</th>
+                <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>{descriptionLabel}</th>
               </tr>
             </thead>
             <tbody>
@@ -80,9 +89,9 @@ function EndpointSection({
                   <td style={{ padding: "0.5rem 0.75rem", fontFamily: "var(--font-mono)", color: "var(--color-text-muted)" }}>{p.type}</td>
                   <td style={{ padding: "0.5rem 0.75rem" }}>
                     {p.required ? (
-                      <span style={{ color: "#f87171", fontWeight: 500 }}>Required</span>
+                      <span style={{ color: "#f87171", fontWeight: 500 }}>{requiredLabel}</span>
                     ) : (
-                      <span style={{ color: "var(--color-text-muted)" }}>Optional</span>
+                      <span style={{ color: "var(--color-text-muted)" }}>{optionalLabel}</span>
                     )}
                   </td>
                   <td style={{ padding: "0.5rem 0.75rem", color: "var(--color-text-secondary)" }}>{p.description}</td>
@@ -95,14 +104,14 @@ function EndpointSection({
 
       <div style={{ marginBottom: "1rem" }}>
         <h4 style={{ fontSize: "0.8rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-          Request Example
+          {requestExampleLabel}
         </h4>
         <CodeBlock language="bash" title="curl">{example}</CodeBlock>
       </div>
 
       <div>
         <h4 style={{ fontSize: "0.8rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-          Response
+          {responseLabel}
         </h4>
         <CodeBlock language="json">{response}</CodeBlock>
       </div>
@@ -110,37 +119,58 @@ function EndpointSection({
   );
 }
 
-export default function ApiDocs() {
+export default async function ApiDocs() {
+  const t = await getTranslations("ApiDocs");
+
+  const sidebarItems = [
+    { id: "getting-started", label: t("gettingStarted") },
+    { id: "authentication", label: t("authentication") },
+    { id: "endpoints", label: t("endpoints"), href: "#endpoints" },
+    { id: "errors", label: t("errorHandling"), href: "#errors" },
+    { id: "limits", label: t("rateLimits"), href: "#limits" },
+  ];
+
+  const endpointProps = {
+    paramsLabel: t("parameters"),
+    nameLabel: t("name"),
+    typeLabel: t("type"),
+    requiredLabel: t("required"),
+    optionalLabel: t("optional"),
+    descriptionLabel: t("description"),
+    requestExampleLabel: t("requestExample"),
+    responseLabel: t("response"),
+  };
+
   return (
     <div className="docs-container">
-      <SidebarNav items={SIDEBAR_ITEMS} activeId="endpoints" />
-      
+      <SidebarNav items={sidebarItems} activeId="endpoints" />
+
       <div className="docs-main">
         <article>
           <h1>REST API</h1>
           <p style={{ fontSize: "1.05rem", color: "var(--color-text-secondary)", marginBottom: "2rem", lineHeight: 1.65 }}>
-            Query the ESG Hub knowledge base programmatically. Search articles, browse resources, and integrate ESG data into your applications.
+            {t("gettingStartedDesc")}
           </p>
 
           {/* Getting Started */}
           <section id="getting-started" style={{ marginBottom: "3rem" }}>
-            <h2>Getting Started</h2>
+            <h2>{t("gettingStarted")}</h2>
             <p style={{ fontSize: "0.95rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginBottom: "1.5rem" }}>
-              The ESG Hub API is REST-based and returns JSON responses. No authentication is required for public endpoints.
+              {t("authDesc")}
             </p>
 
-            <Callout type="info" title="Base URL">
+            <Callout type="info" title={t("baseUrl")}>
               All API requests should be made to: <code style={{ fontFamily: "var(--font-mono)", color: "var(--color-link)" }}>https://esg-hub.ascent.partners/api/v1</code>
             </Callout>
 
-            <h3 style={{ fontSize: "1.1rem", marginTop: "1.5rem", marginBottom: "0.75rem" }}>Quick Start</h3>
+            <h3 style={{ fontSize: "1.1rem", marginTop: "1.5rem", marginBottom: "0.75rem" }}>{t("quickStart")}</h3>
             <ol style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.8, paddingLeft: "1.25rem" }}>
               <li style={{ marginBottom: "0.5rem" }}>Choose an endpoint below (e.g., <code>/api/v1/pages</code> for articles)</li>
               <li style={{ marginBottom: "0.5rem" }}>Make a request using cURL, JavaScript, or Python</li>
               <li style={{ marginBottom: "0.5rem" }}>Parse the JSON response for the data you need</li>
             </ol>
 
-            <h3 style={{ fontSize: "1.1rem", marginTop: "1.5rem", marginBottom: "0.75rem" }}>Code Examples</h3>
+            <h3 style={{ fontSize: "1.1rem", marginTop: "1.5rem", marginBottom: "0.75rem" }}>{t("codeExamples")}</h3>
             <TabbedCodeBlock
               tabs={[
                 {
@@ -171,18 +201,15 @@ for page in data['data']:
 
           {/* Authentication */}
           <section id="authentication" style={{ marginBottom: "3rem" }}>
-            <h2>Authentication</h2>
-            <Callout type="success" title="No Authentication Required">
-              The ESG Hub API is currently open and does not require authentication. All endpoints are publicly accessible.
+            <h2>{t("authentication")}</h2>
+            <Callout type="success" title={t("noAuth")}>
+              {t("authDesc")}
             </Callout>
-            <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginTop: "1rem" }}>
-              Simply make HTTP requests to the endpoints below. For browser-based applications, CORS headers are included to allow cross-origin requests.
-            </p>
           </section>
 
           {/* Endpoints */}
           <section id="endpoints">
-            <h2>Endpoints</h2>
+            <h2>{t("endpoints")}</h2>
 
             <EndpointSection
               id="meta"
@@ -199,6 +226,7 @@ for page in data['data']:
   ],
   "updated_at": "2026-02-24T12:00:00Z"
 }`}
+              {...endpointProps}
             />
 
             <EndpointSection
@@ -239,6 +267,7 @@ curl -s "${BASE}/api/v1/pages?q=climate&limit=5"`}
     "has_more": true
   }
 }`}
+              {...endpointProps}
             />
 
             <EndpointSection
@@ -254,6 +283,7 @@ curl -s "${BASE}/api/v1/pages?q=climate&limit=5"`}
   "keywords": "climate, carbon, emissions",
   "created_at": "2024-01-15T10:30:00Z"
 }`}
+              {...endpointProps}
             />
 
             <EndpointSection
@@ -283,6 +313,7 @@ curl -s "${BASE}/api/v1/resources?type=report&limit=10"`}
   ],
   "pagination": { "total": 244, "limit": 5, "offset": 0 }
 }`}
+              {...endpointProps}
             />
 
             <EndpointSection
@@ -304,6 +335,7 @@ curl -s "${BASE}/api/v1/resources?type=report&limit=10"`}
   ],
   "total": 12
 }`}
+              {...endpointProps}
             />
 
             <EndpointSection
@@ -331,14 +363,15 @@ curl -s "${BASE}/api/v1/resources?type=report&limit=10"`}
   ],
   "total": 5
 }`}
+              {...endpointProps}
             />
           </section>
 
           {/* Error Handling */}
           <section id="errors" style={{ marginTop: "2rem" }}>
-            <h2>Error Handling</h2>
+            <h2>{t("errorHandling")}</h2>
             <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginBottom: "1rem" }}>
-              All errors return a JSON object with an <code style={{ fontFamily: "var(--font-mono)", background: "var(--color-bg-secondary)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>error</code> field containing a human-readable message.
+              {t("errorHandlingDesc")}
             </p>
             <CodeBlock language="json" title="Error Response">{`{
   "error": "Missing required parameter: q"
@@ -346,22 +379,22 @@ curl -s "${BASE}/api/v1/resources?type=report&limit=10"`}
             <table style={{ width: "100%", fontSize: "0.85rem", borderCollapse: "collapse", marginTop: "1rem" }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid var(--color-border)" }}>
-                  <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600 }}>Status</th>
-                  <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600 }}>Meaning</th>
+                  <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600 }}>{t("status")}</th>
+                  <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600 }}>{t("meaning")}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
                   <td style={{ padding: "0.5rem", fontFamily: "var(--font-mono)", color: "#f87171" }}>400</td>
-                  <td style={{ padding: "0.5rem", color: "var(--color-text-secondary)" }}>Bad Request - Missing or invalid parameters</td>
+                  <td style={{ padding: "0.5rem", color: "var(--color-text-secondary)" }}>{t("badRequest")}</td>
                 </tr>
                 <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
                   <td style={{ padding: "0.5rem", fontFamily: "var(--font-mono)", color: "#f87171" }}>404</td>
-                  <td style={{ padding: "0.5rem", color: "var(--color-text-secondary)" }}>Not Found - Resource does not exist</td>
+                  <td style={{ padding: "0.5rem", color: "var(--color-text-secondary)" }}>{t("notFound")}</td>
                 </tr>
                 <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
                   <td style={{ padding: "0.5rem", fontFamily: "var(--font-mono)", color: "#f87171" }}>500</td>
-                  <td style={{ padding: "0.5rem", color: "var(--color-text-secondary)" }}>Server Error - Please try again later</td>
+                  <td style={{ padding: "0.5rem", color: "var(--color-text-secondary)" }}>{t("serverError")}</td>
                 </tr>
               </tbody>
             </table>
@@ -369,13 +402,10 @@ curl -s "${BASE}/api/v1/resources?type=report&limit=10"`}
 
           {/* Rate Limits */}
           <section id="limits" style={{ marginTop: "2rem" }}>
-            <h2>Rate Limits</h2>
-            <Callout type="info" title="No Strict Rate Limits">
-              The API is currently open with no authentication required. Please be respectful and avoid sending more than 60 requests per minute.
+            <h2>{t("rateLimits")}</h2>
+            <Callout type="info" title={t("noRateLimits")}>
+              {t("rateLimitsDesc")}
             </Callout>
-            <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginTop: "1rem" }}>
-              All endpoints support CORS for cross-origin browser requests. The API includes caching headers for efficient client-side caching.
-            </p>
           </section>
         </article>
       </div>

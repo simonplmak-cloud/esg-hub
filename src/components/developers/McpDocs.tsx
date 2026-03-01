@@ -1,12 +1,5 @@
+import { getTranslations } from "next-intl/server";
 import { CodeBlock, SidebarNav, Callout, TabbedCodeBlock } from "./CodeBlock";
-
-const SIDEBAR_ITEMS = [
-  { id: "overview", label: "Overview" },
-  { id: "setup", label: "Setup", href: "#setup" },
-  { id: "tools", label: "Tools", href: "#tools" },
-  { id: "prompts", label: "Example Prompts", href: "#prompts" },
-  { id: "config", label: "Configuration", href: "#config" },
-];
 
 const MCP_TOOLS = [
   {
@@ -49,7 +42,17 @@ const MCP_TOOLS = [
   },
 ];
 
-function ToolCard({ name, description, params }: { name: string; description: string; params: { name: string; type: string; description: string }[] }) {
+function ToolCard({
+  name,
+  description,
+  params,
+  paramsLabel,
+}: {
+  name: string;
+  description: string;
+  params: { name: string; type: string; description: string }[];
+  paramsLabel: string;
+}) {
   return (
     <div style={{ padding: "1.25rem", border: "1px solid var(--color-border)", borderRadius: "8px", marginBottom: "1rem", background: "var(--color-bg-secondary)" }}>
       <h3 style={{ margin: "0 0 0.5rem", fontSize: "1rem", fontFamily: "var(--font-mono)", color: "var(--color-primary)", fontWeight: 600 }}>
@@ -60,7 +63,9 @@ function ToolCard({ name, description, params }: { name: string; description: st
       </p>
       {params.length > 0 && (
         <div style={{ fontSize: "0.82rem" }}>
-          <div style={{ fontWeight: 600, color: "var(--color-text-muted)", marginBottom: "0.35rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>Parameters</div>
+          <div style={{ fontWeight: 600, color: "var(--color-text-muted)", marginBottom: "0.35rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+            {paramsLabel}
+          </div>
           {params.map((p) => (
             <div key={p.name} style={{ display: "flex", gap: "0.5rem", padding: "0.25rem 0" }}>
               <code style={{ color: "var(--color-link)", flexShrink: 0 }}>{p.name}</code>
@@ -73,32 +78,43 @@ function ToolCard({ name, description, params }: { name: string; description: st
   );
 }
 
-export default function McpDocs() {
+export default async function McpDocs() {
+  const t = await getTranslations("McpDocs");
+  const tApi = await getTranslations("ApiDocs");
+
+  const sidebarItems = [
+    { id: "overview", label: t("title") },
+    { id: "setup", label: t("setup"), href: "#setup" },
+    { id: "tools", label: t("availableTools"), href: "#tools" },
+    { id: "prompts", label: t("examplePrompts"), href: "#prompts" },
+    { id: "config", label: t("configuration"), href: "#config" },
+  ];
+
   return (
     <div className="docs-container">
-      <SidebarNav items={SIDEBAR_ITEMS} activeId="overview" />
-      
+      <SidebarNav items={sidebarItems} activeId="overview" />
+
       <div className="docs-main">
         <article>
-          <h1>MCP Server</h1>
+          <h1>{t("title")}</h1>
           <p style={{ fontSize: "1.05rem", color: "var(--color-text-secondary)", marginBottom: "2rem", lineHeight: 1.65 }}>
-            Connect AI assistants to the ESG Hub knowledge base via the Model Context Protocol (MCP). The server exposes tools for searching, retrieving, and browsing ESG content.
+            {t("titleDesc")}
           </p>
 
-          <Callout type="info" title="What is MCP?">
-            The <strong>Model Context Protocol</strong> is an open standard that enables AI assistants to connect to external tools and data sources. Popular clients include Claude Desktop, Cursor, and Windsurf.
+          <Callout type="info" title={t("whatIsMcp")}>
+            {t("setupDesc")}
           </Callout>
 
           {/* Setup */}
           <section id="setup" style={{ marginBottom: "3rem" }}>
-            <h2>Setup</h2>
+            <h2>{t("setup")}</h2>
             <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginBottom: "1.5rem" }}>
-              Choose your AI assistant client below. All options connect to the same ESG Hub MCP server.
+              {t("claudeDesktopDesc")}
             </p>
 
-            <h3 style={{ fontSize: "1.05rem", marginBottom: "0.75rem" }}>Claude Desktop</h3>
+            <h3 style={{ fontSize: "1.05rem", marginBottom: "0.75rem" }}>{t("claudeDesktop")}</h3>
             <p style={{ fontSize: "0.9rem", color: "var(--color-text-secondary)", lineHeight: 1.55, marginBottom: "0.75rem" }}>
-              Add to your Claude Desktop configuration:
+              {t("claudeDesktopDesc")}
             </p>
             <CodeBlock language="json" title="claude_desktop_config.json">{`{
   "mcpServers": {
@@ -109,12 +125,20 @@ export default function McpDocs() {
   }
 }`}</CodeBlock>
             <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", marginBottom: "1.5rem" }}>
-              Configuration file location: <code style={{ fontFamily: "var(--font-mono)", background: "var(--color-bg-secondary)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) or <code style={{ fontFamily: "var(--font-mono)", background: "var(--color-bg-secondary)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>%APPDATA%/Claude/claude_desktop_config.json</code> (Windows)
+              Configuration file location:{" "}
+              <code style={{ fontFamily: "var(--font-mono)", background: "var(--color-bg-secondary)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>
+                ~/Library/Application Support/Claude/claude_desktop_config.json
+              </code>{" "}
+              (macOS) or{" "}
+              <code style={{ fontFamily: "var(--font-mono)", background: "var(--color-bg-secondary)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>
+                %APPDATA%/Claude/claude_desktop_config.json
+              </code>{" "}
+              (Windows)
             </p>
 
-            <h3 style={{ fontSize: "1.05rem", marginBottom: "0.75rem" }}>Cursor / Windsurf</h3>
+            <h3 style={{ fontSize: "1.05rem", marginBottom: "0.75rem" }}>{t("cursorWindsurf")}</h3>
             <p style={{ fontSize: "0.9rem", color: "var(--color-text-secondary)", lineHeight: 1.55, marginBottom: "0.75rem" }}>
-              Add to your Cursor or Windsurf settings:
+              {t("cursorDesc")}
             </p>
             <CodeBlock language="json" title="Settings > MCP Servers">{`{
   "mcpServers": {
@@ -125,19 +149,19 @@ export default function McpDocs() {
   }
 }`}</CodeBlock>
 
-            <h3 style={{ fontSize: "1.05rem", marginBottom: "0.75rem", marginTop: "1.5rem" }}>Manual Setup</h3>
+            <h3 style={{ fontSize: "1.05rem", marginBottom: "0.75rem", marginTop: "1.5rem" }}>{t("manualSetup")}</h3>
             <p style={{ fontSize: "0.9rem", color: "var(--color-text-secondary)", lineHeight: 1.55, marginBottom: "0.75rem" }}>
-              Or run the server directly with Node.js:
+              {t("manualDesc")}
             </p>
             <TabbedCodeBlock
               tabs={[
                 {
-                  label: "Install",
+                  label: t("install"),
                   language: "bash",
                   code: `npm install -g @ascentpartners/esg-hub-mcp`,
                 },
                 {
-                  label: "Run",
+                  label: t("run"),
                   language: "bash",
                   code: `npx @ascentpartners/esg-hub-mcp`,
                 },
@@ -147,21 +171,21 @@ export default function McpDocs() {
 
           {/* Tools */}
           <section id="tools" style={{ marginBottom: "3rem" }}>
-            <h2>Available Tools</h2>
+            <h2>{t("availableTools")}</h2>
             <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.65, marginBottom: "1.5rem" }}>
-              The MCP server exposes 5 tools for interacting with the ESG Hub:
+              {t("toolsDesc")}
             </p>
 
             {MCP_TOOLS.map((tool) => (
-              <ToolCard key={tool.name} {...tool} />
+              <ToolCard key={tool.name} {...tool} paramsLabel={tApi("parameters")} />
             ))}
           </section>
 
           {/* Example Prompts */}
           <section id="prompts" style={{ marginBottom: "3rem" }}>
-            <h2>Example Prompts</h2>
+            <h2>{t("examplePrompts")}</h2>
             <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.55, marginBottom: "1rem" }}>
-              Once connected, try asking your AI assistant:
+              {t("promptsDesc")}
             </p>
             <div style={{ display: "grid", gap: "0.75rem", marginBottom: "2rem" }}>
               {[
@@ -194,16 +218,16 @@ export default function McpDocs() {
 
           {/* Configuration */}
           <section id="config">
-            <h2>Configuration</h2>
+            <h2>{t("configuration")}</h2>
             <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.55, marginBottom: "1rem" }}>
-              The MCP server supports optional environment variables:
+              {t("configDesc")}
             </p>
             <table style={{ width: "100%", fontSize: "0.88rem", borderCollapse: "collapse", marginBottom: "2rem" }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid var(--color-border)", textAlign: "left" }}>
-                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Variable</th>
-                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Default</th>
-                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>Description</th>
+                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>{t("variable")}</th>
+                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>{t("default")}</th>
+                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: 600 }}>{t("variableDesc")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -215,25 +239,29 @@ export default function McpDocs() {
                     <code style={{ fontSize: "0.82rem" }}>https://esg-hub.ascent.partners</code>
                   </td>
                   <td style={{ padding: "0.5rem 0.75rem", color: "var(--color-text-secondary)" }}>
-                    Base URL of the ESG Hub API
+                    {t("baseUrlConfig")}
                   </td>
                 </tr>
               </tbody>
             </table>
 
-            <h3>Resources</h3>
+            <h3>{t("resources")}</h3>
             <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.55, marginBottom: "1rem" }}>
-              The MCP server also exposes a resource with the full API documentation:
+              {t("resourcesDesc")}
             </p>
-            <CodeBlock language="text" title="Resource URI">{`esg-hub://api-docs`}</CodeBlock>
+            <CodeBlock language="text" title={t("resourceUri")}>{`esg-hub://api-docs`}</CodeBlock>
 
-            <h3 style={{ marginTop: "2rem" }}>Source Code</h3>
+            <h3 style={{ marginTop: "2rem" }}>{t("sourceCode")}</h3>
             <p style={{ fontSize: "0.92rem", color: "var(--color-text-secondary)", lineHeight: 1.55 }}>
-              The MCP server source code is available in the{" "}
-              <a href="https://github.com/simonplmak-cloud/esg-hub/tree/main/mcp-server" target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-link)" }}>
+              {t("sourceCodeDesc")}{" "}
+              <a
+                href="https://github.com/simonplmak-cloud/esg-hub/tree/main/mcp-server"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--color-link)" }}
+              >
                 esg-hub/mcp-server
-              </a>{" "}
-              directory on GitHub. Contributions and feedback are welcome.
+              </a>
             </p>
           </section>
         </article>

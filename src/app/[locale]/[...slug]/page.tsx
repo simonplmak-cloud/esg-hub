@@ -103,6 +103,7 @@ export default async function ContentPage({ params }: PageProps) {
   const t = await getTranslations({ locale, namespace: "DynamicPage" });
   const tPages = await getTranslations({ locale, namespace: "Pages" });
   const tPillars = await getTranslations({ locale, namespace: "Pillars" });
+  const tSectionLabels = await getTranslations({ locale, namespace: "SectionLabels" });
   
   const slugPath = slug.join("/");
 
@@ -231,7 +232,7 @@ export default async function ContentPage({ params }: PageProps) {
                   href={`/${locale}/${page.section}`}
                   style={{ color: "var(--color-link)", textDecoration: "none" }}
                 >
-                {page.section.charAt(0).toUpperCase() + page.section.slice(1)}
+                {tSectionLabels(page.section as never) || page.section.charAt(0).toUpperCase() + page.section.slice(1)}
               </Link>
             </span>
           )}
@@ -252,7 +253,12 @@ export default async function ContentPage({ params }: PageProps) {
           />
         )}
 
-        {showToc && <TableOfContents headings={headings} />}
+        {/* Inline TOC: visible only on mobile/tablet — on desktop the sidebar TOC takes over */}
+        {showToc && (
+          <div className="toc-inline-mobile">
+            <TableOfContents headings={headings} />
+          </div>
+        )}
 
         {page.content && page.content.trim().length > 0 && (
           <MarkdownContent content={page.content} />

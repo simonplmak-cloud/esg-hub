@@ -125,9 +125,7 @@ export default async function BooksPage({ params }: Props) {
 
       <h1>{t("literatureTitle")}</h1>
       <p style={{ color: "var(--color-text-secondary)", marginBottom: "1.5rem", maxWidth: "720px" }}>
-        Comprehensive collection of ESG books, guides, and reference documents
-        by Ascent Partners Foundation. Download full PDF versions of our
-        publications or access external standards and frameworks.
+        {t("description")}
       </p>
 
       {Array.from(categories.entries()).map(([category, catBooks]) => (
@@ -318,7 +316,7 @@ export default async function BooksPage({ params }: Props) {
 
       {page && page.content && (
         <section style={{ marginTop: "2rem" }}>
-          <h2>Additional Reading</h2>
+          <h2>{t("additionalReading")}</h2>
           <div className="prose" style={{ maxWidth: "var(--content-max-width)" }}>
             <MarkdownContent content={page.content} />
           </div>

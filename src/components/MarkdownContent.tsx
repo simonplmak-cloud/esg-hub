@@ -1,6 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
+import rehypeRaw from "rehype-raw";
 
 function stripFullPageHtml(html: string): string {
   let result = html;
@@ -21,7 +22,7 @@ export default function MarkdownContent({ content }: { content: string }) {
     <div className="prose">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeSlug]}
+        rehypePlugins={[rehypeSlug, rehypeRaw]}
       >
         {sanitizedContent}
       </ReactMarkdown>
