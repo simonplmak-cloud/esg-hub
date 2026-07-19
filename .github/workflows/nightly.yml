@@ -30,9 +30,13 @@ jobs:
           curl -sf -o /dev/null -w "GET /api/v1 -> %{http_code}\n" https://esg-hub.ascent.partners/api/v1
 
       - name: Broken link sweep
+        id: lychee
+        # Informational: outbound links may be bot-blocked (403/415/429) or
+        # dead in DB content — tracked via nightly-alert issue, not a red run.
+        continue-on-error: true
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --max-retries 2 --timeout 20 --accept 200,204,301,302,307,308,429 --no-progress
+          args: --max-retries 2 --timeout 20 --accept 200,204,301,302,307,308,403,415,429 --no-progress
             "https://esg-hub.ascent.partners/en"
             "https://esg-hub.ascent.partners/en/videos"
             "https://esg-hub.ascent.partners/en/books"
@@ -41,7 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Open or update issue on failure
-        if: failure()
+        if: failure() || steps.lychee.outcome == 'failure'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
