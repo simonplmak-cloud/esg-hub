@@ -1,10 +1,9 @@
 version: 2
+# npm ecosystem removed 2026-07-19 (AC-DE1 verdict): Dependabot's updater
+# fails on the file:../tool_package deps (sibling path absent in its sandbox).
+# github-actions updates continue; npm bumps are manual. Security update PRs
+# still arrive via Dependabot alerts where the manifest can be resolved.
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
