@@ -16,7 +16,7 @@ jobs:
         with:
           repository: simonplmak-cloud/tool_packages
           path: tool_packages_repo
-          ref: main
+          ref: master
           token: ${{ secrets.TOOL_PACKAGES_PAT }}
 
       - name: Link tool_packages
