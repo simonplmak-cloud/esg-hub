@@ -112,8 +112,9 @@ Purpose: record of environment state before/after each change per spec `spec.md`
 
 ## Pending user actions (not blocking)
 
-1. **Enable Copilot** on simonplmak-cloud (github.com/settings/copilot) — ruleset already in place; reviews auto-fire on the next PR (AC-C1 pending this)
-2. **Refresh rejected API keys** in `~/.bashrc`: `BRAVE_API_KEY` (422 invalid) and `GOOGLE_API_KEY` (invalid) — search MCP servers themselves verified working; then run `opencode mcp auth vercel` for the Vercel OAuth consent. github + browserless verified ✓. (Optional: fix n8n/postgres/playwright/humanity4ai MCPs — see F19.)
+1. **Enable Copilot** on simonplmak-cloud — ✅ DONE 2026-07-20: reviewer request for `copilot-pull-request-reviewer[bot]` now accepted on PR #4 (previously no-op'd). Ruleset `copilot_code_review` active → auto-requests on future PRs; review text generation is async (pending on PR #4 at log time; AC-C1 auto-fire to be confirmed on next PR)
+2. **Vercel MCP OAuth** — ✅ DONE 2026-07-20: tokens stored in `~/.local/share/opencode/mcp-auth.json`; vercel MCP tools load on next opencode restart (AC-15 verification = one MCP call listing deployments)
+3. **Refresh rejected API keys** in `~/.bashrc`: `BRAVE_API_KEY` (422 invalid) and `GOOGLE_API_KEY` (invalid) — search MCP servers themselves verified working. github + browserless verified ✓. (Optional: fix n8n/postgres/playwright/humanity4ai MCPs — see F19.)
 3. **Rotate SurrealDB password** — committed fallback removed, but git history still contains it (until rotation, treat as exposed)
 4. **Fix dead YouTube links** (@EFRAG, @TNFD_ → 404 even with browser UA) in DB content — tracked in issue #8
 5. Review/merge Dependabot PRs #4–6 (action version bumps)
