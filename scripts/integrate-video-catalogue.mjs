@@ -141,10 +141,9 @@ function courseRow(r, url) {
   return `| [${r.coursetitle}${jaMarker(r)}](${url}) | ${r.sourceorganization} | ${fmtDuration(r)} | ${fmtFocus(r)} |`;
 }
 function videoEntry(r, url) {
-  const yt = url.match(/[?&]v=([\w-]{11})/) || url.match(/youtu\.be\/([\w-]{11})/);
-  if (yt && r.contenttype === "video") {
-    return `{% include video-embed.html provider="youtube" id="${yt[1]}" title="${r.coursetitle}${jaMarker(r)}" caption="${r.sourceorganization} — ${fmtDuration(r)}" %}`;
-  }
+  // /learning/videos/ is rendered by the generic [...slug] markdown pipeline,
+  // which shows {% include %} shortcodes as raw text — always use prose format
+  // here. (Only the custom /videos page parses embed includes.)
   return `**[${r.coursetitle}${jaMarker(r)}](${url})** — ${fmtFocus(r)}. *${r.sourceorganization}, ${fmtDuration(r)}.*`;
 }
 
