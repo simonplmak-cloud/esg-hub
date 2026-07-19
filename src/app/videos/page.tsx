@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   title: "ESG Video Library",
   description:
     "Curated collection of educational ESG videos, webinars, and expert interviews covering environmental, social, and governance topics.",
-  alternates: { canonical: "https://esg-hub-six.vercel.app/videos" },
+    alternates: { canonical: "https://esg-hub.ascent.partners/videos" },
   openGraph: {
     title: "ESG Video Library — ESG Hub",
     description:
       "Curated collection of educational ESG videos, webinars, and expert interviews.",
-    url: "https://esg-hub-six.vercel.app/videos",
+    url: "https://esg-hub.ascent.partners/videos",
     siteName: "ESG Hub",
     type: "website",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],

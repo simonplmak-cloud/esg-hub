@@ -105,3 +105,7 @@ Bearer token via `Authorization: Bearer $VERCEL_TOKEN`
 - AC-3: Production deployment triggers via POST and polls via GET until READY
 - AC-E1: Timeout after 30 polls → exit 1
 - AC-E2: ERROR/CANCELED state → exit 1 immediately
+
+---
+
+> **SUPERSEDED 2026-07-19** — The API gitSource trigger was replaced by prebuilt-in-CI (`vercel build --prod` + `vercel deploy --prebuilt --prod` in the GitHub Actions deploy job) because `file:../tool_package` deps are unavailable on Vercel's builders. See `specs/ci-cd-process/spec.md` v1.2 amendment and `specs/dev-env-automation/contracts/deploy-workflow.md`.

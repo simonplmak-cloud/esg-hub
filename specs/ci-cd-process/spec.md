@@ -1,8 +1,10 @@
 # CI/CD Pipeline — Development to Deployment
 
 Status: Approved (Gate 1 passed)
-Version: 1.1
+Version: 1.2
 Last updated: 2026-07-19
+
+> **Amendment 2026-07-19** (via `specs/dev-env-automation`, approved at its Gate 1/2): the production deploy mechanism changed from Vercel-API gitSource trigger to **prebuilt-in-CI** (`vercel build --prod` + `vercel deploy --prebuilt --prod` in the deploy job), because `file:../tool_package` deps do not exist on Vercel's builders (pnpm install ENOENT, 6 failed deploys). `contracts/vercel-api.md` is superseded. AC-3, AC-E1, AC-E2 updated below.
 
 ## Overview
 
@@ -46,7 +48,7 @@ As a **developer**, I want **a clean CI log that clearly shows which step failed
 **Ask first (do not proceed unilaterally):**
 - Adding new secrets to the repo
 - Changing the Vercel project ID or team ID
-- Modifying the deploy trigger mechanism (currently Vercel API)
+- Modifying the deploy trigger mechanism (prebuilt-in-CI since 2026-07-19, see header amendment)
 - Adding new jobs or stages beyond what this spec defines
 
 **Never do:**
@@ -80,8 +82,9 @@ And the comment includes the deployment URL
 Given a commit is pushed to the `main` branch
 And the code quality gate (AC-1) passes
 When the deploy workflow runs
-Then Vercel triggers a production deployment for the git SHA
-And the pipeline waits for Vercel to report `READY` state (up to 5 minutes, polling every 10s)
+Then the deploy job builds the site in CI (`vercel build --prod` with tool_packages symlink present)
+And deploys the prebuilt output to production (`vercel deploy --prebuilt --prod`)
+And the job fails immediately if the build or deploy step exits non-zero
 
 ### AC-4: E2E Tests Against Live Deployment [MUST]
 Given the production deployment is READY
@@ -124,15 +127,16 @@ Then the check status is reported back to GitHub as a commit status
 And the PR shows green/red checkmark based on results
 (Note: this relies on GitHub's built-in workflow status reporting — no extra config needed)
 
-### AC-E1: Deployment Timeout [MUST]
-Given the production deployment is triggered
-When Vercel does not reach READY within 5 minutes (30 polls at 10s intervals)
-Then the pipeline fails with a "Timed out waiting for deployment" message
+### AC-E1: Deployment Build Failure [MUST]
+Given the production deployment is building
+When `vercel build --prod` or `vercel deploy --prebuilt --prod` exits non-zero
+Then the deploy job fails at that step with the Vercel error in the job log
+And E2E tests do not run
 
 ### AC-E2: Vercel Deployment Error [MUST]
 Given the production deployment is triggered
-When Vercel returns `ERROR` or `CANCELED` state during polling
-Then the pipeline fails immediately with the deployment state and does not wait for timeout
+When Vercel reports an error during build or deploy
+Then the pipeline fails immediately — there is no polling loop or timeout ambiguity
 
 ### AC-E3: Build Fails on Type Errors [MUST]
 Given TypeScript errors exist in the codebase

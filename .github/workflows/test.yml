@@ -1,8 +1,16 @@
-name: Deploy to Vercel
+name: Test on Demand
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Base URL for E2E tests"
+        required: true
+        default: "https://esg-hub.ascent.partners"
+      skip_e2e:
+        type: boolean
+        description: "Skip Playwright E2E"
+        default: false
 
 jobs:
   check:
@@ -43,30 +51,10 @@ jobs:
       - name: Run unit tests
         run: npx vitest run
 
-      - name: Verify Database Schema
-        run: pnpm verify:db
-        env:
-          SURREAL_ENDPOINT: ${{ secrets.SURREAL_ENDPOINT }}
-          SURREAL_USERNAME: ${{ secrets.SURREAL_USERNAME }}
-          SURREAL_PASSWORD: ${{ secrets.SURREAL_PASSWORD }}
-          SURREAL_NAMESPACE: ${{ secrets.SURREAL_NAMESPACE }}
-          SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
-        continue-on-error: true
-
-      - name: Production build
-        run: pnpm build
-        env:
-          SURREAL_ENDPOINT: ${{ secrets.SURREAL_ENDPOINT }}
-          SURREAL_USERNAME: ${{ secrets.SURREAL_USERNAME }}
-          SURREAL_PASSWORD: ${{ secrets.SURREAL_PASSWORD }}
-          SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
-
-  deploy:
+  e2e:
     runs-on: ubuntu-latest
     needs: check
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    if: ${{ !inputs.skip_e2e }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -94,39 +82,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build for Vercel
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          SURREAL_ENDPOINT: ${{ secrets.SURREAL_ENDPOINT }}
-          SURREAL_USERNAME: ${{ secrets.SURREAL_USERNAME }}
-          SURREAL_PASSWORD: ${{ secrets.SURREAL_PASSWORD }}
-          SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
-
-      - name: Deploy prebuilt to production
-        id: deploy
-        run: |
-          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
-          echo "deploy_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
-
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium
 
-      - name: Run E2E tests against live deployment
+      - name: Run E2E tests
         run: pnpm test
         env:
-          BASE_URL: ${{ steps.deploy.outputs.deploy_url }}
+          BASE_URL: ${{ inputs.base_url }}
           CI: "true"
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-production
+          name: playwright-report-on-demand
           path: playwright-report/
           retention-days: 7

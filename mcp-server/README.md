@@ -65,11 +65,11 @@ Once connected, you can ask your AI assistant questions like:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `ESG_HUB_API_URL` | `https://esg-hub-six.vercel.app` | Base URL of the ESG Hub API |
+| `ESG_HUB_API_URL` | `https://esg-hub.ascent.partners` | Base URL of the ESG Hub API |
 
 ## API Reference
 
-The MCP server wraps the ESG Hub REST API v1. See the [API Documentation](https://esg-hub-six.vercel.app/developers/api) for full endpoint details.
+The MCP server wraps the ESG Hub REST API v1. See the [API Documentation](https://esg-hub.ascent.partners/developers/api) for full endpoint details.
 
 ## License
 
