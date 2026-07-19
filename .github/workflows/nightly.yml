@@ -1,0 +1,56 @@
+name: Nightly Health Check
+
+on:
+  schedule:
+    - cron: "17 18 * * *" # 18:17 UTC = ~02:17 HKT
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify database schema
+        run: node scripts/verify-db-schema.mjs
+        env:
+          SURREAL_ENDPOINT: ${{ secrets.SURREAL_ENDPOINT }}
+          SURREAL_USERNAME: ${{ secrets.SURREAL_USERNAME }}
+          SURREAL_PASSWORD: ${{ secrets.SURREAL_PASSWORD }}
+          SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
+
+      - name: Production smoke checks
+        run: |
+          curl -sf -o /dev/null -w "GET /en -> %{http_code}\n" https://esg-hub.ascent.partners/en
+          curl -sf -o /dev/null -w "GET /api/v1 -> %{http_code}\n" https://esg-hub.ascent.partners/api/v1
+
+      - name: Broken link sweep
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --retry 2 --timeout 20 --accept 200,204,301,302,307,308,429 --no-progress
+            "https://esg-hub.ascent.partners/en"
+            "https://esg-hub.ascent.partners/en/videos"
+            "https://esg-hub.ascent.partners/en/books"
+            "https://esg-hub.ascent.partners/api/v1"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Open or update issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          EXISTING=$(gh issue list --repo ${{ github.repository }} --label nightly-alert --state open --json number --jq '.[0].number')
+          if [ -z "$EXISTING" ]; then
+            gh issue create --repo ${{ github.repository }} --label nightly-alert \
+              --title "Nightly health check failed ($(date +%Y-%m-%d))" \
+              --body "Failing step: ${{ github.job }} — see run: $RUN_URL"
+          else
+            gh issue comment --repo ${{ github.repository }} "$EXISTING" --body "Still failing: $RUN_URL"
+          fi
