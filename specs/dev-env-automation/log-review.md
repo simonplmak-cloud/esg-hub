@@ -81,4 +81,28 @@ Purpose: record of environment state before/after each change per spec `spec.md`
 
 | Finding | Resolution | Verified by | Date |
 |---------|-----------|-------------|------|
-| _pending implementation_ | | | |
+| F1/F2 deploys broken (pnpm ENOENT) | deploy.yml → prebuilt-in-CI (`vercel build --prod` + `deploy --prebuilt --prod`); PR #2 merged | run 29689232543 success; Vercel READY `esg-436ra0u6x`; live robots.txt serves new build | 2026-07-19 |
+| F3 node 24.x | PATCH `nodeVersion: 22.x` | project GET read-back | 2026-07-19 |
+| F4 preview SSO protection | PATCH `ssoProtection: null` | read-back + PR #2 preview E2E green unauthenticated (run 29689025247) | 2026-07-19 |
+| F5 no branch protection | _pending Phase 2 (T-15 ruleset)_ | | |
+| F7 wrong-account auth | PAT → `~/.bashrc` (`SIMONPLMAK_CLOUD_PAT`, `GH_TOKEN` aliased); gh hosts.yml active=simonplmak-cloud; repo-local `credential.username` | AC-A1: `gh api user` → simonplmak-cloud, repo API 200, `git ls-remote` ✓ | 2026-07-19 |
+| F8 namespace shadowing | `scripts/lib/db-env.mjs` (hardcodes esg_hub; `ESG_HUB_NS_OVERRIDE` warns); 14 scripts migrated; syntax-checked | `SURREAL_NAMESPACE=valuation` → verify reports 354 pages; override → warns + targets override | 2026-07-19 |
+| F9 unique permalink index | already existed (`idx_page_permalink`); removed redundant duplicate `unique_permalink`; **verify-db detection bug fixed** (INFO FOR TABLE returns SurrealQL strings, not objects) | `pnpm verify:db` zero warnings, 354 pages | 2026-07-19 |
+| F10 password fallback | removed from `verify-db-schema.mjs:13` | line now `\|\| ""` | 2026-07-19 |
+| F11 dead domain refs | fixed robots.ts, constants.ts, videos/page.tsx, mcp README | grep = 0 hits; live robots.txt → ascent.partners sitemap | 2026-07-19 |
+| F12 MCP config | opencode.json: github→`SIMONPLMAK_CLOUD_PAT`, brave-search/google-search/browserless enabled, vercel remote added; browserless container started (Chrome 145, `/json/version` 200) | **live MCP verification pending opencode restart** | 2026-07-19 |
+| F13 no on-demand tests | `.github/workflows/test.yml` (workflow_dispatch) | run 29689564162: check+e2e success vs production | 2026-07-19 |
+| F15 Vercel env vars missing `preview` target (all 6 keys) — preview deploys had no DB creds; E2E "Page Not Found" test failed on DB-error page | added `preview` target to the production entry of each key | env GET: all keys = [development, preview, production]; preview E2E then passed | 2026-07-19 |
+| F16 Vercel git integration double-build: every push spawned a Vercel-side build (source:git) → perpetual ERROR zombies | `commandForIgnoringBuildStep: "exit 0"` (skips git-triggered builds; CI owns deploys) | PATCH read-back; next merge should show only CI-built READY | 2026-07-19 |
+| F17 preview workflow Comment PR 403 (default GITHUB_TOKEN read-only) → E2E skipped | explicit `permissions:` (issues/pull-requests write) on deploy-preview.yml; least-privilege blocks on all workflows | rerun: Comment PR ✓, E2E ran | 2026-07-19 |
+| F18 stale E2E: asserted English "Developers" on zh/hi pages (DB titles are translated) | aligned with sibling tests (`toBeVisible`) | preview run 29689025247 success | 2026-07-19 |
+
+## Additional observations (documented, no action or deferred)
+
+| Item | State | Note |
+|------|-------|------|
+| `scripts/translate-db-content.mjs` | 🟡 pre-existing broken | contains TypeScript (`interface`) in `.mjs` — never ran under `node`; pre-dates this work |
+| Actions runner warning | 🟡 "Node.js 20 is deprecated… forced to run on Node.js 24" | runtime of the *actions* (checkout@v4 etc.), not our build; resolves as action maintainers ship node24 variants |
+| `mcp-server/package-lock.json` untracked while `dist/` is tracked | 🟡 inconsistent | decide commit-or-ignore later; out of this spec's scope |
+| Vercel `DEEPSEEK_API_KEY` preview value | ⚪ preview uses the development entry's value | acceptable; revisit if preview AI search misbehaves |
+| humanity4ai gh account | ⚪ not stored in hosts.yml (token unrecoverable from files) | `gh auth login` manually if switching is ever needed |
