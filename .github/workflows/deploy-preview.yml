@@ -11,6 +11,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Checkout tool_packages
+        uses: actions/checkout@v4
+        with:
+          repository: simonplmak-cloud/tool_packages
+          path: ../tool_package
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
@@ -49,6 +55,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Checkout tool_packages
+        uses: actions/checkout@v4
+        with:
+          repository: simonplmak-cloud/tool_packages
+          path: ../tool_package
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
