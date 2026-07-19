@@ -54,6 +54,18 @@ jobs:
       - name: Run unit tests
         run: npx vitest run
 
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Scans the checked-out HEAD only. History contains a pre-2026-07-19
+      # committed credential (since removed; rotation is a manual follow-up) —
+      # a full-history scan would fail permanently until history is rewritten.
+      - name: Scan for secrets
+        run: docker run --rm -v "$GITHUB_WORKSPACE:/repo" zricethezav/gitleaks:latest detect --source /repo --redact --no-banner
+
   e2e:
     runs-on: ubuntu-latest
     needs: check
