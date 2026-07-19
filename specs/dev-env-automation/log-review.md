@@ -92,10 +92,31 @@ Purpose: record of environment state before/after each change per spec `spec.md`
 | F11 dead domain refs | fixed robots.ts, constants.ts, videos/page.tsx, mcp README | grep = 0 hits; live robots.txt → ascent.partners sitemap | 2026-07-19 |
 | F12 MCP config | opencode.json: github→`SIMONPLMAK_CLOUD_PAT`, brave-search/google-search/browserless enabled, vercel remote added; browserless container started (Chrome 145, `/json/version` 200) | **live MCP verification pending opencode restart** | 2026-07-19 |
 | F13 no on-demand tests | `.github/workflows/test.yml` (workflow_dispatch) | run 29689564162: check+e2e success vs production | 2026-07-19 |
+| F14 zero automation | Dependabot (github-actions), vuln alerts (204), auto security fixes (on), PR template, PR-title lint, nightly health check, dedup-issue alerts; secret scanning → plan-blocked (422) → gitleaks job in test.yml | Dependabot PRs #4–6 opened same day; nightly dispatch green (29693468529); issue #8 auto-created on failure | 2026-07-19 |
 | F15 Vercel env vars missing `preview` target (all 6 keys) — preview deploys had no DB creds; E2E "Page Not Found" test failed on DB-error page | added `preview` target to the production entry of each key | env GET: all keys = [development, preview, production]; preview E2E then passed | 2026-07-19 |
-| F16 Vercel git integration double-build: every push spawned a Vercel-side build (source:git) → perpetual ERROR zombies | `commandForIgnoringBuildStep: "exit 0"` (skips git-triggered builds; CI owns deploys) | PATCH read-back; next merge should show only CI-built READY | 2026-07-19 |
+| F16 Vercel git integration double-build: every push spawned a Vercel-side build (source:git) → perpetual ERROR zombies | `commandForIgnoringBuildStep: "exit 0"` (skips git-triggered builds; CI owns deploys) | deployment list now: READY(cli) + CANCELED(git) pattern, zero ERROR in last 10 | 2026-07-19 |
 | F17 preview workflow Comment PR 403 (default GITHUB_TOKEN read-only) → E2E skipped | explicit `permissions:` (issues/pull-requests write) on deploy-preview.yml; least-privilege blocks on all workflows | rerun: Comment PR ✓, E2E ran | 2026-07-19 |
 | F18 stale E2E: asserted English "Developers" on zh/hi pages (DB titles are translated) | aligned with sibling tests (`toBeVisible`) | preview run 29689025247 success | 2026-07-19 |
+
+## Final re-sweep (2026-07-19, AC-A12)
+
+| Plane | Result |
+|-------|--------|
+| Actions (last 10) | ✅ deploy/preview/nightly/test all green; 2 Dependabot `npm_and_yarn` update-job failures → AC-DE1 verdict: npm ecosystem removed from dependabot.yml (file: deps break its sandbox); github-actions updates continue |
+| Vercel (last 10) | ✅ READY(cli)×4 production + CANCELED(git)×6 — zero ERROR; zombie builds eliminated |
+| SurrealDB | ✅ verify:db zero warnings; 354 pages; unique permalink index singular (`idx_page_permalink`) |
+| Prod smoke | ✅ /en, /api/v1, /robots.txt → 200; robots.txt sitemap → ascent.partners |
+| GitHub settings | ✅ required check `check` + force-push blocked (classic API — ruleset rejects status checks on this plan); ruleset active: non_fast_forward + copilot_code_review; alerts/auto-fixes on; homepage fixed |
+| Vercel settings | ✅ nodeVersion 22.x; ssoProtection off; env targets all 3; ignore-step set |
+
+## Pending user actions (not blocking)
+
+1. **Enable Copilot** on simonplmak-cloud (github.com/settings/copilot) — ruleset already in place; reviews auto-fire on the next PR (AC-C1 pending this)
+2. **Restart opencode** — MCP changes take effect; verify github/brave-search/google-search/browserless/vercel (AC-A2, AC-14, AC-15 live checks)
+3. **Rotate SurrealDB password** — committed fallback removed, but git history still contains it (until rotation, treat as exposed)
+4. **Fix dead YouTube links** (@EFRAG, @TNFD_ → 404 even with browser UA) in DB content — tracked in issue #8
+5. Review/merge Dependabot PRs #4–6 (action version bumps)
+6. Decide: commit or gitignore `mcp-server/package-lock.json`
 
 ## Additional observations (documented, no action or deferred)
 
