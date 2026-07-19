@@ -1,4 +1,4 @@
-import Surreal from "surrealdb";
+import { Surreal } from "surrealdb";
 
 // Credentials are sourced exclusively from environment variables.
 // Set SURREAL_ENDPOINT, SURREAL_USERNAME, SURREAL_PASSWORD,
@@ -33,7 +33,7 @@ export async function getDb(): Promise<Surreal> {
   await db.connect(env.endpoint, {
     namespace: env.namespace,
     database: env.database,
-    auth: {
+    authentication: {
       username: env.username,
       password: env.password,
     },

@@ -85,6 +85,7 @@ export default function OpenAlexResearch({ title, keywords }: OpenAlexResearchPr
 
   useEffect(() => {
     if (!searchQuery) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       return;
     }

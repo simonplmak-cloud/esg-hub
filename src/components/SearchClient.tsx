@@ -182,14 +182,6 @@ export default function SearchClient() {
     }
   }, [mode, loadModel]);
 
-  // Auto-search on initial load if query is present
-  useEffect(() => {
-    if (initialQuery) {
-      handleSearch(initialQuery, initialMode);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const generateEmbedding = async (text: string): Promise<number[]> => {
     // If model isn't loaded yet, wait for it
     if (!extractorRef.current) {
@@ -263,6 +255,15 @@ export default function SearchClient() {
       setLoading(false);
     }
   };
+
+  // Auto-search on initial load if query is present
+  useEffect(() => {
+    if (initialQuery) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handleSearch(initialQuery, initialMode);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

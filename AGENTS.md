@@ -1,98 +1,99 @@
-# AGENTS.md - ESG Hub Coding Guidelines
+# AGENTS.md - ESG Hub
 
-## Build & Development Commands
+## Build & Dev Commands
 
 ```bash
-# Development
-npm run dev           # Start dev server (port 3000)
-npm run build         # Production build
-npm run start         # Start production server
-
-# Linting & Type Checking
-npm run lint          # ESLint (eslint-config-next)
-npx tsc --noEmit      # TypeScript strict mode check
+pnpm dev              # Next.js dev server (port 3000)
+pnpm build            # Production build (output: standalone)
+pnpm start            # Start production server
+pnpm lint             # ESLint (eslint-config-next flat config)
+npx tsc --noEmit      # TypeScript check (strict mode)
 
 # Testing
-npm run test          # Run all Playwright tests
-npm run test:ci       # Run tests with CI reporter
-npx playwright test path/to/test.spec.ts       # Run single test file
-npx playwright test --grep "test name"         # Run tests matching pattern
+pnpm test             # Playwright E2E tests (e2e/ directory)
+pnpm test:ci          # Playwright with CI reporter
+npx playwright test e2e/locale-routing.spec.ts  # Single E2E test
+npx vitest run src/lib/__tests__/markdown.test.ts  # Single unit test
 
 # Database
-npm run verify:db     # Verify SurrealDB schema
+pnpm verify:db        # Verify SurrealDB schema (scripts/verify-db-schema.mjs)
 ```
 
-## Code Style
+### E2E Test Port Mismatch
+
+Playwright tests use port **3001** (`playwright.config.ts:5`). `pnpm dev` uses the default Next.js port **3000**. The Playwright config spins up its own `npx next dev -p 3001` as a `webServer`, so it works automatically — just be aware the ports differ.
+
+## Architecture
+
+- **Framework**: Next.js 15 App Router (React 19)
+- **Routing**: `next-intl` middleware prefixes `/en`, `/zh`, `/hi` on all routes
+- **Root layout** (`src/app/layout.tsx`) is a pass-through; the real layout is at `src/app/[locale]/layout.tsx`
+- **Pages Router** still present (`src/pages/_error.js`) — do not add new pages there
+- **Database**: SurrealDB Cloud via JSON-RPC over HTTP (`queryHttp()` / `queryHttpAll()` in `src/lib/surrealdb.ts`), not WebSocket
+- **DB namespace** is hardcoded to `"esg_hub"` in `surrealdb.ts:20` — the env var is intentionally ignored to prevent cross-project shadowing
+- **Build output**: `standalone` mode (`next.config.mjs:7`)
+- **Deployment**: Vercel
+
+### Key Dependencies
+
+- `next-intl` for i18n (locales: `en`, `zh`, `hi`; default: `en`)
+- `surrealdb` SDK v2 for DB connectivity
+- `react-markdown` + `remark-gfm` + `rehype-*` for rendering MD content
+- `@huggingface/transformers` for client-side ML (excluded from server bundle)
+- Local file-linked deps: `@simonplmak-cloud/utils`, `@simonplmak-cloud/validation` (at `../tool_package/packages/`)
+
+## Environment Variables
+
+| Variable | Where | Notes |
+|----------|-------|-------|
+| `SURREAL_ENDPOINT` | `~/.bashrc` | SurrealDB Cloud URL |
+| `SURREAL_USERNAME` | `~/.bashrc` | `root` |
+| `SURREAL_PASSWORD` | `~/.bashrc` | secret |
+| `SURREAL_DATABASE` | `~/.bashrc` | `main` |
+| `SURREAL_NAMESPACE` | — | Hardcoded to `esg_hub` in app code; scripts may read env var |
+| `DEEPSEEK_API_KEY` | `~/.bashrc` | For AI search features |
+| `GITHUB_TOKEN` | `~/.bashrc` | For gh CLI |
+| `NEXT_PUBLIC_BASE_URL` | — | Sitemap generation (unused in dev) |
+
+- **NEVER read `.env*` files** — they are gitignored
+- `SURREAL_NAMESPACE` is the only project-specific value; all secrets are shell-level
+
+## Code Conventions
 
 ### TypeScript
-- Strict mode enabled - prefer explicit types over `any`/`unknown`
-- Define interfaces for API responses and DB results
-- Path aliases: `@/*` → `./src/*`
-- Use `type` for unions/primitives, `interface` for objects
+- Strict mode — prefer explicit types
+- Path alias: `@/*` → `./src/*`
+- `type` for unions/primitives, `interface` for objects
 
-### Imports (order: External → Internal → Types)
+### Imports (order: external → internal → types)
 ```typescript
 import { useState } from "react";
 import Link from "next/link";
-import { queryHttp, sanitize } from "@/lib/surrealdb";
+import { queryHttp } from "@/lib/surrealdb";
 import type { Metadata } from "next";
 ```
 
-### Naming
-- **Components**: PascalCase (`Header.tsx`, `SearchClient.tsx`)
-- **Hooks**: camelCase with `use` prefix (`useSearch`)
-- **Utils**: camelCase (`surrealdb.ts`)
-- **Constants**: UPPER_SNAKE_CASE
-- **Interfaces**: PascalCase, export if shared
-
-### Component Structure
-```typescript
-"use client"; // Only for client components
-
-import { useState } from "react";
-
-interface Props {
-  initialValue?: string;
-}
-
-export default function ComponentName({ initialValue }: Props) {
-  const [value, setValue] = useState(initialValue ?? "");
-  // handlers, then render
-}
-```
-
-### Server vs Client Components
+### Components
 - **Default**: Server Components (no `"use client"`)
 - **Client**: Add `"use client"` when using hooks, event handlers, or browser APIs
+- PascalCase for components, camelCase for hooks/utils, UPPER_SNAKE_CASE for constants
 
-### Error Handling
+### SurrealDB Security
 ```typescript
-try {
-  const results = await queryHttp<PageResult>(query, vars);
-  return NextResponse.json({ data: results });
-} catch (err) {
-  console.error("[API] Error:", err);
-  return NextResponse.json({ error: "Internal error" }, { status: 500 });
-}
-```
-
-### Security - SurrealDB Queries
-```typescript
-// Good: Sanitize user input
+// Good: sanitize user input
 const escaped = sanitize(userInput);
 await queryHttp(`SELECT * FROM page WHERE title @0@ '${escaped}'`);
 
-// Good: Validate numeric params
+// Good: validate numeric params
 const limit = sanitizeInt(params.get("limit"), 20, 1, 50);
 
-// Bad: String interpolation (injection risk)
+// Bad: raw string interpolation
 await queryHttp(`SELECT * FROM page WHERE title = '${userInput}'`);
 ```
 
 ### API Routes
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-
 export const runtime = "nodejs";
 
 export async function OPTIONS() {
@@ -101,8 +102,7 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
   try {
-    const q = request.nextUrl.searchParams.get("q");
-    if (!q) return NextResponse.json({ error: "Missing 'q'" }, { status: 400 });
+    // ... validation
   } catch (err) {
     console.error("[API] Error:", err);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
@@ -111,102 +111,32 @@ export async function GET(request: NextRequest) {
 ```
 
 ### Styling
-- Tailwind CSS v4 with CSS variables in `globals.css`
-- Use CSS classes over inline styles
-- Variables: `--color-primary`, `--color-link`, `--font-body`
+- Tailwind CSS v4 (`@import "tailwindcss"` in `globals.css`, no `tailwind.config`)
+- CSS variables in `globals.css`: `--color-primary`, `--color-link`, `--font-body`
+- Prefer CSS classes over inline styles
 
-## Environment Variables
+## Testing
 
-Most credentials are set at the **global/shell level** (`~/.bashrc`). Only `SURREAL_NAMESPACE` is project-specific and lives in a local `.env` file.
+- **E2E**: Playwright (`e2e/`), Chromium only, runs against localhost:3001
+- **Unit**: Vitest (`src/lib/__tests__/`), run with `npx vitest run`
+- No Vitest config file — uses zero-config mode
 
-### Required Variables
+## i18n
 
-| Variable | Where set | Description | Value |
-|----------|-----------|-------------|-------|
-| `SURREAL_ENDPOINT` | `~/.bashrc` | SurrealDB connection URL | shared cloud instance |
-| `SURREAL_USERNAME` | `~/.bashrc` | Database username | `root` |
-| `SURREAL_PASSWORD` | `~/.bashrc` | Database password | (secret) |
-| `SURREAL_DATABASE` | `~/.bashrc` | Database name | `main` |
-| `SURREAL_NAMESPACE` | `.env` (this project) | Database namespace | `esg_hub` |
-| `DEEPSEEK_API_KEY` | `~/.bashrc` | DeepSeek API key for AI features | (secret) |
-| `OPENROUTER_API_KEY` | `~/.bashrc` | OpenRouter API key (optional) | (secret) |
-| `GITHUB_TOKEN` | `~/.bashrc` | GitHub personal access token | (secret) |
+- Locales: `en` (default), `zh`, `hi`
+- Library: `next-intl` (server: `getTranslations`, client: `useTranslations`)
+- Translation files: `messages/en.json`, `messages/zh.json`, `messages/hi.json`
+- DB translation fields: `page.title_zh`, `page.title_hi`, `page.description_zh`, `page.description_hi`, `page.content_zh`, `page.content_hi`
+- Middleware (`src/middleware.ts`) also handles `esg.video` domain → redirects to `/videos`
 
-### Setup
+## Middleware
 
-1. Shared credentials are already set in `~/.bashrc`. For any new machine, add:
-```bash
-export SURREAL_ENDPOINT="https://..."
-export SURREAL_USERNAME="root"
-export SURREAL_PASSWORD="your_password"
-export SURREAL_DATABASE="main"
-export DEEPSEEK_API_KEY="your_key"
-export GITHUB_TOKEN="ghp_xxx"
-```
-
-2. The project `.env` file sets the namespace override (already present in repo working copy, gitignored):
-```bash
-SURREAL_NAMESPACE=esg_hub
-```
-
-3. For GitHub CLI, authenticate once:
-```bash
-echo "$GITHUB_TOKEN" | gh auth login --scopes repo --with-token
-```
-
-4. Verify setup:
-```bash
-gh auth status           # GitHub CLI
-npm run verify:db       # Database connection
-```
-
-### Vercel Deployment
-
-Set all variables in Vercel dashboard: **Project Settings → Environment Variables**
-
-### Important
-- **NEVER commit `.env` files** — `.env*` is in `.gitignore`
-- The `.env` file in this project only contains `SURREAL_NAMESPACE` — no secrets
-- All actual secrets live in `~/.bashrc` (shell level) or Vercel dashboard
-- Store secrets in a password manager for disaster recovery
-
-## Performance
-- Use `cache: "no-store"` for dynamic queries
-- Use `revalidate` for cached responses
-- Lazy load heavy components with `dynamic` import
-
-## Internationalization (i18n)
-
-### Supported Locales
-- English (`en`) - Default
-- Chinese Simplified (`zh`)
-- Hindi (`hi`)
-
-### Usage
-```typescript
-// Server Components
-import { getTranslations } from "next-intl/server";
-const t = await getTranslations({ locale, namespace: "Section" });
-
-// Client Components
-import { useTranslations } from "next-intl";
-const t = useTranslations("Section");
-```
-
-### Translation Files
-```
-messages/
-├── en.json    # English (base)
-├── zh.json    # Chinese
-└── hi.json    # Hindi
-```
-
-### Database Translation Fields
-- `page.title_zh`, `page.title_hi`
-- `page.description_zh`, `page.description_hi`
-- `page.content_zh`, `page.content_hi`
+`src/middleware.ts` runs on all non-API, non-static routes. It:
+1. Detects `*.esg.video` hostnames and redirects them to the videos page
+2. Passes everything else to `next-intl` middleware for locale prefix routing
 
 ## Git Workflow
+
 - No commits unless explicitly requested
 - Never force push to main
 - Keep changes focused and atomic

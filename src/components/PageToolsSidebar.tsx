@@ -82,6 +82,7 @@ export default function PageToolsSidebar({ page, locale = "en" }: PageToolsSideb
 
   useEffect(() => {
     if (page.id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchCrossReferences();
     }
   }, [page.id, fetchCrossReferences]);

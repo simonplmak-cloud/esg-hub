@@ -189,14 +189,6 @@ export default function AISearchAgent() {
     return () => clearTimeout(timer);
   }, [loadModel]);
 
-  // Auto-search on initial load if query is present
-  useEffect(() => {
-    if (initialQuery) {
-      handleAISearch(initialQuery);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const generateEmbedding = async (text: string): Promise<number[] | null> => {
     if (!extractorRef.current) {
       if (!loadingModelRef.current) {
@@ -303,12 +295,22 @@ export default function AISearchAgent() {
         console.error("[AI Search] Error:", err);
         setError("Failed to get AI answer. Showing quick results instead.");
         // Fallback to quick search
+        // eslint-disable-next-line react-hooks/immutability
         handleQuickSearch(q);
       }
     } finally {
       setIsSearching(false);
     }
   };
+
+  // Auto-search on initial load if query is present
+  useEffect(() => {
+    if (initialQuery) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handleAISearch(initialQuery);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* ── Quick Search (instant, no AI) ── */
   const handleQuickSearch = async (searchQuery: string) => {

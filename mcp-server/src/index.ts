@@ -4,7 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-const BASE_URL = process.env.ESG_HUB_API_URL || "https://esg-hub-six.vercel.app";
+const BASE_URL = process.env.ESG_HUB_API_URL || "https://esg-hub.ascent.partners";
 
 /**
  * Helper to call the ESG Hub REST API
