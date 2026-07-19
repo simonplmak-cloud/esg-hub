@@ -32,7 +32,7 @@ jobs:
       - name: Broken link sweep
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --retry 2 --timeout 20 --accept 200,204,301,302,307,308,429 --no-progress
+          args: --max-retries 2 --timeout 20 --accept 200,204,301,302,307,308,429 --no-progress
             "https://esg-hub.ascent.partners/en"
             "https://esg-hub.ascent.partners/en/videos"
             "https://esg-hub.ascent.partners/en/books"
