@@ -108,10 +108,10 @@ Full details in `log-review.md`. Summary:
 - **AC-F1 [MUST]** A nightly cron workflow runs `verify:db` + prod smoke (`/en`, `/api/v1`) + a lychee broken-link sweep; a green run is recorded.
 - **AC-F2 [SHOULD]** On failure, the workflow opens (or updates) a deduplicated GitHub issue.
 
-### WS-G: Notifications (Phase 3)
+### WS-G: Notifications (Phase 3) — DEFERRED
 
-- **AC-G1 [MUST]** Deploy/test/nightly workflow failure POSTs to the n8n webhook (`N8N_WEBHOOK_URL` secret); one test event is confirmed received by the user.
-- **AC-GE1 [SHOULD]** A webhook outage never fails the workflow (notify step is non-blocking).
+- **AC-G1 [WONT — this iteration]** Deploy/test/nightly workflow failure POSTs to the n8n webhook. *Deferred 2026-07-19 per user decision (no webhook URL provided; GitHub email/UI notifications suffice for now). Revisit by re-scoping WS-G when an n8n webhook is available.*
+- **AC-GE1 [WONT — this iteration]** Webhook outage never fails the workflow (moot while AC-G1 deferred).
 
 ## Non-Functional Requirements
 

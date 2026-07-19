@@ -58,10 +58,10 @@ Depends on: PR-1 merged (workflows green); T-15 ordered before PR-2 so PR-2 exer
 | T-19 [P] | `.github/PULL_REQUEST_TEMPLATE.md` per contract §4 | S | **AC-E1**: template renders on next PR |
 | T-20 [P] | `.github/workflows/pr-title.yml` per contract §3 | S | **AC-E2**: non-conforming title fails check (test on PR-3 itself — title intentionally conforming; rely on grep logic review + one edited-title experiment if desired) |
 | T-21 [P] | `.github/workflows/nightly.yml` per contract §2 | M | **AC-F1**: `gh workflow run nightly.yml` → green; **AC-F2**: dedup-issue logic reviewed (failure path exercised only if a check fails) |
-| T-22 | n8n notify step appended to `deploy.yml`, `test.yml`, `nightly.yml` + `N8N_WEBHOOK_URL` secret via `gh secret set`. **BLOCKED: needs webhook URL from user** | S | **AC-G1**: dispatch `test.yml` with bad `base_url` → run fails → user confirms n8n received; **AC-GE1**: notify step green even if webhook down |
+| T-22 | ~~n8n notify step + secret~~ **CANCELLED 2026-07-19** — user deferred WS-G (no webhook URL); spec AC-G1/GE1 → WONT this iteration | — | — |
 | T-23 | Final re-sweep (**AC-A12**): last 10 Actions runs, last 10 Vercel deployments, `verify:db`, prod smoke, MCP table, settings read-backs → complete Resolution Log in `log-review.md`; drift check vs spec.md | M | every F-item resolved or documented; Phase 5 validate report |
 
-**PR-3** (contains T-19, T-20, T-21, T-22): merge → close-out.
+**PR-3** (contains T-19, T-20, T-21): merge → close-out.
 
 ---
 
