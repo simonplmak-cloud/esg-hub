@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/"],
       },
     ],
-    sitemap: "https://esg-hub-six.vercel.app/sitemap.xml",
+    sitemap: "https://esg-hub.ascent.partners/sitemap.xml",
   };
 }

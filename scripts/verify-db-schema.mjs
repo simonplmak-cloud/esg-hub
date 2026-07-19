@@ -8,10 +8,11 @@
  * - Required fields are present
  */
 
+import { getNamespace } from "./lib/db-env.mjs";
 const SURREAL_ENDPOINT = process.env.SURREAL_ENDPOINT || "";
 const SURREAL_USERNAME = process.env.SURREAL_USERNAME || "root";
-const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "ValuationApp2026!";
-const SURREAL_NAMESPACE = process.env.SURREAL_NAMESPACE || "esg_hub";
+const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "";
+const SURREAL_NAMESPACE = getNamespace();
 const SURREAL_DATABASE = process.env.SURREAL_DATABASE || "main";
 
 async function querySurreal(sql) {
@@ -49,9 +50,10 @@ async function verifySchema() {
     console.log(`   Found indexes: ${Object.keys(indexes).join(", ") || "none"}`);
 
     // Check for unique constraint on permalink
+    // INFO FOR TABLE returns indexes as { <name>: "DEFINE INDEX ... ON page FIELDS <field> UNIQUE" }
     console.log("\n3. Checking for unique constraint on 'permalink'...");
     const uniquePermalink = Object.values(indexes).some(
-      (idx) => idx?.type === "UNIQUE" && idx?.fields?.includes("permalink")
+      (def) => typeof def === "string" && /FIELDS\s+permalink\b/i.test(def) && /\bUNIQUE\b/i.test(def)
     );
     if (uniquePermalink) {
       console.log("   ✅ Unique index on 'permalink' exists");

@@ -4,7 +4,7 @@
  */
 
 // Site Configuration
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://esg-hub-six.vercel.app";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://esg-hub.ascent.partners";
 
 // Content Thresholds
 export const HUB_PAGE_MAX_CONTENT_LENGTH = 200;

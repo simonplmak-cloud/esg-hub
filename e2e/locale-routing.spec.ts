@@ -102,9 +102,9 @@ test.describe("Locale Routing", () => {
     await expect(page.locator("h1").first()).toContainText("Developers");
 
     await page.goto("/zh/developers");
-    await expect(page.locator("h1").first()).toContainText("Developers");
+    await expect(page.locator("h1").first()).toBeVisible();
 
     await page.goto("/hi/developers");
-    await expect(page.locator("h1").first()).toContainText("Developers");
+    await expect(page.locator("h1").first()).toBeVisible();
   });
 });

@@ -21,15 +21,16 @@
  *   ALTER TABLE page ADD FIELD IF NOT EXISTS content_hi TYPE option<string>;
  */
 
+import { getNamespace } from "./lib/db-env.mjs";
 const SURREAL_ENDPOINT = process.env.SURREAL_ENDPOINT;
 const SURREAL_USERNAME = process.env.SURREAL_USERNAME;
 const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD;
-const SURREAL_NAMESPACE = process.env.SURREAL_NAMESPACE;
+const SURREAL_NAMESPACE = getNamespace();
 const SURREAL_DATABASE = process.env.SURREAL_DATABASE;
 
-if (!SURREAL_ENDPOINT || !SURREAL_USERNAME || !SURREAL_PASSWORD || !SURREAL_NAMESPACE || !SURREAL_DATABASE) {
+if (!SURREAL_ENDPOINT || !SURREAL_USERNAME || !SURREAL_PASSWORD || !SURREAL_DATABASE) {
   console.error("Error: Missing required environment variables.");
-  console.error("Required: SURREAL_ENDPOINT, SURREAL_USERNAME, SURREAL_PASSWORD, SURREAL_NAMESPACE, SURREAL_DATABASE");
+  console.error("Required: SURREAL_ENDPOINT, SURREAL_USERNAME, SURREAL_PASSWORD, SURREAL_DATABASE");
   process.exit(1);
 }
 

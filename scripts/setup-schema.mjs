@@ -8,10 +8,11 @@
  * Run: node scripts/setup-schema.mjs
  */
 
+import { getNamespace } from "./lib/db-env.mjs";
 const SURREAL_ENDPOINT = process.env.SURREAL_ENDPOINT || "https://valuation-webap-06dvm6i94trq92goln8f5gebnk.aws-euw1.surreal.cloud";
 const SURREAL_USERNAME = process.env.SURREAL_USERNAME || "root";
 const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "ValuationApp2026!";
-const SURREAL_NAMESPACE = process.env.SURREAL_NAMESPACE || "esg_hub";
+const SURREAL_NAMESPACE = getNamespace();
 const SURREAL_DATABASE = process.env.SURREAL_DATABASE || "main";
 
 async function query(sql) {
