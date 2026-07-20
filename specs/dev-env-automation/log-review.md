@@ -157,7 +157,7 @@ Exposed-credential postures after publication: SurrealDB password — rotated be
 | F19: playwright MCP | ✅ rewired to global binary (`@playwright/mcp` cli.js) — was npx cold-start failure |
 | F19: postgres MCP | ✅ DB connection verified (`SELECT 1`); rewired to global binary with `{env:DATABASE_URL}` arg — was npx cold-start failure |
 | F19: humanity4ai MCP | ✅ built `mcp-servers/dist` (tsc), rewired to `node dist/bin.js` — was tsx/pnpm cold-start failure |
-| F19: n8n MCP | 🔴 **user action**: endpoint returns 401 — `N8N_API_KEY` invalid/expired. Regenerate in n8n cloud (Settings → API) and update `~/.bashrc` |
+| F19: n8n MCP | 🟡 root cause found 2026-07-20: the MCP server authenticates via **OAuth** (verified `/.well-known/oauth-authorization-server`), NOT the n8n REST API key — the static `Authorization: Bearer {env:N8N_API_KEY}` header was removed from opencode.json. Fix: user runs `opencode mcp auth n8n` (browser consent). The API key created 2026-07-20 remains valid for the n8n REST API |
 | MCP restart verification | pending next opencode restart (all binaries smoke-tested manually) |
 | Deploys post-merge | ✅ 3/3 production deploys green after Dependabot merges |
 
