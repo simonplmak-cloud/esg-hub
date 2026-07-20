@@ -380,6 +380,17 @@ Guidelines:
 8. **Be balanced** and acknowledge different perspectives on debated ESG topics.
 9. At the end, suggest 2-3 related ESG Hub topics the user might want to explore.`;
 
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
