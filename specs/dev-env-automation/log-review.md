@@ -147,7 +147,19 @@ Exposed-credential postures after publication: SurrealDB password — rotated be
 | GCP key rotation | ➡️ simplified | Google CSE no longer used anywhere — user just **deletes** the exposed key in GCP Console (no replacement needed), clearing the go-public gate |
 | AI search generation broken (pre-existing) | ✅ fixed | stale `DEEPSEEK_API_KEY` in Vercel env; upserted the locally-verified key ×3 targets; prod streams full answers (439–496 chunks, no error events) |
 
-## Pending user actions (not blocking)
+## Optional items completion (2026-07-20)
+
+| Item | Result |
+|------|--------|
+| Dependabot PRs #4–6 (upload-artifact v7, github-script v9, pnpm/action-setup v6) | ✅ all merged, pipelines green. Required fix: **Dependabot-triggered runs receive no repo secrets** — added `TOOL_PACKAGES_PAT` + `VERCEL_TOKEN`/`VERCEL_ORG_ID`/`VERCEL_PROJECT_ID` to the **Dependabot secrets store** (scoped to Dependabot runs only; `pull_request_target` correctly avoided — secret-exfiltration risk on a public repo) |
+| Copilot auto-review (AC-C1) | ✅ **verified end-to-end**: ruleset auto-fired on PR #9 open; `copilot-pull-request-reviewer[bot]` posted a COMMENTED review unprompted |
+| gitleaks CI job | ✅ removed via PR #9 (merged) — native secret scanning + push protection covers it |
+| F19: playwright MCP | ✅ rewired to global binary (`@playwright/mcp` cli.js) — was npx cold-start failure |
+| F19: postgres MCP | ✅ DB connection verified (`SELECT 1`); rewired to global binary with `{env:DATABASE_URL}` arg — was npx cold-start failure |
+| F19: humanity4ai MCP | ✅ built `mcp-servers/dist` (tsc), rewired to `node dist/bin.js` — was tsx/pnpm cold-start failure |
+| F19: n8n MCP | 🔴 **user action**: endpoint returns 401 — `N8N_API_KEY` invalid/expired. Regenerate in n8n cloud (Settings → API) and update `~/.bashrc` |
+| MCP restart verification | pending next opencode restart (all binaries smoke-tested manually) |
+| Deploys post-merge | ✅ 3/3 production deploys green after Dependabot merges |
 
 1. **Enable Copilot** on simonplmak-cloud — ✅ DONE 2026-07-20: reviewer request for `copilot-pull-request-reviewer[bot]` now accepted on PR #4 (previously no-op'd). Ruleset `copilot_code_review` active → auto-requests on future PRs; review text generation is async (pending on PR #4 at log time; AC-C1 auto-fire to be confirmed on next PR)
 2. **Vercel MCP OAuth** — ✅ DONE 2026-07-20: tokens stored in `~/.local/share/opencode/mcp-auth.json`; vercel MCP tools load on next opencode restart (AC-15 verification = one MCP call listing deployments)
