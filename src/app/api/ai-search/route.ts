@@ -21,8 +21,23 @@ import { queryHttpAll, sanitize } from "@/lib/surrealdb";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || "";
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "";
-const GOOGLE_CSE_ID = process.env.GOOGLE_CSE_ID || "";
+const BRAVE_API_KEY = process.env.BRAVE_API_KEY || "";
+
+// Authoritative ESG domains scoping web search (curated from the external_resource corpus + standard-setters)
+const ESG_SEARCH_DOMAINS = [
+  "eur-lex.europa.eu",
+  "environment.ec.europa.eu",
+  "ghgprotocol.org",
+  "tnfd.global",
+  "sciencebasedtargets.org",
+  "sdgs.un.org",
+  "unglobalcompact.org",
+  "www.cdp.net",
+  "globalreporting.org",
+  "ifrs.org",
+  "oecd.org",
+  "epa.gov",
+];
 
 interface RAGSource {
   id: string;
@@ -250,37 +265,43 @@ function mergeAndRank(
 }
 
 /**
- * Google Custom Search for web results from ESG-focused domains
+ * Brave Search for web results from authoritative ESG domains
  */
-async function googleSearch(query: string, limit: number = 5): Promise<RAGSource[]> {
-  if (!GOOGLE_API_KEY || !GOOGLE_CSE_ID) return [];
+async function braveSearch(query: string, limit: number = 5): Promise<RAGSource[]> {
+  if (!BRAVE_API_KEY) return [];
 
   const results: RAGSource[] = [];
   try {
+    const siteFilter = ESG_SEARCH_DOMAINS.map((d) => `site:${d}`).join(" OR ");
     const params = new URLSearchParams({
-      key: GOOGLE_API_KEY,
-      cx: GOOGLE_CSE_ID,
-      q: query,
-      num: String(Math.min(limit, 10)),
+      q: `${query} (${siteFilter})`,
+      count: String(Math.min(limit, 10)),
     });
     const resp = await fetch(
-      `https://www.googleapis.com/customsearch/v1?${params.toString()}`,
-      { next: { revalidate: 3600 } }
+      `https://api.search.brave.com/res/v1/web/search?${params.toString()}`,
+      {
+        headers: {
+          "X-Subscription-Token": BRAVE_API_KEY,
+          Accept: "application/json",
+        },
+        next: { revalidate: 3600 },
+      }
     );
     if (!resp.ok) {
-      console.error("[AI Search] Google CSE error:", resp.status, await resp.text());
+      console.error("[AI Search] Brave error:", resp.status, await resp.text());
       return [];
     }
     const data = await resp.json();
-    if (data.items && Array.isArray(data.items)) {
-      for (const item of data.items) {
-        const domain = new URL(item.link).hostname.replace(/^www\./, "");
+    const items = data.web?.results;
+    if (Array.isArray(items)) {
+      for (const item of items) {
+        const domain = new URL(item.url).hostname.replace(/^www\./, "");
         results.push({
-          id: `google:${item.link}`,
+          id: `brave:${item.url}`,
           title: item.title || "",
-          url: item.link,
-          link: item.link,
-          snippet: (item.snippet || "").slice(0, 300),
+          url: item.url,
+          link: item.url,
+          snippet: (item.description || "").slice(0, 300),
           source_type: "external",
           domain,
           relevance: 0.5, // lower priority than SurrealDB results
@@ -288,7 +309,7 @@ async function googleSearch(query: string, limit: number = 5): Promise<RAGSource
       }
     }
   } catch (err) {
-    console.error("[AI Search] Google CSE fetch error:", err);
+    console.error("[AI Search] Brave fetch error:", err);
   }
   return results;
 }
@@ -328,7 +349,7 @@ function buildRAGContext(sources: RAGSource[]): string {
     }
   }
 
-  const webResults = sources.filter((s) => s.id.startsWith("google:"));
+  const webResults = sources.filter((s) => s.id.startsWith("brave:"));
   if (webResults.length > 0) {
     parts.push("\n## Web Search Results (from authoritative ESG sources)\n");
     for (const w of webResults.slice(0, 5)) {
@@ -394,30 +415,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Step 1: Retrieve context from SurrealDB (BM25 + vector) + Google CSE
+    // Step 1: Retrieve context from SurrealDB (BM25 + vector) + Brave Search
     const bm25Promise = bm25Search(query.trim(), mode === "quick" ? 5 : 8);
     const vectorPromise =
       embedding && Array.isArray(embedding) && embedding.length === 384
         ? vectorSearch(embedding, mode === "quick" ? 5 : 8)
         : Promise.resolve([]);
-    const googlePromise = mode === "deep"
-      ? googleSearch(query.trim(), 5)
+    const bravePromise = mode === "deep"
+      ? braveSearch(query.trim(), 5)
       : Promise.resolve([]);
 
-    const [bm25Results, vectorResults, googleResults] = await Promise.all([
+    const [bm25Results, vectorResults, braveResults] = await Promise.all([
       bm25Promise,
       vectorPromise,
-      googlePromise,
+      bravePromise,
     ]);
 
-    // Merge SurrealDB results first, then append Google results
+    // Merge SurrealDB results first, then append Brave results
     const mergedSources = mergeAndRank(bm25Results, vectorResults);
-    // Add Google results that aren't already in the merged set
+    // Add Brave results that aren't already in the merged set
     const existingUrls = new Set(mergedSources.map(s => s.url).filter(Boolean));
-    for (const gr of googleResults) {
-      if (!existingUrls.has(gr.url) && mergedSources.length < 25) {
-        mergedSources.push(gr);
-        existingUrls.add(gr.url);
+    for (const br of braveResults) {
+      if (!existingUrls.has(br.url) && mergedSources.length < 25) {
+        mergedSources.push(br);
+        existingUrls.add(br.url);
       }
     }
     const ragContext = buildRAGContext(mergedSources);

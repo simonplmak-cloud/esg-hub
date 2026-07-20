@@ -95,7 +95,7 @@
     "thinking": "सोच रहा है...",
     "generating": "जनरेट हो रहा है...",
     "searchingKnowledgeBase": "नॉलेज बेस खोज रहा है...",
-    "poweredBy": "DeepSeek + SurrealDB RAG + Google CSE द्वारा संचालित",
+    "poweredBy": "DeepSeek + SurrealDB RAG + Brave Search द्वारा संचालित",
     "searchingAcross": "307 लेखों, 1,954 पुस्तक अंशों, 244 बाहरी स्रोतों, और 12 ESG वेब डोमेन में खोज रहा है...",
     "inclWebResults": "GRI, IFRS, OECD, EPA, UN, SEC और अधिक से वेब परिणाम शामिल हैं",
     "noResultsFor": "\"{query}\" के लिए कोई परिणाम नहीं मिला",

@@ -95,7 +95,7 @@
     "thinking": "思考中...",
     "generating": "生成中...",
     "searchingKnowledgeBase": "正在搜索知识库...",
-    "poweredBy": "由DeepSeek + SurrealDB RAG + Google CSE提供支持",
+    "poweredBy": "由DeepSeek + SurrealDB RAG + Brave Search提供支持",
     "searchingAcross": "正在搜索307篇文章、1954个书籍摘录、244个外部来源和12个ESG网页域...",
     "inclWebResults": "包括来自GRI、IFRS、经合组织、环保署、联合国、SEC等网页结果",
     "noResultsFor": "未找到 {query} 的相关结果",

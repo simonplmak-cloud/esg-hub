@@ -95,7 +95,7 @@
     "thinking": "Thinking...",
     "generating": "Generating...",
     "searchingKnowledgeBase": "Searching knowledge base...",
-    "poweredBy": "Powered by DeepSeek + SurrealDB RAG + Google CSE",
+    "poweredBy": "Powered by DeepSeek + SurrealDB RAG + Brave Search",
     "searchingAcross": "Searching across 307 articles, 1,954 book excerpts, 244 external sources, and 12 ESG web domains...",
     "inclWebResults": "incl. web results from GRI, IFRS, OECD, EPA, UN, SEC & more",
     "noResultsFor": "No results found for \"{query}\"",
