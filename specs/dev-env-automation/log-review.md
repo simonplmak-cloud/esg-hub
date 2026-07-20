@@ -161,11 +161,27 @@ Exposed-credential postures after publication: SurrealDB password — rotated be
 | F19: perplexity MCP | ✅ rewired to global binary (`@perplexity-ai/mcp-server` dist/index.js) — was npx cold-start failure |
 | F19: humanity4ai startup | ✅ root-caused + fixed 2026-07-20: `bin.ts` calls `main()` AND `mcp-server.ts` auto-runs `main()` on import → double `server.connect()` → fatal at boot. opencode now points at `dist/mcp-server.js` (single-connect path; valid JSON-RPC verified). **Upstream fix recommended in project_human:** remove the `main()` call from `bin.ts` (keep the auto-run) or vice versa. Timeout field note: opencode `timeout` = tools-fetch (default 5s), not boot |
 
-## MCP final status (2026-07-20)
+## MCP final status (2026-07-20, ALL GREEN)
 
-**Verified live:** github (simonplmak-cloud) · browserless · brave-search (new key) · esg-hub · perplexity (tools used in-session) · postgres (`postgres_query` + `SELECT 1`)
-**Loaded, no startup failures:** playwright · n8n (OAuth refreshed by user) · vercel (OAuth valid)
-**Pending next restart:** humanity4ai (timeout fix), perplexity (binary fix) · google-search: intentionally disabled (replaced by Brave)
+| Server | State | Verification |
+|--------|-------|--------------|
+| github | ✅ | get_me → simonplmak-cloud |
+| browserless | ✅ | screenshot of prod via MCP |
+| brave-search | ✅ | live query returns results (new key) |
+| perplexity | ✅ | live query returns results (global binary) |
+| esg-hub | ✅ | 354 pages via prod API |
+| postgres | ✅ | `SELECT 1` + `postgres_query` tool |
+| context7, gh_grep, clerk | ✅ | used throughout the project |
+| playwright | ✅ | loads clean (global binary) |
+| n8n | ✅ | OAuth refreshed by user; no startup failure |
+| vercel | ✅ | OAuth valid; no startup failure |
+| humanity4ai | ✅ | loads clean after double-`main()` fix (points at `dist/mcp-server.js`) |
+| google-search | ⊘ disabled | intentionally replaced by Brave |
+| google-workspace, ms-365 | ⊘ disabled | pending OAuth (out of scope) |
+
+Future option noted: SurrealDB ships an official MCP (`surrealdb/surrealmcp` Docker image, surrealdb.com/mcp) — could give agents direct SurrealQL access to esg_hub if ever wanted.
+
+Startup log after final restart: **zero `server unavailable` warnings** (2026-07-20 14:57+).
 | MCP restart verification | pending next opencode restart (all binaries smoke-tested manually) |
 | Deploys post-merge | ✅ 3/3 production deploys green after Dependabot merges |
 
