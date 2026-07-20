@@ -1,6 +1,6 @@
 # Repo Debug & Cleanup — Code Review Findings
 
-Status: Approved (Gate 1 passed)
+Status: Completed (2026-07-20, PR #10)
 Version: 1.0
 Last updated: 2026-07-20
 
@@ -67,3 +67,16 @@ Apply the findings of a focused code review of the esg-hub repository: remove a 
 - [RESOLVED] Root duplicates are unreachable (307 verified on prod) → safe to delete
 - [RESOLVED] translate-db-content.mjs → delete (broken, superseded)
 - [OPEN] ~~AC-4 implementation~~ [RESOLVED 2026-07-20] → add constitution-pattern OPTIONS handlers to the 8 routes (user decision)
+
+## Completion Verification (2026-07-20)
+
+| AC | Result |
+|----|--------|
+| AC-1 | ✅ route deleted (404 on contents API); prod serves the generic not-found page with **zero** header leakage (`allHeaders`/`x-forwarded-host` absent). Note: Next.js returns HTTP 200 + HTML 404-body for ALL unmatched `/api/*` paths in this app (soft-404, verified with a bogus path) — platform-level behavior, logged as a separate observation |
+| AC-2 | ✅ 4 pages deleted, zero references; `/videos` → 307 → `/en/videos` preserved on prod |
+| AC-3 | ✅ script deleted |
+| AC-4 | ✅ OPTIONS handlers added to all 8 routes; 100% coverage audit; live: `OPTIONS /api/ai-search` → 204 |
+| AC-5 | ✅ no-op rewrite removed; `/api/v1` → 200 |
+| AC-6 | ✅ PR #10: check + preview + production deploy all green; E2E passed |
+| AC-7 | ✅ AGENTS.md updated |
+| Bonus | Copilot auto-review fired on PR #10 (COMMENTED) |
