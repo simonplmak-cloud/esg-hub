@@ -122,6 +122,15 @@ Purpose: record of environment state before/after each change per spec `spec.md`
 
 **Repo-public gate:** making `simonplmak-cloud/esg-hub` public is BLOCKED until the user rotates the GCP API key (it exists in git history and is still live). After rotation: flip visibility, enable secret scanning + push protection (free on public repos), verify footer GitHub link 200s.
 
+## Brave Search replacement + AI search repair (2026-07-20)
+
+| Item | State | Evidence |
+|------|-------|----------|
+| Google CSE → Brave Search (site AI search) | ✅ replaced + verified live | `braveSearch()` in `ai-search/route.ts` scoped to 12 authoritative ESG domains (from the `external_resource` corpus + standard-setters) via `site:` operators; `BRAVE_API_KEY` in Vercel env (all targets); deep-mode query returns scoped results (globalreporting.org, ifrs.org) |
+| google-search MCP | ✅ disabled | brave-search MCP covers the same need (key verified working, added to `~/.bashrc`) |
+| GCP key rotation | ➡️ simplified | Google CSE no longer used anywhere — user just **deletes** the exposed key in GCP Console (no replacement needed), clearing the go-public gate |
+| AI search generation broken (pre-existing) | ✅ fixed | stale `DEEPSEEK_API_KEY` in Vercel env; upserted the locally-verified key ×3 targets; prod streams full answers (439–496 chunks, no error events) |
+
 ## Pending user actions (not blocking)
 
 1. **Enable Copilot** on simonplmak-cloud — ✅ DONE 2026-07-20: reviewer request for `copilot-pull-request-reviewer[bot]` now accepted on PR #4 (previously no-op'd). Ruleset `copilot_code_review` active → auto-requests on future PRs; review text generation is async (pending on PR #4 at log time; AC-C1 auto-fire to be confirmed on next PR)
