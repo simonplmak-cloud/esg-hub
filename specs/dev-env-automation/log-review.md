@@ -110,6 +110,18 @@ Purpose: record of environment state before/after each change per spec `spec.md`
 | GitHub settings | ✅ required check `check` + force-push blocked (classic API — ruleset rejects status checks on this plan); ruleset active: non_fast_forward + copilot_code_review; alerts/auto-fixes on; homepage fixed |
 | Vercel settings | ✅ nodeVersion 22.x; ssoProtection off; env targets all 3; ignore-step set |
 
+## Pre-publication secret sweep (2026-07-20)
+
+| Item | State | Evidence |
+|------|-------|----------|
+| gitleaks full-history scan (133 commits) | 🟡 1 finding | `src/app/api/ai-search/route.ts:24` — live GCP API key committed as fallback (prod had no Vercel env var, so the fallback was in active use) |
+| GCP key fallback in code | ✅ removed | `|| ""`; interim value added to Vercel env (all 3 targets) so prod keeps working until user rotates the key in GCP Console |
+| `GOOGLE_CSE_ID` fallback | ✅ removed | same change; also added to Vercel env |
+| SurrealDB root password rotation | ✅ rotated + verified | `DEFINE USER OVERWRITE root ON ROOT PASSWORD … ROLES OWNER`; new password queried OK (354 pages), old rejected (401). Updated: Vercel env ×2 entries, GitHub secret, `~/.bashrc` |
+| Deploy with rotated creds | ✅ green | run 29711734065 success; prod /en + /api/v1 → 200 |
+
+**Repo-public gate:** making `simonplmak-cloud/esg-hub` public is BLOCKED until the user rotates the GCP API key (it exists in git history and is still live). After rotation: flip visibility, enable secret scanning + push protection (free on public repos), verify footer GitHub link 200s.
+
 ## Pending user actions (not blocking)
 
 1. **Enable Copilot** on simonplmak-cloud — ✅ DONE 2026-07-20: reviewer request for `copilot-pull-request-reviewer[bot]` now accepted on PR #4 (previously no-op'd). Ruleset `copilot_code_review` active → auto-requests on future PRs; review text generation is async (pending on PR #4 at log time; AC-C1 auto-fire to be confirmed on next PR)
