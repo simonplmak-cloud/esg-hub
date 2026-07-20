@@ -159,7 +159,7 @@ Exposed-credential postures after publication: SurrealDB password — rotated be
 | F19: humanity4ai MCP | ✅ built `mcp-servers/dist` (tsc), rewired to `node dist/bin.js` — was tsx/pnpm cold-start failure |
 | F19: n8n MCP | ✅ resolved 2026-07-20: OAuth-only server (API key irrelevant); user completed `opencode mcp auth n8n` — access token refreshed (valid, auto-renews via refresh token); static Bearer header removed from config |
 | F19: perplexity MCP | ✅ rewired to global binary (`@perplexity-ai/mcp-server` dist/index.js) — was npx cold-start failure |
-| F19: humanity4ai startup | ✅ root-caused: even compiled bin takes ~35s to boot on this slow machine (heavy schema I/O); added `timeout: 120000` to its config entry |
+| F19: humanity4ai startup | ✅ root-caused + fixed 2026-07-20: `bin.ts` calls `main()` AND `mcp-server.ts` auto-runs `main()` on import → double `server.connect()` → fatal at boot. opencode now points at `dist/mcp-server.js` (single-connect path; valid JSON-RPC verified). **Upstream fix recommended in project_human:** remove the `main()` call from `bin.ts` (keep the auto-run) or vice versa. Timeout field note: opencode `timeout` = tools-fetch (default 5s), not boot |
 
 ## MCP final status (2026-07-20)
 
