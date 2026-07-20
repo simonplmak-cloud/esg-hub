@@ -120,7 +120,23 @@ Purpose: record of environment state before/after each change per spec `spec.md`
 | SurrealDB root password rotation | ✅ rotated + verified | `DEFINE USER OVERWRITE root ON ROOT PASSWORD … ROLES OWNER`; new password queried OK (354 pages), old rejected (401). Updated: Vercel env ×2 entries, GitHub secret, `~/.bashrc` |
 | Deploy with rotated creds | ✅ green | run 29711734065 success; prod /en + /api/v1 → 200 |
 
-**Repo-public gate:** making `simonplmak-cloud/esg-hub` public is BLOCKED until the user rotates the GCP API key (it exists in git history and is still live). After rotation: flip visibility, enable secret scanning + push protection (free on public repos), verify footer GitHub link 200s.
+**Repo-public gate:** ~~BLOCKED~~ **REPO IS PUBLIC as of 2026-07-20** ✅
+
+## Repository publication record (2026-07-20)
+
+| Step | Result |
+|------|--------|
+| Pre-publication sweeps | gitleaks history scan (1 GCP key found + removed from HEAD); SurrealDB password rotated everywhere first |
+| Exposed GCP API key | ✅ deleted by user in GCP Console; verified "API Key not found" (was "forbidden" before) |
+| Visibility flip | `PATCH private:false` → `"visibility":"public"` |
+| Secret scanning + push protection | ✅ enabled (free on public) — **AC-D4 fully satisfied natively**, gitleaks CI job now redundant-but-harmless |
+| Dependabot | security updates enabled; alerts API 204; 0 open vulnerability alerts |
+| Branch protection | ✅ survived: required check `check`, enforce_admins=false |
+| Ruleset | ✅ survived: active, `non_fast_forward` + `copilot_code_review` |
+| Footer GitHub link | ✅ 200 (was anonymous-404 — lychee false-positive eliminated) |
+| Prod | /en + /api/v1 → 200 after all changes |
+
+Exposed-credential postures after publication: SurrealDB password — rotated before exposure (history value invalid). GCP key — deleted before exposure (history value invalid). **No live credentials exist in the repo history.**
 
 ## Brave Search replacement + AI search repair (2026-07-20)
 
