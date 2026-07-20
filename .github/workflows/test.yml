@@ -34,7 +34,7 @@ jobs:
         run: ln -s "$GITHUB_WORKSPACE/tool_packages_repo" "${GITHUB_WORKSPACE}/../tool_package"
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -86,7 +86,7 @@ jobs:
         run: ln -s "$GITHUB_WORKSPACE/tool_packages_repo" "${GITHUB_WORKSPACE}/../tool_package"
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
