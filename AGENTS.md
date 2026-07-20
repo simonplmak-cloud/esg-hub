@@ -29,8 +29,7 @@ Local: the config starts its own `next dev -p 3001` webServer (`playwright.confi
 - Next.js 15 App Router, React 19, `output: "standalone"` (`next.config.mjs:7`), deployed to Vercel via API trigger from GitHub Actions (not Vercel's git integration).
 - Whole site is request-time DB rendering: `export const dynamic = "force-dynamic"` in `src/app/[locale]/layout.tsx:11`.
 - `src/app/layout.tsx` is a pass-through; the real layout is `src/app/[locale]/layout.tsx`. Root `src/app/page.tsx` only redirects to `/en`.
-- `next-intl` prefixes all routes with `/en`, `/zh`, `/hi` (`src/i18n/routing.ts`).
-- **Duplicate pages**: `src/app/{books,contents,search,videos}/page.tsx` are non-localized copies of the `[locale]/` counterparts, and both are actively maintained. Edits do not propagate — check/update both.
+- `next-intl` prefixes all routes with `/en`, `/zh`, `/hi` (`src/i18n/routing.ts`). Unprefixed paths 307-redirect to the default locale via middleware.
 - Database: SurrealDB Cloud via JSON-RPC over HTTP (`queryHttp()` / `queryHttpAll()` in `src/lib/surrealdb.ts`) — never WebSocket.
 - DB namespace is hardcoded to `"esg_hub"` (`surrealdb.ts:20`); the `SURREAL_NAMESPACE` env var is intentionally ignored in app code so another project's shell var can't shadow it. Scripts do read the env var.
 - `src/pages/_error.js` is the last Pages Router file — never add pages there.
