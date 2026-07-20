@@ -37,7 +37,7 @@ Local: the config starts its own `next dev -p 3001` webServer (`playwright.confi
 
 ### mcp-server/ (separate package)
 
-Standalone MCP server (`@esg-hub/mcp-server`) wrapping the public REST API at `/api/v1`. Not in the pnpm workspace, excluded from root tsconfig and vitest, installed with npm. Its `dist/` is committed to git, but `mcp-server/node_modules/` is NOT gitignored — stage files explicitly; never `git add .`.
+Standalone MCP server (`@esg-hub/mcp-server`) wrapping the public REST API at `/api/v1`. Not in the pnpm workspace, excluded from root tsconfig and vitest, installed with npm. Its `dist/` and `package-lock.json` are committed to git for reproducibility.
 
 ### specs/ and constitution.md
 
@@ -90,4 +90,3 @@ This repo belongs to the `simonplmak-cloud` account. gh CLI and git authenticate
 ## Git
 
 - No commits unless explicitly requested; never force-push main.
-- `git add .` stages `mcp-server/node_modules/` (not ignored) — stage files explicitly.
