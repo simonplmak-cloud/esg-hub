@@ -157,7 +157,15 @@ Exposed-credential postures after publication: SurrealDB password — rotated be
 | F19: playwright MCP | ✅ rewired to global binary (`@playwright/mcp` cli.js) — was npx cold-start failure |
 | F19: postgres MCP | ✅ DB connection verified (`SELECT 1`); rewired to global binary with `{env:DATABASE_URL}` arg — was npx cold-start failure |
 | F19: humanity4ai MCP | ✅ built `mcp-servers/dist` (tsc), rewired to `node dist/bin.js` — was tsx/pnpm cold-start failure |
-| F19: n8n MCP | 🟡 root cause found 2026-07-20: the MCP server authenticates via **OAuth** (verified `/.well-known/oauth-authorization-server`), NOT the n8n REST API key — the static `Authorization: Bearer {env:N8N_API_KEY}` header was removed from opencode.json. Fix: user runs `opencode mcp auth n8n` (browser consent). The API key created 2026-07-20 remains valid for the n8n REST API |
+| F19: n8n MCP | ✅ resolved 2026-07-20: OAuth-only server (API key irrelevant); user completed `opencode mcp auth n8n` — access token refreshed (valid, auto-renews via refresh token); static Bearer header removed from config |
+| F19: perplexity MCP | ✅ rewired to global binary (`@perplexity-ai/mcp-server` dist/index.js) — was npx cold-start failure |
+| F19: humanity4ai startup | ✅ root-caused: even compiled bin takes ~35s to boot on this slow machine (heavy schema I/O); added `timeout: 120000` to its config entry |
+
+## MCP final status (2026-07-20)
+
+**Verified live:** github (simonplmak-cloud) · browserless · brave-search (new key) · esg-hub · perplexity (tools used in-session) · postgres (`postgres_query` + `SELECT 1`)
+**Loaded, no startup failures:** playwright · n8n (OAuth refreshed by user) · vercel (OAuth valid)
+**Pending next restart:** humanity4ai (timeout fix), perplexity (binary fix) · google-search: intentionally disabled (replaced by Brave)
 | MCP restart verification | pending next opencode restart (all binaries smoke-tested manually) |
 | Deploys post-merge | ✅ 3/3 production deploys green after Dependabot merges |
 
