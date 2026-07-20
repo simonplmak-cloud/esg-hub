@@ -21,8 +21,8 @@ import { queryHttpAll, sanitize } from "@/lib/surrealdb";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || "";
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "AIzaSyBlxCo0Pouj7q7_SXrEt5A_R6ptBArfOSI";
-const GOOGLE_CSE_ID = process.env.GOOGLE_CSE_ID || "91c4fb08953b44d7d";
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "";
+const GOOGLE_CSE_ID = process.env.GOOGLE_CSE_ID || "";
 
 interface RAGSource {
   id: string;
