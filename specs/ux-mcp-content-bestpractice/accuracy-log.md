@@ -312,3 +312,17 @@ References added: framework home-base list.
 - **hong-kong-china**: STAGE year corrected (2022 → Dec 2020); HKEX climate phasing precision (LargeCap FY2025, Main Board FY2026, GEM comply-or-explain); dead HKEX/HKMA/SSE/PBOC links replaced (HKMA press page, sse.com.cn root, PBOC catalogue → plain text, EEB for CAP2050). References: 3.
 - **singapore-asean**: SGX phasing corrected (mandatory ISSB climate for large issuers ≥S$1B from FY2025, others comply-or-explain; Scope 3 FY2026; assurance FY2027); dead MAS links replaced (MAS SAT taxonomy page, env-risk guidelines). ASEAN Taxonomy v2 link updated. References: 3.
 - **australia-new-zealand**: group thresholds corrected (AND → **2 of 3** per group); dead DCCEEW (unreachable) and APRA CPG 229 links replaced (Climate Change Act 2022, APRA news); NZ ETS link replaced (environment.govt.nz). References: 3.
+
+## practice section (7/7, 2026-07-21)
+
+- **assurance-verification**: "CSRD requires reasonable assurance (phased in by 2028)" + "2028 onwards reasonable" **corrected** — Omnibus removed the progression; limited assurance is the ceiling (Commission proposal PDF + Consilium). References: 3 (IAASB ISSA 5000, ISAE 3000).
+- **esg-integration**: dead PRI esg-integration link → unpri.org. References: 2.
+- **materiality-assessment**: dead efrag lab6 link → EFRAG sustainability-reporting; dead materiality.sasb.org (domain gone) → IFRS SASB standards. References: 3.
+- **practice hub, data-management, stakeholder-engagement, target-setting**: References added (process pages, claims already sound).
+
+## emerging-topics section (8/8, 2026-07-21)
+
+- **just-transition**: "Just Transition Act (proposed 2023)" **corrected** — **Canadian Sustainable Jobs Act, enacted June 2024** (laws.justice.gc.ca C-23.25); dead ILO green-jobs link → ILO just-transition guidelines publication page; JTF €17.5B ✓, ILO 2015 guidelines ✓. References: 3.
+- **ai-ethics-algorithmic-bias**: AI Act 2024 fines (€35M/7%) ✓, COMPAS 2016 ✓, Amazon 2018 ✓, NYC LL144 2023 ✓, China algorithm regs 2022 ✓ — all confirmed. References: 4 (added EUR-Lex AI Act, NYC DCA, CAC, ProPublica).
+- **human-rights-technology**: "2.6 billion without internet (2024)" ✓ (ITU Facts & Figures 2024). References: 2.
+- **circular-economy, scope-3, sustainable-supply-chains, tnfd-nature, emerging-topics hub**: References added (EMF, GHG Protocol, CDP, TNFD).
