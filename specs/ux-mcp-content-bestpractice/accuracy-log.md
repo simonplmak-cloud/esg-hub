@@ -339,3 +339,7 @@ Bulk URL sweep (309 unique URLs) → ~40 dead links fixed with verified replacem
 
 22/23 pages applied. URL sweep: HKEX restructure links (×3 → HKEX climate announcement), asean.org ×3 (Sucuri WAF → taxonomy PDF v2 + plain text), treasury.gov.au consultation → root, HKMA green-finance → international-financial-centre, ssb-japan.go.jp + kssb.or.kr (geo-unreachable → plain text). References added per page (regulatory bodies per jurisdiction).
 **Redirect record (skipped, no References):** /hk-apac/hkex-esg/ — pure meta-refresh redirect to /hk-apac/hkex-esg-code/ (4th redirect in the project policy).
+
+## governance section (65/65, 2026-07-21)
+
+65 pages, 21 subsections. URL sweep (91 URLs): 14 dead fixed — EUR-Lex ESG ratings 2024/3005, COSO ERM root, EFRAG sustainability-reporting, FRC library, GRI download-the-standards ×2, HKEX governance → climate announcement, IAASB root, ISS root, gov.uk bribery guidance, NYSE regulation, unpri root, world-exchanges root; ethics.org (defunct → plain text). Theme-keyed References added to all 65; DB verified 65/65 with References.
