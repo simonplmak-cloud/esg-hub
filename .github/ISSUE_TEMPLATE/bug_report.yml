@@ -1,0 +1,38 @@
+name: Bug report
+description: Something on the ESG Hub site or API is broken
+title: "fix: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting a bug on ESG Hub.
+  - type: input
+    id: page-url
+    attributes:
+      label: Page or endpoint URL
+      description: Where does the bug happen? (e.g. https://esg-hub.ascent.partners/en/standards/gri or /api/v1/search)
+      placeholder: https://esg-hub.ascent.partners/en/...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happens instead? Include error messages or screenshots if helpful.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps are ideal
+      placeholder: "1. Go to ...\n2. Click ...\n3. See error"
+    validations:
+      required: false
