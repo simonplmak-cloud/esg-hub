@@ -280,7 +280,7 @@ Structured learning journeys to build ESG expertise, from foundational concepts 
 
 ## Key Resources
 
-- [PRI Academy](https://www.unpri.org/academy)
+- [PRI Academy](https://www.unpri.org/)
 - [GRI Academy](https://www.globalreporting.org/public-policy-partnerships/the-gri-academy/)
 
 ---

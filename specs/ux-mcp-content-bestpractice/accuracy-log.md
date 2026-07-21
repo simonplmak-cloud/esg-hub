@@ -326,3 +326,7 @@ References added: framework home-base list.
 - **ai-ethics-algorithmic-bias**: AI Act 2024 fines (€35M/7%) ✓, COMPAS 2016 ✓, Amazon 2018 ✓, NYC LL144 2023 ✓, China algorithm regs 2022 ✓ — all confirmed. References: 4 (added EUR-Lex AI Act, NYC DCA, CAC, ProPublica).
 - **human-rights-technology**: "2.6 billion without internet (2024)" ✓ (ITU Facts & Figures 2024). References: 2.
 - **circular-economy, scope-3, sustainable-supply-chains, tnfd-nature, emerging-topics hub**: References added (EMF, GHG Protocol, CDP, TNFD).
+
+## learning (10/10), biodiversity (11/11), climate-finance (13/13), environmental (23/23) — 2026-07-21
+
+Bulk URL sweep (309 unique URLs) → ~40 dead links fixed with verified replacements: GHG Protocol scope-3 path, EFRAG sustainability-reporting, GRI Academy, EPA EJ (news page), WRI Aqueduct, environment.ec air/water topics, ozone.unep.org Montreal Protocol, HK EPD/WSD roots, climate.gov.hk → EEB, unpri.org links, UNCCD/UNESCO roots, OECD circular-economy topic, INMS root, nutrientchallenge → INMS, oa-ie.org (defunct → plain text), menlhk.go.id (unreachable → plain text w/ Presidential Instruction No. 5/2019), asean.org (Sucuri WAF 307 → plain text ×2), amazon author page → simonmak.com, waterfootprint.org, worldbank, IESO, ADB roots. References blocks added to all 48 pages (framework source lists per section). All pages applied with live-verified URLs.
