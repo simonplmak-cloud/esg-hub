@@ -1,6 +1,6 @@
 # Public Repo Readiness — Config & Content Review
 
-Status: Approved (Gate 1 passed)
+Status: Completed (2026-07-21, PR #21)
 Version: 1.0
 Last updated: 2026-07-21
 
@@ -75,3 +75,19 @@ The repository went public on 2026-07-20. This spec covers everything needed to 
 
 - [RESOLVED] Contact email → `simon@ascent.partners` (user decision 2026-07-21)
 - [RESOLVED] Code license → MIT (user decision 2026-07-21; content remains CC BY-SA 4.0)
+
+## Completion Verification (2026-07-21)
+
+| AC | Result |
+|----|--------|
+| AC-1 | ✅ `LICENSE` (pure MIT) detected by GitHub as **MIT (MIT License)**; `LICENSE-CONTENT.md` holds the CC BY-SA 4.0 content statement (initial combined file detected as "Other" — split fixed it) |
+| AC-2 | ✅ `SECURITY.md` committed; private vulnerability reporting enabled (API 200 verified) |
+| AC-3 | ✅ `CONTRIBUTING.md` committed |
+| AC-4 | ✅ `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1, contact simon@ascent.partners) |
+| AC-5 | ✅ `bug_report.yml` + `content_error.yml` + `config.yml` (blank issues disabled, security contact link) |
+| AC-6 | ✅ description + 10 topics set (API read-back verified) |
+| AC-7 | ✅ README rewritten (badges, features, accurate stack, API/MCP, license section); broken `.env.example` reference fixed |
+| AC-8 | ✅ `.env.example` committed with `!.env.example` gitignore exception |
+| AC-9 | ✅ wiki + projects disabled (API: both false) |
+| AC-10 | ✅ `CITATION.cff` committed |
+| AC-11 | ✅ PR #21 CI green; Copilot auto-reviewed |
