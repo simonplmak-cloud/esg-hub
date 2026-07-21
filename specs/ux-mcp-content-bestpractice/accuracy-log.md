@@ -303,3 +303,12 @@ References added: framework home-base list.
 **Singles (7 content pages):** case-studies, glossary, learning-paths, site-index, sitemap, tools, videos — full URL sweeps run; dead links fixed: HKEX esg-introduction → HKEX climate announcement; carrotsandsticks.net → KPMG-hosted PDF; GRI training → GRI Academy; danone integrated-report → publications page; kering EP&L → sustainability hub; unilever planet-and-society = bot-blocked WAF (documented, kept). Script's verifyUrl improved: curl second opinion now triggers on ANY non-200 (was exceptions only) — correctly classifies WAF 404-vs-403 bot-blocks.
 
 **Redirect records (3, no References — functional redirects):** /learn/, /sdgs/, /regional/ — logged, intentionally untouched (same policy as the 4 article-section redirects earlier).
+
+## regulations section (6/6, 2026-07-21)
+
+- **united-states**: SEC 2025 status added (ended defense Mar 2025, abeyance, rescission proposed 2026 — sec.gov 2025-58); SB 253/261 ✓; EPA GHGRP ✓. References: 5.
+- **united-kingdom**: TCFD 2022 ✓ (first G20), SDR labels ✓, MSA £36M ✓. References: 3 (+ dead SECR and green-taxonomy links replaced with live gov.uk pages).
+- **european-union**: Omnibus I corrections applied (scope >1000/€450M, SMEs removed, stop-the-clock, €450M non-EU, assurance ceiling); dead efrag lab6 link fixed. References: 3.
+- **hong-kong-china**: STAGE year corrected (2022 → Dec 2020); HKEX climate phasing precision (LargeCap FY2025, Main Board FY2026, GEM comply-or-explain); dead HKEX/HKMA/SSE/PBOC links replaced (HKMA press page, sse.com.cn root, PBOC catalogue → plain text, EEB for CAP2050). References: 3.
+- **singapore-asean**: SGX phasing corrected (mandatory ISSB climate for large issuers ≥S$1B from FY2025, others comply-or-explain; Scope 3 FY2026; assurance FY2027); dead MAS links replaced (MAS SAT taxonomy page, env-risk guidelines). ASEAN Taxonomy v2 link updated. References: 3.
+- **australia-new-zealand**: group thresholds corrected (AND → **2 of 3** per group); dead DCCEEW (unreachable) and APRA CPG 229 links replaced (Climate Change Act 2022, APRA news); NZ ETS link replaced (environment.govt.nz). References: 3.
