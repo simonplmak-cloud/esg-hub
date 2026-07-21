@@ -1,0 +1,32 @@
+name: Content error
+description: Wrong, outdated, or broken content in the encyclopedia
+title: "content: "
+labels: [content]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Encyclopedia content lives in our database — maintainers review and apply verified corrections directly.
+        For dead links, please paste the exact URL that's broken.
+  - type: input
+    id: page-url
+    attributes:
+      label: Page URL
+      description: The ESG Hub page with the error
+      placeholder: https://esg-hub.ascent.partners/en/...
+    validations:
+      required: true
+  - type: textarea
+    id: whats-wrong
+    attributes:
+      label: What's wrong
+      description: Quote or describe the incorrect/outdated/broken content
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Suggested correction
+      description: What should it say? Include a source link if possible — corrections with sources are applied fastest
+    validations:
+      required: true

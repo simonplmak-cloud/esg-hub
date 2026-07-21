@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this encyclopedia, please cite it as below."
+type: dataset
+title: "ESG Hub — Open-Access ESG Encyclopedia"
+authors:
+  - family-names: Mak
+    given-names: Simon
+    affiliation: Ascent Partners Foundation
+publisher:
+  name: Ascent Partners Foundation
+url: "https://esg-hub.ascent.partners"
+repository-code: "https://github.com/simonplmak-cloud/esg-hub"
+license: "CC-BY-SA-4.0"
+keywords:
+  - ESG
+  - sustainability
+  - environmental social governance
+  - sustainability reporting
+  - encyclopedia
+date-released: 2026-02-17
