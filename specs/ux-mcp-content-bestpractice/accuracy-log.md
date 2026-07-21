@@ -330,3 +330,12 @@ References added: framework home-base list.
 ## learning (10/10), biodiversity (11/11), climate-finance (13/13), environmental (23/23) — 2026-07-21
 
 Bulk URL sweep (309 unique URLs) → ~40 dead links fixed with verified replacements: GHG Protocol scope-3 path, EFRAG sustainability-reporting, GRI Academy, EPA EJ (news page), WRI Aqueduct, environment.ec air/water topics, ozone.unep.org Montreal Protocol, HK EPD/WSD roots, climate.gov.hk → EEB, unpri.org links, UNCCD/UNESCO roots, OECD circular-economy topic, INMS root, nutrientchallenge → INMS, oa-ie.org (defunct → plain text), menlhk.go.id (unreachable → plain text w/ Presidential Instruction No. 5/2019), asean.org (Sucuri WAF 307 → plain text ×2), amazon author page → simonmak.com, waterfootprint.org, worldbank, IESO, ADB roots. References blocks added to all 48 pages (framework source lists per section). All pages applied with live-verified URLs.
+
+## sdg section (21/21, 2026-07-21)
+
+21 pages (hub + 3 sub-hubs + SDG 1-17). URL sweep (54 URLs): 2 dead fixed — sdgcompass.org (defunct → sdgs.un.org/partnerships/sdg-compass), un.org ocean page (unreachable → sdgs.un.org/goals/goal14). Per-goal References added (sdgs.un.org/goals/goalN + 2030 Agenda resolution). All applied.
+
+## hk-apac section (22 applied + 1 redirect, 2026-07-21)
+
+22/23 pages applied. URL sweep: HKEX restructure links (×3 → HKEX climate announcement), asean.org ×3 (Sucuri WAF → taxonomy PDF v2 + plain text), treasury.gov.au consultation → root, HKMA green-finance → international-financial-centre, ssb-japan.go.jp + kssb.or.kr (geo-unreachable → plain text). References added per page (regulatory bodies per jurisdiction).
+**Redirect record (skipped, no References):** /hk-apac/hkex-esg/ — pure meta-refresh redirect to /hk-apac/hkex-esg-code/ (4th redirect in the project policy).
