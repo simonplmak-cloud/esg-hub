@@ -200,3 +200,49 @@ References added: 3.
 | ISO 50001:2018, PDCA | confirmed | ISO |
 
 References added: 2.
+
+## /standards/pcaf/ — PCAF (2026-07-21)
+
+7 asset classes ✓, financed emissions = Scope 3 Cat 15 ✓, attribution formula ✓, 5-level data quality score ✓ — all confirmed. References added: 1 (carbonaccountingfinancials.com/standard dropped after fetcher incompatibility; homepage verified via curl-fallback — script's verifyUrl gained a curl fallback for this machine's ETIMEDOUT quirks).
+
+## /standards/sasb/ — SASB (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| "Over 2,700 organizations" | **flagged + softened** — count unverifiable from primary sources; replaced with "thousands of companies and investors" | ifrs.org/sasb-standards (flagged) |
+| 77 industries, 11 sectors, 26 issues, 5 dimensions | confirmed | IFRS/SASB |
+| "merged with IFRS Foundation in 2022" | **refined** — Value Reporting Foundation merged into IFRS Foundation June 2022; SASB now maintained by ISSB | IFRS |
+
+References added: 2.
+
+## /standards/sfdr-sustainable-finance/ — SFDR (2026-07-21)
+
+Art 6/8/9 ✓, scope ✓, 18+46 PAI ✓, DNSH ✓ — all confirmed (page already had the 18+46 split). References added: 2.
+
+## /standards/social-governance/ilo-conventions/ — ILO (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| "eight fundamental conventions" | **corrected** — **ten since June 2022** (OSH as 5th principle; C155 + C187 elevated) | ILO fundamental principles page + OSH conventions page |
+| 8 conventions' numbers/years; C138 age 15 (13 light work); 1998 Declaration | confirmed | ILO |
+| ILO founded 1919; ~190 conventions | confirmed | ILO |
+
+References added: 3 (normlex.ilo.org dropped — unreachable from this machine; replaced with ilo.org/global/standards/).
+
+## /standards/social-governance/iso-26000/ — ISO 26000 (2026-07-21)
+
+2010 publication ✓, guidance (not certifiable) ✓, 90+ countries/40+ orgs development ✓, 7 core subjects ✓ — all confirmed. References added: 2.
+
+## /standards/social-governance/oecd-cg-principles/ — OECD CG Principles (2026-07-21)
+
+1999 first publication, 2023 revision ✓, FSB Key Standard ✓, 6 principles ✓, 2023 sustainability/digital/diversity strengthening ✓ — all confirmed. References added: 2.
+
+## /standards/social-governance/oecd-mne-guidelines/ — OECD MNE Guidelines (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| "due diligence (added in 2023)" as 11th chapter | **corrected** — due diligence is embedded in **Chapter II (General Policies)**, not a standalone chapter | OECD MNE Guidelines 2023 |
+| "elevated to a standalone chapter in 2023" | **corrected** — strengthened as cross-cutting expectation within Chapter II | OECD |
+| 1976 first adoption, June 2023 update, NCP mechanism | confirmed | OECD |
+
+References added: 2.

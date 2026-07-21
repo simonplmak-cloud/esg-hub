@@ -9,6 +9,7 @@
 import { getDbEnv } from "./lib/db-env.mjs";
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 const SPEC_DIR = new URL("../specs/ux-mcp-content-bestpractice/", import.meta.url).pathname;
 const env = getDbEnv();
@@ -42,14 +43,25 @@ async function verifyUrl(url) {
   try {
     const res = await fetch(url, {
       redirect: "follow",
-      signal: AbortSignal.timeout(20000),
+      signal: AbortSignal.timeout(45000),
       headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" },
     });
     if (res.status === 200) return "ok";
     if ([403, 415, 429, 202].includes(res.status)) return `bot-blocked(${res.status})`;
     return `FAIL(${res.status})`;
   } catch (e) {
-    return `FAIL(${e.name})`;
+    // Node fetch can fail where curl succeeds on this machine (ETIMEDOUT etc.)
+    try {
+      const code = execFileSync("curl", [
+        "-s", "-o", "/dev/null", "-w", "%{http_code}",
+        "--max-time", "30", "-L", "-A", "Mozilla/5.0", url,
+      ], { encoding: "utf8" }).trim();
+      if (code === "200") return "ok";
+      if (["403", "415", "429", "202"].includes(code)) return `bot-blocked(${code})`;
+      return `FAIL(${e.name}, curl:${code})`;
+    } catch {
+      return `FAIL(${e.name})`;
+    }
   }
 }
 
