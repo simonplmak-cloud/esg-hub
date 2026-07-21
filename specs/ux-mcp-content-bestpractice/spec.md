@@ -1,7 +1,7 @@
 # Best-Practice Architecture & Content Program — UX/IA, MCP, Content
 
-Status: Draft (Gate 1 pending)
-Version: 0.1
+Status: Completed (2026-07-21)
+Version: 1.0
 Last updated: 2026-07-21
 
 ## Overview
@@ -93,7 +93,25 @@ Review the webapp's UI/UX architecture and the MCP server design against researc
 
 - [RESOLVED] Research baselines gathered (IA/UX + MCP design, cited)
 - [RESOLVED] Pilot = `standards` section (33 pages) — highest citation sensitivity
-- [OPEN] Cross-reference population: run existing `generate-cross-references*.mjs` (may be stale/broken — verify first) vs write a small scoped generator for the pilot section — decide in plan.md
+- [OPEN] ~~Cross-reference population~~ [RESOLVED 2026-07-21] → scoped pilot generator (per plan §A2; legacy full-graph scripts rejected); record-ID convention matched to the existing `/related` API
+
+## Completion Verification (2026-07-21)
+
+| AC | Result |
+|----|--------|
+| AC-A1 | ✅ `architecture-review.md`: cited baseline + code-evidence gap table (G1 refs 15%, G2 empty graph = P0) + prioritized refinements |
+| AC-A2 | ✅ **33/33 pages have related_pages (162 links)** + backlinks; `/api/v1/pages/standards%2Fgri/related` returns real links live; record-ID convention matched to existing API contract |
+| AC-A3 | ✅ template convention documented; 5 thin-description pages got proper leads (4 redirect records intentionally left) |
+| AC-B1 | ✅ all 5 MCP tools annotated (`readOnlyHint`, `openWorldHint`; `idempotentHint` on 2) + what/when/returns descriptions — verified via tools/list |
+| AC-B2 | ✅ `structuredContent.pagination` {count,total,offset,has_more,next_offset} on both list tools — verified `limit=2 → next_offset=2` |
+| AC-B3 | ✅ `toolError()` envelope {code,message,retryable,hint} + isError — verified on bogus permalink (NOT_FOUND) |
+| AC-B4 | ✅ mcp-server v1.1.0, README updated, dist rebuilt and committed |
+| AC-C1 | ✅ **33/33 pilot pages have `## References`** in locked format (`--status` verified) |
+| AC-C2 | ✅ per-page claim verification vs primary sources; 40+ corrections applied (GRI 2021 principles, CDP scoring/modules, CSDDD/CSRD Omnibus scope, ILO 10 conventions, OECD DD chapter, RED III targets, GRESB 2024, ISO Survey, hub links); full record in `accuracy-log.md` |
+| AC-C3 | ✅ `content-review-methodology.md` (6-step repeatable procedure) + `scripts/review-pilot-content.mjs` driver |
+| AC-C4 | ✅ every written URL live-checked at write time; 12 dead research-suggested URLs caught by the write gate and replaced |
+| AC-D1 | ✅ `references.md` finalized: 24 research sources + per-page verification sources table + URL hygiene record |
+| AC-D2 | ✅ all changes committed to main; DB content live immediately (spot-checked renders); MCP dist committed; CI green throughout |
 
 ## References (research sources, full list in references.md at Gate 2)
 
