@@ -1,56 +1,16 @@
-name: Nightly Health Check
+# Contract: Nightly Issue Lifecycle Steps
 
-on:
-  schedule:
-    - cron: "17 18 * * *" # 18:17 UTC = ~02:17 HKT
-  workflow_dispatch: {}
+Locks the YAML for the two replacement steps in `.github/workflows/nightly.yml` (Gate 2). Existing check steps are unchanged except gaining `id:` fields (`verify_db`, `smoke`; `lychee` already has one).
 
-permissions:
-  contents: read
-  issues: write
+## Step A — Open or update issue on failure
 
-jobs:
-  health:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Verify database schema
-        id: verify_db
-        run: node scripts/verify-db-schema.mjs
-        env:
-          SURREAL_ENDPOINT: ${{ secrets.SURREAL_ENDPOINT }}
-          SURREAL_USERNAME: ${{ secrets.SURREAL_USERNAME }}
-          SURREAL_PASSWORD: ${{ secrets.SURREAL_PASSWORD }}
-          SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
-
-      - name: Production smoke checks
-        id: smoke
-        run: |
-          curl -sf -o /dev/null -w "GET /en -> %{http_code}\n" https://esg-hub.ascent.partners/en
-          curl -sf -o /dev/null -w "GET /api/v1 -> %{http_code}\n" https://esg-hub.ascent.partners/api/v1
-
-      - name: Broken link sweep
-        id: lychee
-        # Informational: outbound links may be bot-blocked (403/415/429) or
-        # dead in DB content — tracked via nightly-alert issue, not a red run.
-        continue-on-error: true
-        uses: lycheeverse/lychee-action@v2
-        with:
-          args: --max-retries 2 --timeout 20 --accept 200,204,301,302,307,308,403,415,429 --no-progress
-            "https://esg-hub.ascent.partners/en"
-            "https://esg-hub.ascent.partners/en/videos"
-            "https://esg-hub.ascent.partners/en/books"
-            "https://esg-hub.ascent.partners/api/v1"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+```yaml
       - name: Open or update issue on failure
         if: failure() || steps.lychee.outcome == 'failure'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          NOW: $(date)
         run: |
           DATE=$(date -u +"%Y-%m-%d %H:%M")
           if [ "${{ steps.verify_db.outcome }}" = "failure" ] || [ "${{ steps.smoke.outcome }}" = "failure" ]; then
@@ -72,7 +32,11 @@ jobs:
           else
             gh issue comment --repo ${{ github.repository }} "$EXISTING" --body "$BODY"
           fi
+```
 
+## Step B — Close health issue on clean run
+
+```yaml
       - name: Close health issue on clean run
         if: success() && steps.verify_db.outcome == 'success' && steps.smoke.outcome == 'success' && steps.lychee.outcome == 'success'
         env:
@@ -85,3 +49,10 @@ jobs:
               --body "✅ Resolved by clean nightly run $RUN_URL — all checks green (verify:db, smoke, link sweep: 0 errors). Closing; a new failure will reopen or recreate this issue."
             gh issue close --repo ${{ github.repository }} "$EXISTING"
           fi
+```
+
+## Invariants
+
+- Conditions mutually exclusive: Step A on `failure()`/lychee-failure, Step B on full `success()`
+- Step B is a no-op when no `nightly-alert` issue is open → green runs stay silent (AC-3)
+- No changes to check commands, sweep URLs, accept-list, schedule, or permissions (`issues: write` already present)
