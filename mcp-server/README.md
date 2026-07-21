@@ -43,13 +43,20 @@ node dist/index.js
 
 ## Available Tools
 
-| Tool | Description |
-|------|-------------|
-| `search_esg` | Full-text keyword search across all ESG content (BM25 ranking) |
-| `get_esg_page` | Retrieve the full content of a specific ESG article by permalink or slug |
-| `list_esg_pages` | List/filter ESG articles by section, pillar, or title |
-| `list_esg_resources` | List/filter curated external ESG resources by domain or title |
-| `get_esg_metadata` | Get database statistics (total pages, sections, pillars, domains) |
+| Tool | Description | Annotations |
+|------|-------------|-------------|
+| `search_esg` | Full-text keyword search across all ESG content (BM25 ranking) | readOnly, closed-world |
+| `get_esg_page` | Retrieve the full content of a specific ESG article by permalink or slug | readOnly, idempotent |
+| `list_esg_pages` | List/filter ESG articles by section, pillar, or title — paginated | readOnly |
+| `list_esg_resources` | List/filter curated external ESG resources by domain or title — paginated | readOnly |
+| `get_esg_metadata` | Get database statistics (total pages, sections, pillars, domains) | readOnly, idempotent |
+
+### v1.1.0 behaviors
+
+- **Pagination:** `list_esg_pages` / `list_esg_resources` return `structuredContent.pagination` with `count`, `total`, `offset`, `has_more`, and `next_offset` — pass `next_offset` as the next call's `offset` to page through results.
+- **Structured output:** every tool returns a `structuredContent` payload alongside the human-readable text.
+- **Error envelope:** failures return `isError: true` with `structuredContent.error = { code, message, retryable, hint }` — codes: `NOT_FOUND` (retryable: false), `UPSTREAM_ERROR` (retryable on 5xx/network).
+- **Empty search guidance:** zero-result searches return guidance text suggesting broader terms or browsing by section.
 
 ## Example Prompts
 
