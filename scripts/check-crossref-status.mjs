@@ -1,7 +1,7 @@
 import { getNamespace } from "./lib/db-env.mjs";
-const SURREAL_ENDPOINT = "https://valuation-webap-06dvm6i94trq92goln8f5gebnk.aws-euw1.surreal.cloud";
+const SURREAL_ENDPOINT = (process.env.SURREAL_ENDPOINT || "");
 const SURREAL_USERNAME = "root";
-const SURREAL_PASSWORD = "ValuationApp2026!";
+const SURREAL_PASSWORD = process.env.SURREAL_PASSWORD || "";
 const SURREAL_NAMESPACE = getNamespace();
 const SURREAL_DATABASE = "main";
 

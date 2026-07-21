@@ -6,11 +6,11 @@
 
 import { readFileSync } from 'fs';
 
-const SURREAL_ENDPOINT = 'https://valuation-webap-06dvm6i94trq92goln8f5gebnk.aws-euw1.surreal.cloud';
+const SURREAL_ENDPOINT = process.env.SURREAL_ENDPOINT || "";
 const SURREAL_NS = 'esg_hub';
 const SURREAL_DB = 'main';
 const SURREAL_USER = 'root';
-const SURREAL_PASS = 'ValuationApp2026!';
+const SURREAL_PASS = process.env.SURREAL_PASSWORD || "";
 
 async function query(sql) {
   const res = await fetch(`${SURREAL_ENDPOINT}/sql`, {

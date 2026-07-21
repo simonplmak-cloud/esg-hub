@@ -9,14 +9,15 @@ Model: BAAI/bge-small-en-v1.5 (384 dimensions)
 import json
 import time
 import sys
+import os
 import base64
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
 # SurrealDB connection
-SURREAL_ENDPOINT = "https://valuation-webap-06dvm6i94trq92goln8f5gebnk.aws-euw1.surreal.cloud"
+SURREAL_ENDPOINT = os.environ.get("SURREAL_ENDPOINT", "")
 SURREAL_USERNAME = "root"
-SURREAL_PASSWORD = "ValuationApp2026!"
+SURREAL_PASSWORD = os.environ.get("SURREAL_PASSWORD", "")
 SURREAL_NAMESPACE = "esg_hub"
 SURREAL_DATABASE = "main"
 
