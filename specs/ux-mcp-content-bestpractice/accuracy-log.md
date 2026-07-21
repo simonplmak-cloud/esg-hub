@@ -146,3 +146,57 @@ References added: 4.
 | CO2 standards 2035 zero-emission; ESR −10% to −50%; LULUCF −310 Mt | confirmed | Commission |
 
 References added: 5 (ESR URL 404'd at gate → replaced with EUR-Lex Reg 2018/842).
+
+## /standards/investment/eu-taxonomy/ — EU Taxonomy (2026-07-21)
+
+Regulation 2020/852 ✓, Climate DA June 2021 ✓, Environmental DA June 2023 ✓, 4 alignment conditions ✓, nuclear/gas Complementary DA 2022 ✓ — all confirmed. References added: 3 (2 finance.ec.europa.eu URLs 404'd at gate → EUR-Lex 2021/2139 + 2023/2485).
+
+## /standards/investment/gresb/ — GRESB (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| "2,000+ entities, $8.6T" | **corrected** — 2024 official: 2,223 RE portfolios + 887 infrastructure, ~$9T GAV | GRESB 2024 results |
+| "170+ investors, $51T AUM" | **softened** — AUM figure unverifiable from primary sources; kept "over 170 institutional investors" | GRESB |
+| Founded 2009 by pension funds; score 0-100; 1-5 stars | confirmed | GRESB |
+
+References added: 3 (gresb.com/nl-en/standards/ 404'd at gate → gresb.com).
+
+## /standards/investment/pri/ — PRI (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| 5,300+ signatories, ~$121T AUM | confirmed (directionally, per PRI reporting) | unpri.org/signatories |
+| 2006 NYSE launch; 6 principles | confirmed | unpri.org |
+
+References added: 2 (unpri.org/pri/* and /reporting-and-assessment 404'd at gate → live PRI URLs).
+
+## /standards/investment/sfdr/ — SFDR (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| 18 mandatory PAI indicators | confirmed (+ **46 additional opt-in** added for precision) | RTS (Del. Reg. 2022/1288) |
+| In force March 2021; RTS from Jan 2023; Art 6/8/9; 2023 review | confirmed | EUR-Lex 2019/2088 |
+
+References added: 2 (+ pre-existing dead ESMA link replaced with EUR-Lex RTS).
+
+## /standards/ifrs-s1-s2/ — IFRS S1 & S2 (2026-07-21)
+
+Existing footnote References (14 entries) verified live: 12 OK, **2 dead fixed** (efrag.org/lab6 → EFRAG-ISSB interoperability guidance May 2024; HKEX ESG link → HKEX climate enhancement announcement Apr 2024). iosco.org PDF = bot-block (403, documented). Claims confirmed: S1/S2 issued June 2023, effective 1 Jan 2024, TCFD disbanded 2023 → ISSB monitoring from 2024.
+
+## /standards/iso-14001/ — ISO 14001 (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| "Over 400,000 organizations in 171 countries" | **corrected** — ISO Survey 2024: **670,000+ certifications** worldwide | iso.org ISO 14000 family + ISO Survey |
+| ISO 14001:2015, PDCA structure | confirmed | ISO |
+
+References added: 3.
+
+## /standards/iso-50001/ — ISO 50001 (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| "Over 35,000 organizations in 120+ countries" | **flagged + softened** — figure unverifiable from primary sources; replaced with "organizations in over 120 countries (see ISO Survey)" | iso.org (flagged) |
+| ISO 50001:2018, PDCA | confirmed | ISO |
+
+References added: 2.
