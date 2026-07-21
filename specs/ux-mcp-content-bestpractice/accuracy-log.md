@@ -288,3 +288,10 @@ References added: framework home-base list.
 ## Pilot sweep (T-13, 2026-07-21)
 
 `review-pilot-content --status`: **33/33 pages have ## References** ✅. Every written URL live-checked at write time (200 or documented bot-block); 12 research-suggested URLs failed the write gate during the pilot and were replaced with live equivalents before applying. Backups for all 33 pages in `backup/`.
+
+## WS-A2 — Cross-reference graph (2026-07-21)
+
+- `scripts/generate-cross-references-pilot.mjs` (scoped generator, plan §A2): keyword-Jaccard (×3) + title-Jaccard (×2) + same-pillar bonus; top-5/page; MIN_SCORE 0.08. Dry-run assignments reviewed (CSRD↔ESRS top pair, Green Deal↔Fit-for-55 mutual top, investment cluster interlinked — semantically sound).
+- **33/33 pages have related_pages (162 links)**; backlinks computed as reverse map.
+- Convention fix: first apply wrote permalinks; the `/api/v1/pages/:id/related` + `/backlinks` routes expect **record IDs** (matching the legacy generator's convention) — generator fixed to write IDs, re-applied.
+- Live verification: `/api/v1/pages/standards%2Fgri/related` returns CDP, Standards hub, TCFD ✓; backlinks endpoint returns data ✓.
