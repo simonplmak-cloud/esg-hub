@@ -246,3 +246,45 @@ References added: 3 (normlex.ilo.org dropped — unreachable from this machine; 
 | 1976 first adoption, June 2023 update, NCP mechanism | confirmed | OECD |
 
 References added: 2.
+
+## /standards/social-governance/un-global-compact/ — UN Global Compact (2026-07-21)
+
+20,000+ companies + 3,800 non-business in 160+ countries ✓ (UNGC brochure), 2000 launch by Kofi Annan ✓, 10 principles ✓, CoP questionnaire since 2023 ✓, delisting for non-submission ✓ — all confirmed. References added: 3.
+
+## /standards/social-governance/ungp/ — UNGP (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| "GRI 411-414 directly reference UNGP concepts" | **corrected** — no such UNGP series in GRI; replaced with accurate framing (GRI 2 + social topic standards reference HRDD aligned with UNGPs) | GRI standards index (flagged) |
+| 2011 unanimous HRC endorsement, Ruggie, 3 pillars, 4-step HRDD, UNGP-based laws (CSDDD/Vigilance/LkSG) | confirmed | OHCHR |
+
+References added: 2.
+
+## /standards/tcfd/ — TCFD (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| Page silent on disbanding | **corrected** — added: TCFD completed remit, disbanded October 2023; ISSB monitoring from 2024 | fsb-tcfd.org |
+| EU row "~50,000 companies (phased 2024-2028)" | **corrected** — Wave 1 FY2024; scope narrowed by 2025 Omnibus | Consilium |
+| FSB 2015, 11 disclosures/4 pillars, IFRS S2 integration, jurisdiction rows (UK/NZ/SGX/HKEX/Japan/Switzerland/California SB 253) | confirmed | FSB-TCFD, regulators |
+
+References added: 3.
+
+## /standards/tnfd/ — TNFD (2026-07-21)
+
+September 2023 release ✓, TCFD-mirrored 4 pillars ✓, LEAP ✓, 14 recommended disclosures ✓, sector guidance ✓, spatial tools (IBAT/ENCORE/Trase) ✓ — all confirmed. References added: 2.
+
+## /standards/ — Standards hub (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| 3 broken links (climate-nature/iso-14001, iso-50001, pcaf paths) | **corrected** — /standards/iso-14001/, /standards/iso-50001/, /standards/pcaf/ | pilot permalinks |
+| "SBTi 6,000+ companies" | **corrected** — 7,000+ | SBTi |
+| "ILO 8 fundamental conventions" | **corrected** — 10 since 2022 | ILO |
+| "ISO 14001 400,000+ certifications" | **corrected** — 670,000+ | ISO Survey 2024 |
+
+References added: framework home-base list.
+
+## Pilot sweep (T-13, 2026-07-21)
+
+`review-pilot-content --status`: **33/33 pages have ## References** ✅. Every written URL live-checked at write time (200 or documented bot-block); 12 research-suggested URLs failed the write gate during the pilot and were replaced with live equivalents before applying. Backups for all 33 pages in `backup/`.
