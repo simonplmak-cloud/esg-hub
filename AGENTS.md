@@ -70,6 +70,7 @@ This repo belongs to the `simonplmak-cloud` account. gh CLI and git authenticate
 ## Testing
 
 - **This machine is too slow for local E2E** — Playwright times out. Run tests on GitHub instead: `gh workflow run test.yml` (inputs: `base_url`, `skip_e2e`), then `gh run watch`. Local `pnpm test` is unsupported here.
+- **Nightly health check** (`nightly.yml`, 18:17 UTC cron): verify:db + prod smoke are hard gates; lychee link sweep is informational. Issue lifecycle on the `nightly-alert` label: opens/comments with typed details on failure (HARD = named check, LINKS = failing URLs), auto-closes on a fully clean run, silent when green with no open issue.
 - Unit: Vitest in `src/lib/__tests__/`; `vitest.config.ts` excludes `e2e/`, `node_modules/`, `mcp-server/`.
 - E2E: Playwright in `e2e/` (currently only `locale-routing.spec.ts`), Chromium only.
 - CI runs E2E twice per change: against the PR preview deployment and against production after merge.

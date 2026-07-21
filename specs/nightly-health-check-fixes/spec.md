@@ -1,7 +1,7 @@
 # Nightly Health Check — Error Review & Issue-Management Fixes
 
-Status: Draft (Gate 1 pending)
-Version: 0.1
+Status: Completed (2026-07-21, PR #20)
+Version: 1.0
 Last updated: 2026-07-21
 
 ## Overview
@@ -79,3 +79,15 @@ Review every error surfaced by the Nightly Health Check workflow since its creat
 - [RESOLVED] unccelearn 403 → alive for real users (MCP search), stays in accept-list
 - [RESOLVED] manuscdn links → absent from DB content
 - [RESOLVED] All original lychee findings resolved or bot-blocked
+
+## Completion Verification (2026-07-21)
+
+| AC | Result |
+|----|--------|
+| AC-1/AC-4 | ✅ proven live: first post-fix dispatch found a real LINKS failure — comment typed `LINKS` with the failing URL + status extracted from `lychee/out.md` (run 29789873892, issue #8 comment). HARD branch: logic-reviewed (outcome semantics: hard failure skips lychee, branches mutually exclusive) |
+| AC-2 | ✅ after the 202 fix, dispatch 29790226502 (clean) auto-closed issue #8 with the clean-run comment — state: CLOSED ✓ |
+| AC-3 | ✅ dispatch 29790332551 (clean): 0 open nightly-alert issues, comment count unchanged — silent green ✓ |
+| AC-5 | ✅ resolution summary posted on #8 before auto-close (comment 5028708569) |
+| AC-6 | ✅ two real dispatches (close-path + silence-path); failure-branch by logic review |
+| AC-7 | ✅ AGENTS.md documents the issue lifecycle |
+| Bonus | The new workflow caught a real finding on its first run: hkgreenfinance.org returns **202** to lychee's agent but 200 with full content to browser UAs → 202 added to the accept-list (bot-challenge class, same as 403/415/429) |
