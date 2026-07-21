@@ -79,3 +79,70 @@ References added: 3 (all live-verified). No content corrections needed.
 | Civil liability flat statement | **refined** — narrowed by 2025 Omnibus | Commission |
 
 References added: 2 (all live-verified).
+
+## /standards/csrd-corporate-sustainability/ — CSRD (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| Scope "2 of 3 criteria (250+/€50M/€25M)" | **corrected** — Omnibus I: >1,000 employees AND >€450M turnover | Council (Consilium) position 2025-06-23 |
+| Listed SMEs opt-out | **corrected** — removed from mandatory scope entirely | Consilium |
+| Timeline waves 2025/2026 | **corrected** — Wave 2 delayed to FY2027 (report 2028) by stop-the-clock | Consilium/Parliament |
+| Non-EU €150M | **corrected** — €450M | Omnibus summaries |
+
+References added: 3 (europarl legislative-train 404'd at gate → replaced with Consilium URL).
+
+## /standards/esrs/ — ESRS (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| Adopted July 2023, 12 standards | confirmed | Delegated Regulation 2023/2772 |
+| "≈50,000 companies" | **annotated** — original estimate; Omnibus narrowed scope ~80% | Council/Parliament |
+| Scope table (250+/SMEs/€150M) | **corrected** — Omnibus scope + stop-the-clock dates | Consilium |
+| "progressing to reasonable assurance" | **corrected** — progression removed | Omnibus summaries |
+| Sector standards "Phase 1 2026" | **corrected** — empowerment removed, track paused | Omnibus summaries |
+
+References added: 3 (efrag.org/en/projects/esrs 404'd at gate → replaced with efrag.org/en/sustainability-reporting).
+
+## /standards/esrs-sustainability-reporting/ — ESRS summary (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| Cross-cutting row "General principles, climate change" | **corrected** — General requirements, general disclosures | ESRS Set 1 (EFRAG) |
+| "Reasonable assurance (future)" | **corrected** — progression removed | Omnibus |
+| "First reports due 2024/2025" | **refined** — Wave 1 FY2024 (report 2025); later waves delayed | stop-the-clock |
+
+References added: 2.
+
+## /standards/eu-emissions-trading/ — EU ETS (2026-07-21)
+
+Phase 4 (2021–2030), −62% vs 2005, LRF 4.3%/4.4%, maritime 2024, ETS2 2027, CBAM phase-in — all **confirmed**. References added: 3 (all live).
+
+## /standards/eu-taxonomy-sustainable/ — EU Taxonomy (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| Objective 3 "Sustainable use of water" | **refined** — "sustainable use and protection of water and marine resources" | Regulation (EU) 2020/852 |
+| 6 objectives, DNSH, minimum safeguards (UNGP/ILO/OECD) | confirmed | Taxonomy Regulation |
+
+References added: 2.
+
+## /standards/european-green-deal/ — European Green Deal (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| "39% energy efficiency improvement" | **corrected** — adopted target: 11.7% final energy reduction vs 2020 projections (EED recast 2023) | EED recast |
+| 2050 neutrality, −55% net 2030, Climate Law 2021, 42.5% renewables, JTF €17.5B | confirmed | Climate Law, RED III |
+
+References added: 4.
+
+## /standards/fit-for-55-package/ — Fit for 55 (2026-07-21)
+
+| Claim | Verdict | Source |
+|-------|---------|--------|
+| "adopted by the EU in 2021" | **corrected** — proposed July 2021; files adopted 2022–2023 | Commission |
+| "60% transport target (advanced biofuels)" | **corrected** — transport: 14.5% GHG-intensity OR 29% renewable share; advanced biofuels/RFNBO 5.5% (≥1% RFNBO) by 2030 | RED III |
+| "Hydrogen: 10% renewable" | **corrected** — industry RFNBO 42% (2030), 60% (2035) | RED III |
+| "39% energy efficiency" | **corrected** — 11.7% vs 2020 projections | EED recast |
+| CO2 standards 2035 zero-emission; ESR −10% to −50%; LULUCF −310 Mt | confirmed | Commission |
+
+References added: 5 (ESR URL 404'd at gate → replaced with EUR-Lex Reg 2018/842).
