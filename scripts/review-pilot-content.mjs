@@ -40,28 +40,40 @@ const esc = (s) => s.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 const slugOf = (pl) => pl.replace(/^\/|\/$/g, "").replace(/\//g, "__");
 
 async function verifyUrl(url) {
+  const curlCheck = () => {
+    try {
+      const code = execFileSync("curl", [
+        "-s", "-o", "/dev/null", "-w", "%{http_code}",
+        "--max-time", "30", "-L", "-A", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36", url,
+      ], { encoding: "utf8" }).trim();
+      return code;
+    } catch {
+      return null;
+    }
+  };
+  const classify = (code) => {
+    if (code === "200") return "ok";
+    if (["403", "415", "429", "202"].includes(code)) return `bot-blocked(${code})`;
+    return null;
+  };
   try {
     const res = await fetch(url, {
+      method: "GET",
       redirect: "follow",
       signal: AbortSignal.timeout(45000),
       headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" },
     });
     if (res.status === 200) return "ok";
     if ([403, 415, 429, 202].includes(res.status)) return `bot-blocked(${res.status})`;
-    return `FAIL(${res.status})`;
+    // Second opinion via curl — WAFy sites answer differently per client
+    const curlCode = curlCheck();
+    const verdict = classify(curlCode);
+    if (verdict) return verdict;
+    return `FAIL(${res.status}${curlCode ? `, curl:${curlCode}` : ""})`;
   } catch (e) {
-    // Node fetch can fail where curl succeeds on this machine (ETIMEDOUT etc.)
-    try {
-      const code = execFileSync("curl", [
-        "-s", "-o", "/dev/null", "-w", "%{http_code}",
-        "--max-time", "30", "-L", "-A", "Mozilla/5.0", url,
-      ], { encoding: "utf8" }).trim();
-      if (code === "200") return "ok";
-      if (["403", "415", "429", "202"].includes(code)) return `bot-blocked(${code})`;
-      return `FAIL(${e.name}, curl:${code})`;
-    } catch {
-      return `FAIL(${e.name})`;
-    }
+    const verdict = classify(curlCheck());
+    if (verdict) return verdict;
+    return `FAIL(${e.name})`;
   }
 }
 

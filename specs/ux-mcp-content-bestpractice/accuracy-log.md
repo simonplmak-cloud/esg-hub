@@ -295,3 +295,11 @@ References added: framework home-base list.
 - **33/33 pages have related_pages (162 links)**; backlinks computed as reverse map.
 - Convention fix: first apply wrote permalinks; the `/api/v1/pages/:id/related` + `/backlinks` routes expect **record IDs** (matching the legacy generator's convention) — generator fixed to write IDs, re-applied.
 - Live verification: `/api/v1/pages/standards%2Fgri/related` returns CDP, Standards hub, TCFD ✓; backlinks endpoint returns data ✓.
+
+## Continuation — small sections & singles (2026-07-21)
+
+**Hub pages (5):** /finance/ (bond figure → US$946.9B, CBI 2023), /frameworks/ (dead efrag link fixed), /fundamentals/, /investment/ (GSIA $30T kept, GSIA 2022), /ratings/ (EU ESG Ratings URL → EUR-Lex Reg 2024/3005) — all got References blocks; all applied.
+
+**Singles (7 content pages):** case-studies, glossary, learning-paths, site-index, sitemap, tools, videos — full URL sweeps run; dead links fixed: HKEX esg-introduction → HKEX climate announcement; carrotsandsticks.net → KPMG-hosted PDF; GRI training → GRI Academy; danone integrated-report → publications page; kering EP&L → sustainability hub; unilever planet-and-society = bot-blocked WAF (documented, kept). Script's verifyUrl improved: curl second opinion now triggers on ANY non-200 (was exceptions only) — correctly classifies WAF 404-vs-403 bot-blocks.
+
+**Redirect records (3, no References — functional redirects):** /learn/, /sdgs/, /regional/ — logged, intentionally untouched (same policy as the 4 article-section redirects earlier).
