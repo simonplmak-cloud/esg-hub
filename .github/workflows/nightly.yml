@@ -38,7 +38,7 @@ jobs:
         continue-on-error: true
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --max-retries 2 --timeout 20 --accept 200,204,301,302,307,308,403,415,429 --no-progress
+          args: --max-retries 2 --timeout 20 --accept 200,202,204,301,302,307,308,403,415,429 --no-progress
             "https://esg-hub.ascent.partners/en"
             "https://esg-hub.ascent.partners/en/videos"
             "https://esg-hub.ascent.partners/en/books"
