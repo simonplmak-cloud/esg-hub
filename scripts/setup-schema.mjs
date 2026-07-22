@@ -68,12 +68,12 @@ DEFINE INDEX IF NOT EXISTS idx_page_pillar ON page FIELDS pillar;
 
 -- Full-text search indexes (separate indexes for title and content to support OR queries)
 DEFINE ANALYZER IF NOT EXISTS esg_analyzer TOKENIZERS blank, class FILTERS lowercase, ascii, snowball(english);
-DEFINE INDEX IF NOT EXISTS idx_page_title_search ON page FIELDS title SEARCH ANALYZER esg_analyzer BM25(1.2,0.75);
-DEFINE INDEX IF NOT EXISTS idx_page_content_search ON page FIELDS content SEARCH ANALYZER esg_analyzer BM25(1.2,0.75);
-DEFINE INDEX IF NOT EXISTS idx_page_title_zh_search ON page FIELDS title_zh SEARCH ANALYZER esg_analyzer BM25(1.2,0.75);
-DEFINE INDEX IF NOT EXISTS idx_page_title_hi_search ON page FIELDS title_hi SEARCH ANALYZER esg_analyzer BM25(1.2,0.75);
-DEFINE INDEX IF NOT EXISTS idx_page_content_zh_search ON page FIELDS content_zh SEARCH ANALYZER esg_analyzer BM25(1.2,0.75);
-DEFINE INDEX IF NOT EXISTS idx_page_content_hi_search ON page FIELDS content_hi SEARCH ANALYZER esg_analyzer BM25(1.2,0.75);
+DEFINE INDEX IF NOT EXISTS idx_page_title_search ON page FIELDS title FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75);
+DEFINE INDEX IF NOT EXISTS idx_page_content_search ON page FIELDS content FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75);
+DEFINE INDEX IF NOT EXISTS idx_page_title_zh_search ON page FIELDS title_zh FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75);
+DEFINE INDEX IF NOT EXISTS idx_page_title_hi_search ON page FIELDS title_hi FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75);
+DEFINE INDEX IF NOT EXISTS idx_page_content_zh_search ON page FIELDS content_zh FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75);
+DEFINE INDEX IF NOT EXISTS idx_page_content_hi_search ON page FIELDS content_hi FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75);
 
 -- Navigation table: stores nav structure
 DEFINE TABLE IF NOT EXISTS navigation SCHEMAFULL;
