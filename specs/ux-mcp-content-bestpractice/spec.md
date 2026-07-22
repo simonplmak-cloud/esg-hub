@@ -1,6 +1,6 @@
 # Best-Practice Architecture & Content Program — UX/IA, MCP, Content
 
-Status: Completed (2026-07-21)
+Status: Completed — pilot 2026-07-21, full continuation 2026-07-22
 Version: 1.0
 Last updated: 2026-07-21
 

@@ -77,3 +77,21 @@ Primary sources used to verify claims and build References sections during the `
 | /standards/ | framework home bases (GRI, IFRS, EFRAG, FSB-TCFD, TNFD, GHG Protocol, SBTi, CDP, ILO, OECD, UNGC, OHCHR) |
 
 **URL hygiene during the pilot:** 12 research-suggested URLs failed the write-time live check (404s on europarl legislative-train, efrag.org/en/projects/esrs, finance.ec.europa.eu sub-pages, unpri.org sub-pages, esma.europa.eu, gresb.com/nl-en/standards, ilo.org sub-paths) and were replaced with live equivalents (Consilium, EFRAG sustainability-reporting, EUR-Lex records, working PRI/ILO/GRESB pages) before applying. carbonaccountingfinancials.com required a curl fallback (Node-fetch ETIMEDOUT on this machine; site verified live).
+
+## 4. Continuation — all remaining sections (2026-07-21/22)
+
+The pilot methodology was scaled to every remaining section. Per-section sources are logged in `accuracy-log.md`; the recurring primary sources used across the continuation:
+
+| Domain | Sources |
+|--------|---------|
+| Reporting frameworks | GRI (globalreporting.org), IFRS/ISSB (ifrs.org), ESRS/EFRAG (efrag.org/en/sustainability-reporting), SASB (ifrs.org/issued-standards/sasb-standards) |
+| Climate & nature | GHG Protocol (ghgprotocol.org), SBTi (sciencebasedtargets.org), SBTN (sciencebasedtargetsnetwork.org), TCFD (fsb-tcfd.org), TNFD (tnfd.global), IPCC (ipcc.ch), CDP (cdp.net) |
+| EU regulation | EUR-Lex (eur-lex.europa.eu), European Commission (commission.europa.eu, finance.ec.europa.eu, climate.ec.europa.eu, energy.ec.europa.eu), Consilium (consilium.europa.eu) |
+| US regulation | SEC (sec.gov), California Legislature (leginfo.legislature.ca.gov), EPA (epa.gov) |
+| APAC regulation | HKEX (hkex.com.hk), HKMA (hkma.gov.hk), MAS (mas.gov.sg), SGX (sgx.com), AASB (aasb.gov.au), APRA (apra.gov.au), Treasury Australia (treasury.gov.au), NZ MfE (environment.govt.nz), ASEAN (taxonomy PDF) |
+| Social & labour | ILO (ilo.org/global/standards, fundamental-principles project), OHCHR (ohchr.org), UN Global Compact (unglobalcompact.org), UN Treaty Collection (treaties.un.org) |
+| Governance | OECD (oecd.org/corporate), COSO (coso.org), IAASB (iaasb.org), ICGN (icgn.org), FRC (frc.org.uk), NIST (nist.gov) |
+| Investment | PRI (unpri.org), GRESB (gresb.com), GSIA (gsi-alliance.org), CBI (climatebonds.net), ICMA (icmagroup.org) |
+| Other bodies | ISO (iso.org), UN SDGs (sdgs.un.org), ITU (itu.int), WRI Aqueduct (wri.org/aqueduct), Stockholm Resilience Centre (stockholmresilience.org), Ellen MacArthur Foundation (ellenmacarthurfoundation.org), Transparency International (transparency.org), OECD Due Diligence (oecd.org) |
+
+**URL hygiene (continuation):** ~90 dead or restructured URLs replaced with verified live equivalents (regulator/framework site restructures); defunct hosts plain-texted with source names retained (oa-ie.org, menlhk.go.id, nutrientchallenge.org, carrotsandsticks.net→KPMG PDF, globalrightsindex.org); WAF-bot-blocked statuses (403/415/429/202/307-sucuri) documented as bot-blocked, not dead.
