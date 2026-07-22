@@ -1,0 +1,89 @@
+name: opencode-auto
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  triage:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run OpenCode triage
+        uses: anomalyco/opencode/github@latest
+        env:
+          KIMI_API_KEY: ${{ secrets.KIMI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: kimi-for-coding/k3
+          use_github_token: true
+          prompt: |
+            You are the engineering supervisor for this repository. The GitHub
+            Copilot coding agent (@copilot) is your implementer. Load the
+            copilot-supervisor skill for full orchestration rules.
+
+            Triage this issue:
+            1. If it is unclear or underspecified, comment with concise
+               clarifying questions and stop.
+            2. If it is a well-scoped coding task, refine the issue body if
+               needed (acceptance criteria, constraints, affected files), then
+               assign it to Copilot with:
+               gh issue edit <number> --add-assignee copilot
+               and comment that Copilot has been dispatched.
+            3. If it is a question or discussion, answer it in a comment.
+            4. If it contains multiple independent tasks, split it into
+               sub-issues and assign each to Copilot.
+            Never implement code changes yourself — delegate to Copilot.
+
+  review-copilot-pr:
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.user.login == 'copilot-swe-agent[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run OpenCode review
+        uses: anomalyco/opencode/github@latest
+        env:
+          KIMI_API_KEY: ${{ secrets.KIMI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: kimi-for-coding/k3
+          use_github_token: true
+          prompt: |
+            You are the engineering supervisor reviewing a pull request opened
+            by the GitHub Copilot coding agent. Load the copilot-supervisor
+            skill for full orchestration rules.
+
+            1. Review the diff against the linked issue: correctness, scope,
+               tests, security, and adherence to repo conventions.
+            2. Run the project's checks locally if available (inspect
+               package.json scripts / CI workflow files to find them).
+            3. If changes are needed, leave a single review comment addressed
+               to @copilot describing exactly what to change. Copilot will
+               iterate on the PR.
+            4. If the PR is good, approve it:
+               gh pr review <number> --approve
+               and summarize why it is ready to merge.
+            Never commit fixes directly to the PR branch — send feedback to
+            Copilot instead.
