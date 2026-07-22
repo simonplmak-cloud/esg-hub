@@ -150,7 +150,7 @@ ESG data integrated into Bloomberg Terminal.
 
 ### Benchmarking Tools
 
-**[SASB Materiality Finder](https://materiality.sasb.org/)**  
+**[SASB Materiality Finder](https://www.ifrs.org/issued-standards/sasb-standards/)**  
 Industry-specific material ESG topics and metrics.  
 **Use For**: Materiality assessment, peer benchmarking  
 **Cost**: Free
@@ -261,7 +261,7 @@ Data on modern slavery by country and sector.
 
 ## Assurance & Verification
 
-**[ISO 14065 Accredited Bodies](https://www.iaf.nu/articles/IAF_MEM_EN/4)**  
+**[ISO 14065 Accredited Bodies](https://iaf.nu/)**  
 List of accredited GHG verification bodies.  
 **Use For**: Selecting GHG assurance provider  
 **Cost**: Free
@@ -275,7 +275,7 @@ List of AA1000AS licensed assurance providers.
 
 ## Learning & Training
 
-**[GRI Training](https://www.globalreporting.org/standards/training/)**  
+**[GRI Training](https://www.globalreporting.org/Academy/)**  
 Official GRI Standards training courses.  
 **Courses**: GRI Certified Sustainability Professional, report writing  
 **Cost**: Paid

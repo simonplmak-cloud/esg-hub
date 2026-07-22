@@ -347,3 +347,13 @@ Bulk URL sweep (309 unique URLs) → ~40 dead links fixed with verified replacem
 ## social section (91/91, 2026-07-21)
 
 91 pages, 28 subsections. URL sweep (95 URLs): 15 dead fixed — ILO restructure (resource/other/* and topics/* → fundamental-principles project page + ilo.org/global/standards/ + OSH publications page), unglobalcompact supply-chain → root, globalrightsindex.org (503/down → plain text), UNCAC unodc.org (intermittent 503 → UN Treaty Collection stable URL). Theme-keyed References added to all 91; DB verified 91/91 with References.
+
+## Cross-reference graph — all sections (2026-07-21)
+
+Ran `generate-cross-references-pilot.mjs --section <s> --apply` for all 29 sections: **1,663 cross-reference links** written. Coverage: every multi-page section fully covered (governance 65/65, social 91/91, standards 33/33, hk-apac 23/23, environmental 23/23, sdg 21/21, climate-finance 13/13, biodiversity 11/11, learning 10/10, emerging-topics 8/8, finance 8/8, frameworks 7/7, regulations 6/6, investment 6/6, fundamentals 5/5, ratings 5/5, practice 6/7); 12 single-page sections correctly have none (nothing to relate to); practice hub below MIN_SCORE (accepted).
+
+## Final sweep (2026-07-21)
+
+- **References: 350/354 pages** — the only 4 without are the intentional redirect records (/learn/, /sdgs/, /regional/, /hk-apac/hkex-esg/) per project policy
+- **related_pages: 341/354** (13 without = 12 single-page sections + practice hub, correct by design)
+- Late fixes in final sweep: japan-esg/japan-ssbj re-applied (missed after SSBJ fix), tools.md multi-dead-link cleanup (GRI training ×2, iaf.nu article, materiality.sasb.org → IFRS)
