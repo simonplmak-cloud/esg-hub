@@ -40,8 +40,8 @@ async function main() {
     DEFINE FIELD IF NOT EXISTS scraped_at ON external_resource TYPE datetime DEFAULT time::now();
     DEFINE INDEX IF NOT EXISTS idx_external_url ON external_resource FIELDS url UNIQUE;
     DEFINE ANALYZER IF NOT EXISTS ext_analyzer TOKENIZERS blank, class FILTERS lowercase, ascii, snowball(english);
-    DEFINE INDEX IF NOT EXISTS idx_ext_title_search ON external_resource FIELDS title SEARCH ANALYZER ext_analyzer BM25;
-    DEFINE INDEX IF NOT EXISTS idx_ext_content_search ON external_resource FIELDS content SEARCH ANALYZER ext_analyzer BM25;
+    DEFINE INDEX IF NOT EXISTS idx_ext_title_search ON external_resource FIELDS title FULLTEXT ANALYZER ext_analyzer BM25;
+    DEFINE INDEX IF NOT EXISTS idx_ext_content_search ON external_resource FIELDS content FULLTEXT ANALYZER ext_analyzer BM25;
   `);
   console.log('Schema result:', JSON.stringify(schemaResult).slice(0, 200));
 
