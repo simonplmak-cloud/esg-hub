@@ -343,3 +343,7 @@ Bulk URL sweep (309 unique URLs) → ~40 dead links fixed with verified replacem
 ## governance section (65/65, 2026-07-21)
 
 65 pages, 21 subsections. URL sweep (91 URLs): 14 dead fixed — EUR-Lex ESG ratings 2024/3005, COSO ERM root, EFRAG sustainability-reporting, FRC library, GRI download-the-standards ×2, HKEX governance → climate announcement, IAASB root, ISS root, gov.uk bribery guidance, NYSE regulation, unpri root, world-exchanges root; ethics.org (defunct → plain text). Theme-keyed References added to all 65; DB verified 65/65 with References.
+
+## social section (91/91, 2026-07-21)
+
+91 pages, 28 subsections. URL sweep (95 URLs): 15 dead fixed — ILO restructure (resource/other/* and topics/* → fundamental-principles project page + ilo.org/global/standards/ + OSH publications page), unglobalcompact supply-chain → root, globalrightsindex.org (503/down → plain text), UNCAC unodc.org (intermittent 503 → UN Treaty Collection stable URL). Theme-keyed References added to all 91; DB verified 91/91 with References.
