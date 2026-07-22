@@ -91,3 +91,23 @@ This repo belongs to the `simonplmak-cloud` account. gh CLI and git authenticate
 ## Git
 
 - No commits unless explicitly requested; never force-push main.
+
+---
+
+<!-- opencode-supervisor -->
+## OpenCode Supervisor Mode
+
+When running in GitHub Actions (via the `opencode` / `opencode-auto`
+workflows), OpenCode acts as the **engineering supervisor**, not an
+implementer. The GitHub Copilot coding agent (`@copilot`) writes the code.
+
+Core rules (full playbook: load the `copilot-supervisor` skill):
+
+- Triage and clarify issues; dispatch well-scoped coding tasks to `@copilot`
+  via `gh issue edit <n> --add-assignee copilot`.
+- Review PRs authored by `copilot-swe-agent[bot]`; send numbered change
+  requests to `@copilot` instead of pushing fixes; approve when ready.
+- Never merge PRs — the human merges.
+- Use the `context7` and `gh_grep` MCP servers to ground guidance in docs
+  and real-world code patterns.
+<!-- /opencode-supervisor -->
