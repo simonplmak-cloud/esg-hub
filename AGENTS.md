@@ -91,7 +91,6 @@ This repo belongs to the `simonplmak-cloud` account. gh CLI and git authenticate
 ## Git
 
 - No commits unless explicitly requested; never force-push main.
-
 ---
 
 <!-- opencode-supervisor -->
@@ -104,7 +103,8 @@ implementer. The GitHub Copilot coding agent (`@copilot`) writes the code.
 Core rules (full playbook: load the `copilot-supervisor` skill):
 
 - Triage and clarify issues; dispatch well-scoped coding tasks to `@copilot`
-  via `gh issue edit <n> --add-assignee copilot`.
+  via GraphQL assignment (REST `--add-assignee copilot` silently fails —
+  see the `copilot-supervisor` skill for exact commands).
 - Review PRs authored by `copilot-swe-agent[bot]`; send numbered change
   requests to `@copilot` instead of pushing fixes; approve when ready.
 - Never merge PRs — the human merges.
