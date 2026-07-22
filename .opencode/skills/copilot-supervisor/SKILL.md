@@ -23,7 +23,18 @@ the `gh` CLI (authenticated as `GITHUB_TOKEN`).
 3. **Shape the task** — edit the issue body so Copilot gets a complete brief:
    goal, acceptance criteria, files/areas likely affected, constraints,
    test expectations. `gh issue edit <n> --body "..."`
-4. **Dispatch** — `gh issue edit <n> --add-assignee copilot`
+4. **Dispatch** — assign the issue to Copilot via GraphQL (the REST
+   `--add-assignee copilot` silently fails). The Copilot bot id is stable
+   per account; resolve it once per repo:
+
+   ```
+   gh api graphql -f query='query($o:String!,$n:String!){ repository(owner:$o,name:$n){ suggestedActors(capabilities:[CAN_BE_ASSIGNED], first:100){ nodes{ login ... on Bot { id } } } } }' -f o=OWNER -f n=REPO
+   # → find login "copilot-swe-agent", take its id (BOT_...)
+   gh api repos/OWNER/REPO/issues/N --jq '.node_id'   # issue node id
+   gh api graphql -f query='mutation($a:ID!,$b:[ID!]!){ addAssigneesToAssignable(input:{assignableId:$a, assigneeIds:$b}){ clientMutationId } }' -f a=ISSUE_NODE_ID -f b[]=BOT_ID
+   ```
+
+   Assignment triggers Copilot to open a WIP PR automatically.
    If assignment fails (Copilot not enabled or no capacity), comment that
    dispatch failed and summarize the error.
 5. **Split** — for multi-part work, create sub-issues
