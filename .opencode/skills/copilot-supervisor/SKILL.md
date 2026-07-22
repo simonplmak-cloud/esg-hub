@@ -1,6 +1,6 @@
 ---
 name: copilot-supervisor
-description: Orchestrate the GitHub Copilot coding agent (@copilot) as supervisor — triage issues, dispatch tasks, review Copilot PRs, and manage the feedback loop. Use when handling issues, assigning work to Copilot, or reviewing PRs authored by copilot-swe-agent[bot].
+description: Orchestrate the GitHub Copilot coding agent (@copilot) as supervisor — triage issues, dispatch tasks, review Copilot PRs, and manage the feedback loop. Use when handling issues, assigning work to Copilot, or reviewing PRs authored by the Copilot coding agent (login matches "copilot-swe-agent").
 compatibility: opencode
 metadata:
   role: supervisor
