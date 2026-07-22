@@ -42,6 +42,9 @@ jobs:
                assign it to Copilot via GraphQL (REST --add-assignee copilot
                silently fails — load the copilot-supervisor skill for the exact
                commands) and comment that Copilot has been dispatched.
+               IMPORTANT: GH_TOKEN is pre-configured to a user PAT with
+               Copilot dispatch rights. Never override GH_TOKEN or
+               GITHUB_TOKEN; run gh commands as-is.
             3. If it is a question or discussion, answer it in a comment.
             4. If it contains multiple independent tasks, split it into
                sub-issues and assign each to Copilot.
