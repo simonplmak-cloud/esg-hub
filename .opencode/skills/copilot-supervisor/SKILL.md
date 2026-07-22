@@ -24,16 +24,20 @@ the `gh` CLI (authenticated as `GITHUB_TOKEN`).
    goal, acceptance criteria, files/areas likely affected, constraints,
    test expectations. `gh issue edit <n> --body "..."`
 4. **Dispatch** — assign the issue to Copilot via GraphQL (the REST
-   `--add-assignee copilot` silently fails). The Copilot bot id is stable
-   per account; resolve it once per repo:
+   `--add-assignee copilot` silently fails). The Copilot coding agent bot id
+   is a stable global node id: `BOT_kgDOC9w8XQ` (login `copilot-swe-agent`).
+   Note: `suggestedActors` does NOT list the Copilot bot when queried with a
+   GitHub Actions `GITHUB_TOKEN` — do not rely on resolving it; use the
+   constant above. Only if the assignment mutation errors with "not found",
+   re-resolve via `suggestedActors`.
 
    ```
-   gh api graphql -f query='query($o:String!,$n:String!){ repository(owner:$o,name:$n){ suggestedActors(capabilities:[CAN_BE_ASSIGNED], first:100){ nodes{ login ... on Bot { id } } } } }' -f o=OWNER -f n=REPO
-   # → find login "copilot-swe-agent", take its id (BOT_...)
    gh api repos/OWNER/REPO/issues/N --jq '.node_id'   # issue node id
-   gh api graphql -f query='mutation($a:ID!,$b:[ID!]!){ addAssigneesToAssignable(input:{assignableId:$a, assigneeIds:$b}){ clientMutationId } }' -f a=ISSUE_NODE_ID -f b[]=BOT_ID
+   gh api graphql -f query='mutation($a:ID!,$b:[ID!]!){ addAssigneesToAssignable(input:{assignableId:$a, assigneeIds:$b}){ clientMutationId } }' -f a=ISSUE_NODE_ID -f b[]=BOT_kgDOC9w8XQ
    ```
 
+   Verify the assignment stuck (`gh issue view N --json assignees`) — a
+   silent no-op means the token lacks Copilot dispatch rights.
    Assignment triggers Copilot to open a WIP PR automatically.
    If assignment fails (Copilot not enabled or no capacity), comment that
    dispatch failed and summarize the error.
