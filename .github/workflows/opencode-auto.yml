@@ -38,9 +38,9 @@ jobs:
                clarifying questions and stop.
             2. If it is a well-scoped coding task, refine the issue body if
                needed (acceptance criteria, constraints, affected files), then
-               assign it to Copilot with:
-               gh issue edit <number> --add-assignee copilot
-               and comment that Copilot has been dispatched.
+               assign it to Copilot via GraphQL (REST --add-assignee copilot
+               silently fails — load the copilot-supervisor skill for the exact
+               commands) and comment that Copilot has been dispatched.
             3. If it is a question or discussion, answer it in a comment.
             4. If it contains multiple independent tasks, split it into
                sub-issues and assign each to Copilot.
