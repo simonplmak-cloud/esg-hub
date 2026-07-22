@@ -83,7 +83,7 @@ jobs:
             Review sweep of Copilot PRs (runs on a schedule):
             1. List open PRs authored by the Copilot coding agent:
                gh pr list --state open --json number,title,author,updatedAt
-               --jq '.[] | select(.author.login == "copilot-swe-agent[bot]")'
+               --jq '.[] | select(.author.login | test("copilot-swe-agent"))'
             2. If none, stop — do not comment anywhere.
             3. For each Copilot PR with commits you have not yet reviewed
                (check the PR comments for your previous review):
