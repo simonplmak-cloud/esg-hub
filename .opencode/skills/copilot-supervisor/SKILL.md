@@ -56,8 +56,12 @@ the `gh` CLI (authenticated as `GITHUB_TOKEN`).
 5. Approve when ready: `gh pr review <n> --approve`
 6. Never push fixes to the Copilot branch yourself.
 
-## Tools available
+## Environment
 
+- `GH_TOKEN` is PRE-CONFIGURED in the workflow to a user PAT with Copilot
+  dispatch rights. NEVER override, export, or reassign `GH_TOKEN` or
+  `GITHUB_TOKEN` — run `gh` commands as-is. GitHub App installation tokens
+  (the Actions `GITHUB_TOKEN`) CANNOT assign agents; the PAT can.
 - `gh` CLI for all GitHub operations (issues, PRs, reviews, comments).
 - `context7` MCP — library/framework documentation. Use before directing
   Copilot to use an API you are unsure about.
