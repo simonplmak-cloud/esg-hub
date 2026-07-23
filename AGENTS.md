@@ -14,7 +14,7 @@ npx playwright test e2e/locale-routing.spec.ts     # Single E2E test
 pnpm verify:db        # Verify SurrealDB schema (needs SURREAL_* env)
 ```
 
-CI gate order (`.github/workflows/deploy.yml`): lint → tsc → vitest → build. Run all four before pushing; Playwright runs only in CI against the deployed URL.
+CI gate order (`.github/workflows/deploy.yml` check job): lint → tsc → vitest → verify:db (continue-on-error) → build. `ci.yml` runs the same gates on every PR/push. Run all four before pushing; Playwright runs only in CI against deployed URLs.
 
 ### Local install prerequisite
 
@@ -26,32 +26,47 @@ Local: the config starts its own `next dev -p 3001` webServer (`playwright.confi
 
 ## Architecture
 
-- Next.js 15 App Router, React 19, `output: "standalone"` (`next.config.mjs:7`), deployed to Vercel via API trigger from GitHub Actions (not Vercel's git integration).
+- Next.js 15 App Router, React 19, `output: "standalone"` (`next.config.mjs:7`). Production deploys are **prebuilt-in-CI**: the deploy job runs `vercel build --prod` + `vercel deploy --prebuilt --prod` in GitHub Actions (the `file:../tool_package` deps don't exist on Vercel's builders, so Vercel-side builds fail). Vercel's git-integration builds are disabled via `commandForIgnoringBuildStep: "exit 0"` — do not re-enable them.
 - Whole site is request-time DB rendering: `export const dynamic = "force-dynamic"` in `src/app/[locale]/layout.tsx:11`.
 - `src/app/layout.tsx` is a pass-through; the real layout is `src/app/[locale]/layout.tsx`. Root `src/app/page.tsx` only redirects to `/en`.
 - `next-intl` prefixes all routes with `/en`, `/zh`, `/hi` (`src/i18n/routing.ts`). Unprefixed paths 307-redirect to the default locale via middleware.
 - Database: SurrealDB Cloud via JSON-RPC over HTTP (`queryHttp()` / `queryHttpAll()` in `src/lib/surrealdb.ts`) — never WebSocket.
-- DB namespace is hardcoded to `"esg_hub"` (`surrealdb.ts:20`); the `SURREAL_NAMESPACE` env var is intentionally ignored in app code so another project's shell var can't shadow it. Scripts do read the env var.
+- DB namespace is hardcoded to `"esg_hub"` in app code (`surrealdb.ts:20`) AND in `scripts/lib/db-env.mjs` — the `SURREAL_NAMESPACE` env var is intentionally ignored everywhere so another project's shell var (e.g. `valuation`) can't shadow it. Scripts override only via `ESG_HUB_NS_OVERRIDE`.
 - `src/pages/_error.js` is the last Pages Router file — never add pages there.
 - Node: `.nvmrc` says 22.x, CI uses 20, engines allow >=18 <24.
 
 ### mcp-server/ (separate package)
 
-Standalone MCP server (`@esg-hub/mcp-server`) wrapping the public REST API at `/api/v1`. Not in the pnpm workspace, excluded from root tsconfig and vitest, installed with npm. Its `dist/` and `package-lock.json` are committed to git for reproducibility.
+Standalone MCP server (`@esg-hub/mcp-server`) wrapping the public REST API at `/api/v1`. Not in the pnpm workspace, excluded from root tsconfig and vitest, installed with npm. Its `dist/` and `package-lock.json` are committed to git for reproducibility. v1.1.0: all tools carry `readOnlyHint`/`openWorldHint` annotations, list tools return `structuredContent.pagination` (`has_more`, `next_offset`), and errors use a structured envelope `{ error: { code, message, retryable, hint } }` with `isError: true`. After editing `src/index.ts`, rebuild with `npx tsc` in `mcp-server/` and commit `dist/`.
 
 ### specs/ and constitution.md
 
-`specs/` holds spec-driven-development artifacts (spec/plan/tasks per feature). `constitution.md` formally restates this file's constraints for SDD workflows.
+`specs/` holds spec-driven-development artifacts (spec/plan/tasks per feature; e.g. `dev-env-automation`, `ux-mcp-content-bestpractice`). `constitution.md` formally restates this file's constraints for SDD workflows. For DB content work, the repeatable procedure lives in `specs/ux-mcp-content-bestpractice/content-review-methodology.md` (claim verification → References format → accuracy log).
+
+### Workflows (all in `.github/workflows/`)
+
+- `ci.yml` — lint/tsc/vitest gates on push and PRs (concurrency-cancelling)
+- `deploy.yml` — push to main: check job then prebuilt deploy to production, E2E against the live URL
+- `deploy-preview.yml` — PR: prebuilt preview deploy + E2E, comments the preview URL
+- `test.yml` — `workflow_dispatch` on-demand test runner (inputs: `base_url`, `skip_e2e`)
+- `nightly.yml` — 18:17 UTC health check with `nightly-alert` issue lifecycle
+- `pr-title.yml` — PR titles must match conventional commits (`feat|fix|ci|chore|docs|refactor|test|perf(scope): …`) or the check fails
+- `opencode.yml` / `opencode-auto.yml` — OpenCode agent triggers via `/oc` comments
+
+### Repo status: public + protected
+
+Repo is **public** (since 2026-07-20). `main` has classic branch protection (required status check `check`, force-push blocked, `enforce_admins: false` — admin direct pushes still work). Ruleset `main-protection` adds `non_fast_forward` + `copilot_code_review` (Copilot auto-reviews every PR). Dependabot is enabled for the `github-actions` ecosystem only (the `npm` ecosystem was removed — Dependabot's sandbox can't resolve `file:../tool_package` deps); Dependabot-triggered runs get secrets from the **Dependabot secrets store** (repo secrets are withheld from Dependabot runs). Community files exist and must stay accurate: `LICENSE` (MIT code), `LICENSE-CONTENT.md` (CC BY-SA 4.0 content), `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `CITATION.cff`, `.github/ISSUE_TEMPLATE/`.
 
 ## Environment Variables
 
-Secrets are shell-level (`~/.bashrc`), never in repo files. **Never read `.env*` files.**
+Secrets are shell-level (`~/.bashrc`), never in repo files. **Never read `.env*` files.** `.env.example` exists for contributor setup (names only).
 
 | Variable | Notes |
 |----------|-------|
 | `SURREAL_ENDPOINT` / `SURREAL_USERNAME` / `SURREAL_PASSWORD` / `SURREAL_DATABASE` | SurrealDB Cloud; required for dev, build, `verify:db` |
 | `SURREAL_NAMESPACE` | Ignored by app code AND by `scripts/*.mjs` (both hardcode `esg_hub`; scripts override via `ESG_HUB_NS_OVERRIDE` only) |
 | `DEEPSEEK_API_KEY` | AI search/chat API routes |
+| `BRAVE_API_KEY` | Web search for the AI search feature (`src/app/api/ai-search/route.ts`) |
 | `SIMONPLMAK_CLOUD_PAT` | GitHub PAT for the `simonplmak-cloud` account (owns this repo); `GH_TOKEN` aliases it |
 | `VERCEL_TOKEN` | Vercel API token for deployment/log inspection |
 
@@ -87,6 +102,10 @@ This repo belongs to the `simonplmak-cloud` account. gh CLI and git authenticate
 ## Scripts
 
 `scripts/*.mjs` are one-off/manual DB migration and content-maintenance scripts (run with `node`, need `SURREAL_*` env). Only `verify-db-schema.mjs` is wired to a pnpm script. Do not run mutation scripts unless asked.
+
+Content-work drivers (all dry-run-first; use them rather than ad-hoc SQL):
+- `scripts/review-pilot-content.mjs` — `--fetch <permalink>` (backup+dump), `--apply <permalink> --file <path> [--write]`; validates every URL live before writing (bot-blocks 403/415/429/202 accepted, others fail) and requires a `## References` section. `--status` shows section coverage.
+- `scripts/generate-cross-references-pilot.mjs` — `--section <name> [--apply]`; writes `related_pages`/`backlinks` as **record IDs** (not permalinks — the `/api/v1/pages/:id/related` and `/backlinks` routes expect IDs). Dry-run reviews assignments before `--apply`.
 
 ## Git
 
