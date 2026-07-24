@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 import { queryHttpAll, sanitize } from "@/lib/surrealdb";
+import { rrfFusion, esgRerank, type RrfInput } from "@/lib/search/hybrid";
+import type { RankedResult } from "@/lib/search/types";
 
 /**
  * AI-Powered Search Agent API
@@ -226,42 +228,88 @@ async function vectorSearch(
   return results;
 }
 
-/**
- * Deduplicate and merge results from BM25 and vector search
- */
-function mergeAndRank(
-  bm25Results: RAGSource[],
-  vectorResults: RAGSource[]
-): RAGSource[] {
-  const seen = new Map<string, RAGSource>();
+const TABLE_MAP: Record<string, string> = {
+  page: "page",
+  book_chunk: "book_chunk",
+  external: "external_resource",
+};
 
-  // Add BM25 results first (they have relevance scores)
+/**
+ * Hybrid fusion pipeline: RRF + ESG re-rank.
+ * Replaces the old hand-rolled mergeAndRank with:
+ *  1. Reciprocal Rank Fusion (rrfFusion) across BM25 + HNSW result sets
+ *  2. ESG-aware percentile re-rank (esgRerank) with topic match via query embedding
+ */
+function hybridFuseAndRank(
+  bm25Results: RAGSource[],
+  vectorResults: RAGSource[],
+  queryEmbedding?: number[]
+): RAGSource[] {
+  // ----- Convert BM25 results to RrfInput -----
+  const bm25Inputs: RrfInput[] = bm25Results.map(r => ({
+    id: r.id,
+    table: TABLE_MAP[r.source_type] ?? "page",
+    score: r.relevance ?? 0,
+  }));
+
+  // ----- Convert HNSW results to RrfInput (distance → similarity) -----
+  const hnswInputs: RrfInput[] = vectorResults.map(r => ({
+    id: r.id,
+    table: TABLE_MAP[r.source_type] ?? "page",
+    score: r.distance !== undefined ? 1 - r.distance : 0,
+  }));
+
+  // ----- Stage 1: Reciprocal Rank Fusion -----
+  const fused = rrfFusion(bm25Inputs, hnswInputs);
+
+  // ----- Build RankedResult[] for esgRerank -----
+  const rankedInput: RankedResult[] = fused.map(f => ({
+    id: f.id,
+    table: f.table,
+    rrfScore: f.rrfScore,
+    textScore: 0,
+    frameworkMatch: 0,
+    topicMatch: 0,
+    authority: 0,
+    freshness: 0,
+    finalScore: 0,
+  }));
+
+  // ----- Build a lookup map from all original results -----
+  const resultMap = new Map<string, RAGSource>();
   for (const r of bm25Results) {
-    seen.set(r.id, r);
+    const key = `${TABLE_MAP[r.source_type]}:${r.id}`;
+    if (!resultMap.has(key)) resultMap.set(key, r);
+  }
+  for (const r of vectorResults) {
+    const key = `${TABLE_MAP[r.source_type]}:${r.id}`;
+    if (!resultMap.has(key)) resultMap.set(key, r);
   }
 
-  // Add vector results, skip duplicates
-  for (const r of vectorResults) {
-    if (!seen.has(r.id)) {
-      seen.set(r.id, r);
+  // ----- Stage 2: ESG percentile re-rank -----
+  const reranked = esgRerank(
+    rankedInput,
+    queryEmbedding,
+  );
+
+  // ----- Map back to RAGSource[] ordered by finalScore -----
+  reranked.sort((a, b) => b.finalScore - a.finalScore);
+
+  const mergedSources: RAGSource[] = [];
+  const seen = new Set<string>();
+
+  for (const r of reranked) {
+    const key = `${r.table}:${r.id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const source = resultMap.get(key);
+    if (source) {
+      mergedSources.push({ ...source, relevance: Math.round(r.finalScore * 10000) / 100 });
     }
   }
 
-  const merged = Array.from(seen.values());
-
-  // Sort: BM25 relevance first (desc), then vector distance (asc)
-  merged.sort((a, b) => {
-    // Prefer items with relevance scores (BM25)
-    if (a.relevance && b.relevance) return b.relevance - a.relevance;
-    if (a.relevance && !b.relevance) return -1;
-    if (!a.relevance && b.relevance) return 1;
-    // Then by vector distance
-    if (a.distance !== undefined && b.distance !== undefined)
-      return a.distance - b.distance;
-    return 0;
-  });
-
-  return merged.slice(0, 20);
+  return mergedSources.slice(0, 20);
 }
 
 /**
@@ -442,9 +490,14 @@ export async function POST(req: NextRequest) {
       bravePromise,
     ]);
 
-    // Merge SurrealDB results first, then append Brave results
-    const mergedSources = mergeAndRank(bm25Results, vectorResults);
-    // Add Brave results that aren't already in the merged set
+    // Hybrid fusion: RRF + ESG re-rank (replaces mergeAndRank)
+    const mergedSources = hybridFuseAndRank(
+      bm25Results,
+      vectorResults,
+      embedding,
+    );
+
+    // Append Brave results that aren't already in the merged set
     const existingUrls = new Set(mergedSources.map(s => s.url).filter(Boolean));
     for (const br of braveResults) {
       if (!existingUrls.has(br.url) && mergedSources.length < 25) {

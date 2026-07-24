@@ -10,7 +10,15 @@
     "lint": "eslint",
     "test": "playwright test",
     "test:ci": "playwright test --reporter=list",
-    "verify:db": "node scripts/verify-db-schema.mjs"
+    "verify:db": "node scripts/verify-db-schema.mjs",
+    "eval-search": "node scripts/eval-search.mjs",
+    "eval-pipeline": "node scripts/eval-pipeline.mjs",
+    "seed-km-vocab": "node scripts/seed-km-vocab.mjs",
+    "seed-km-sources": "node scripts/seed-km-sources.mjs",
+    "backfill-standards": "node scripts/backfill-standards.mjs",
+    "migrate-crossrefs": "node scripts/migrate-crossrefs-to-edges.mjs",
+    "review-enhancements": "node scripts/review-enhancements.mjs",
+    "release-km-lock": "node scripts/release-km-lock.mjs"
   },
   "dependencies": {
     "@simonplmak-cloud/utils": "file:../tool_package/packages/utils",

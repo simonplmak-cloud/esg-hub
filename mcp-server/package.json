@@ -1,6 +1,6 @@
 {
   "name": "@esg-hub/mcp-server",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "MCP server for the ESG Hub knowledge base \u2014 provides AI agents with access to 307 ESG articles and 244 curated external resources",
   "type": "module",
   "bin": {

@@ -130,3 +130,14 @@ Core rules (full playbook: load the `copilot-supervisor` skill):
 - Use the `context7` and `gh_grep` MCP servers to ground guidance in docs
   and real-world code patterns.
 <!-- /opencode-supervisor -->
+
+## Agent Skills
+
+This project includes 4 ESG-specific agent skills under `.opencode/skills/`:
+
+- `esg-taxonomy-tagging` — Classify ESG content across perspective facets
+- `esg-relevance-ranking` — Apply ESG re-rank weights to search results
+- `esg-glossary-writer` — Draft structured term definitions with citations
+- `esg-source-authority-review` — Score source credibility across 5 dimensions
+
+Load a skill with: skill(name="esg-taxonomy-tagging")

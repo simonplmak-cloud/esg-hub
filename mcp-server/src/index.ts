@@ -5,6 +5,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 
 const BASE_URL = process.env.ESG_HUB_API_URL || "https://esg-hub.ascent.partners";
+const API_BASE = process.env.ESG_HUB_API_BASE || "http://localhost:3000";
+const WRITE_TOKEN = process.env.ESG_HUB_WRITE_TOKEN || "";
 
 /**
  * Helper to call the ESG Hub REST API
@@ -20,7 +22,7 @@ class ApiError extends Error {
 }
 
 async function apiGet<T = unknown>(path: string, params?: Record<string, string>): Promise<T> {
-  const url = new URL(`/api/v1${path}`, BASE_URL);
+  const url = new URL(`/api/v1${path}`, API_BASE);
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== "") {
@@ -33,6 +35,62 @@ async function apiGet<T = unknown>(path: string, params?: Record<string, string>
   });
   if (!res.ok) {
     throw new ApiError(res.status, `API error: ${res.status} ${res.statusText}`);
+  }
+  return res.json() as Promise<T>;
+}
+
+async function apiPost<T = unknown>(path: string, body: unknown): Promise<T> {
+  const url = new URL(`/api/v1${path}`, API_BASE);
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  if (WRITE_TOKEN) {
+    headers["Authorization"] = `Bearer ${WRITE_TOKEN}`;
+  }
+  const res = await fetch(url.toString(), {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    let detail = res.statusText;
+    try {
+      const json = await res.json();
+      if (json.error) detail = json.error;
+      else if (json.message) detail = json.message;
+    } catch {
+      /* ignore parse failure */
+    }
+    throw new ApiError(res.status, `API error: ${res.status} ${detail}`);
+  }
+  return res.json() as Promise<T>;
+}
+
+async function apiPatch<T = unknown>(path: string, body: unknown): Promise<T> {
+  const url = new URL(`/api/v1${path}`, API_BASE);
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  if (WRITE_TOKEN) {
+    headers["Authorization"] = `Bearer ${WRITE_TOKEN}`;
+  }
+  const res = await fetch(url.toString(), {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    let detail = res.statusText;
+    try {
+      const json = await res.json();
+      if (json.error) detail = json.error;
+      else if (json.message) detail = json.message;
+    } catch {
+      /* ignore parse failure */
+    }
+    throw new ApiError(res.status, `API error: ${res.status} ${detail}`);
   }
   return res.json() as Promise<T>;
 }
@@ -73,11 +131,41 @@ function mapApiError(err: unknown, notFoundHint: string) {
   );
 }
 
+function mapWriteError(err: unknown, notFoundHint?: string) {
+  if (err instanceof ApiError) {
+    if (err.status === 401) {
+      return toolError(
+        "UNAUTHORIZED",
+        "The write token is missing, expired, or invalid.",
+        false,
+        "Set ESG_HUB_WRITE_TOKEN to a valid API write token and retry."
+      );
+    }
+    if (err.status === 429) {
+      return toolError(
+        "RATE_LIMITED",
+        "Too many write requests — rate limit hit.",
+        true,
+        "Wait a few seconds before retrying."
+      );
+    }
+    if (err.status === 400) {
+      return toolError(
+        "BAD_REQUEST",
+        `Invalid request: ${err.message}`,
+        false,
+        "Check the input parameters and try again."
+      );
+    }
+  }
+  return mapApiError(err, notFoundHint || "Re-check your inputs and try again.");
+}
+
 // ── Create MCP Server ──────────────────────────────────────────────────
 
 const server = new McpServer({
   name: "esg-hub",
-  version: "1.1.0",
+  version: "1.2.0",
   description:
     "Access the ESG Hub knowledge base — 307 articles and 244 curated external resources covering Environmental, Social, and Governance topics.",
 });
@@ -417,6 +505,413 @@ ${domainsStr}`,
       };
     } catch (err) {
       return mapApiError(err, "The metadata endpoint should always be available — retry in a few seconds.");
+    }
+  }
+);
+
+
+// ── Tool: search_content ────────────────────────────────────────────────
+
+server.tool(
+  "search_content",
+  "Hybrid semantic + keyword search across all ESG Hub content. Combines vector similarity (384-dim BGE embeddings) with BM25 full-text scoring for higher-quality results than keyword-only search. Use for nuanced ESG queries.",
+  {
+    query: z.string().min(1).describe("Search query (e.g., 'carbon emissions', 'board diversity', 'GRI standards')"),
+    limit: z.number().min(1).max(50).default(10).describe("Maximum number of results to return"),
+  },
+  { readOnlyHint: true, openWorldHint: false },
+  async ({ query, limit }) => {
+    try {
+      const result = await apiGet<{
+        data: Array<{
+          id: string;
+          title: string;
+          permalink: string;
+          description: string;
+          section: string;
+          pillar: string;
+          source_type: string;
+          hybrid_score?: number;
+        }>;
+        total: number;
+      }>("/search", { mode: "hybrid", q: query, limit: String(limit) });
+
+      const formatted = result.data
+        .map((item, i) => {
+          const link = `${BASE_URL}${item.permalink}`;
+          return `${i + 1}. **${item.title}** [${item.source_type === "page" ? "Article" : "Resource"}] (score: ${item.hybrid_score?.toFixed(3) || "N/A"})\n   ${item.description || ""}\n   Link: ${link}`;
+        })
+        .join("\n\n");
+
+      const empty = result.data.length === 0;
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: empty
+              ? `No hybrid results for "${query}". Try broader terms or use search_esg for BM25-only search.`
+              : `Found ${result.total} results for "${query}":\n\n${formatted}`,
+          },
+        ],
+        structuredContent: {
+          query,
+          mode: "hybrid",
+          total: result.total,
+          count: result.data.length,
+          items: result.data,
+        },
+      };
+    } catch (err) {
+      return mapApiError(err, "Try a different keyword or use search_esg for BM25-only search.");
+    }
+  }
+);
+
+// ── Tool: get_term ──────────────────────────────────────────────────────
+
+server.tool(
+  "get_term",
+  "Fetch a glossary term by ID, slug, or permalink. Returns the full term definition plus related frameworks that reference this term. Use when users ask about specific ESG terminology.",
+  {
+    term_id: z
+      .string()
+      .min(1)
+      .describe("Term identifier — can be a slug (e.g., 'materiality'), a permalink path, or a SurrealDB record ID (e.g., 'term:abc123')"),
+  },
+  { readOnlyHint: true, openWorldHint: false, idempotentHint: true },
+  async ({ term_id }) => {
+    try {
+      const [termResult, relatedResult] = await Promise.all([
+        apiGet<{
+          data: {
+            id: string;
+            term: string;
+            definition: string;
+            slug?: string;
+            section?: string;
+            facets?: unknown;
+          };
+        }>("/terms", { id: encodeURIComponent(term_id) }),
+        apiGet<{
+          data: Array<{
+            id: string;
+            title: string;
+            permalink: string;
+            section?: string;
+          }>;
+        }>(`/pages/${encodeURIComponent(term_id)}/related`).catch(() => ({
+          data: [] as Array<{ id: string; title: string; permalink: string; section?: string }>,
+        })),
+      ]);
+
+      const term = termResult.data;
+      const related = relatedResult.data;
+
+      const text = [
+        `# ${term.term}`,
+        term.section ? `**Section:** ${term.section}` : "",
+        `\n## Definition`,
+        term.definition,
+        term.facets ? `\n## Facets\n\`\`\`json\n${JSON.stringify(term.facets, null, 2)}\n\`\`\`` : "",
+        related.length > 0
+          ? `\n## Related Frameworks\n${related.map((r) => `- **${r.title}** (${r.section || "N/A"}) → ${BASE_URL}${r.permalink}`).join("\n")}`
+          : "",
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      return {
+        content: [{ type: "text" as const, text }],
+        structuredContent: {
+          term,
+          related_frameworks: related,
+          related_count: related.length,
+        },
+      };
+    } catch (err) {
+      return mapApiError(
+        err,
+        "Check the term identifier with search_esg or list_esg_pages — slugs look like 'materiality' or 'scope-1-emissions'."
+      );
+    }
+  }
+);
+
+// ── Tool: get_related ────────────────────────────────────────────────────
+
+server.tool(
+  "get_related",
+  "Traverse the ESG Hub knowledge graph. Given a page or term record ID, returns all connected records grouped by edge type (related_pages, backlinks, framework, term, etc.). Use to explore how concepts interconnect.",
+  {
+    record_id: z
+      .string()
+      .min(1)
+      .describe("Record identifier — a SurrealDB record ID (e.g., 'page:abc123') or permalink/slug"),
+    edge_type: z
+      .string()
+      .optional()
+      .describe("Optional filter: only return edges of this type (e.g., 'framework', 'term', 'related_pages')"),
+  },
+  { readOnlyHint: true, openWorldHint: true },
+  async ({ record_id, edge_type }) => {
+    try {
+      const result = await apiGet<{
+        data: Array<{
+          id: string;
+          title: string;
+          permalink?: string;
+          description?: string;
+          section?: string;
+          edge_type: string;
+        }>;
+        total: number;
+      }>(`/pages/${encodeURIComponent(record_id)}/related`);
+
+      let edges = result.data;
+      if (edge_type) {
+        edges = edges.filter((e) => e.edge_type === edge_type);
+      }
+
+      const groups: Record<string, typeof edges> = {};
+      for (const edge of edges) {
+        const type = edge.edge_type || "unknown";
+        (groups[type] ??= []).push(edge);
+      }
+
+      const groupText = Object.entries(groups)
+        .map(([type, items]) => {
+          const lines = items.map((e) => `  - **${e.title}** (${e.section || "N/A"})${e.permalink ? ` → ${BASE_URL}${e.permalink}` : ""}${e.description ? `\n    ${e.description.slice(0, 120)}` : ""}`);
+          return `### ${type} (${items.length})\n${lines.join("\n")}`;
+        })
+        .join("\n\n");
+
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: edges.length === 0
+              ? `No related records found for "${record_id}".`
+              : `# Related to "${record_id}"\n\n${groupText}`,
+          },
+        ],
+        structuredContent: {
+          record_id,
+          total: edges.length,
+          edge_types: Object.keys(groups),
+          edges_grouped: groups,
+        },
+      };
+    } catch (err) {
+      return mapApiError(err, "Ensure the record_id is a valid page record ID or permalink.");
+    }
+  }
+);
+
+// ── Tool: list_frameworks ────────────────────────────────────────────────
+
+server.tool(
+  "list_frameworks",
+  "List all ESG reporting frameworks and standards available in the knowledge base (GRI, SASB, TCFD, ESRS, etc.). Use to discover which frameworks are covered before deep-diving into a specific one.",
+  {
+    limit: z.number().min(1).max(100).default(20).describe("Number of results per page (use with offset for paging)"),
+    offset: z.number().min(0).default(0).describe("Pagination offset — pass the previous response's next_offset to get the next page"),
+  },
+  { readOnlyHint: true, openWorldHint: false },
+  async ({ limit, offset }) => {
+    try {
+      const result = await apiGet<{
+        data: Array<{
+          id: string;
+          title: string;
+          permalink: string;
+          description?: string;
+          section?: string;
+          content?: string;
+        }>;
+        pagination: { total: number; limit: number; offset: number; has_more: boolean };
+      }>("/frameworks", { limit: String(limit), offset: String(offset) });
+
+      const formatted = result.data
+        .map((fw, i) => {
+          const idx = result.pagination.offset + i + 1;
+          return `${idx}. **${fw.title}**\n   ${fw.description?.slice(0, 160) || fw.content?.slice(0, 160) || "N/A"}\n   Link: ${BASE_URL}${fw.permalink}`;
+        })
+        .join("\n\n");
+
+      const pag = result.pagination;
+      const nextOffset = pag.offset + result.data.length;
+      const summary = `Showing ${pag.offset + 1}–${nextOffset} of ${pag.total} frameworks${pag.has_more ? ` (more available — call again with offset=${nextOffset})` : ""}`;
+
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: `${summary}\n\n${formatted}`,
+          },
+        ],
+        structuredContent: {
+          items: result.data,
+          pagination: {
+            count: result.data.length,
+            total: pag.total,
+            offset: pag.offset,
+            has_more: pag.has_more,
+            next_offset: pag.has_more ? nextOffset : null,
+          },
+        },
+      };
+    } catch (err) {
+      return mapApiError(err, "The frameworks endpoint should always be available — retry in a few seconds.");
+    }
+  }
+);
+
+// ── Tool: list_industries ───────────────────────────────────────────────
+
+server.tool(
+  "list_industries",
+  "List all industry sectors tagged across the ESG Hub knowledge base. Returns a hardcoded industry taxonomy with names, sectors, and descriptions. Use to discover valid industry filter values for list_esg_pages or tag_content.",
+  {},
+  { readOnlyHint: true, openWorldHint: false, idempotentHint: true },
+  async () => {
+    const industries = [
+      { name: "Financial Services & Insurance", sector: "Finance", description: "Banking, investment management, insurance, and capital markets" },
+      { name: "Energy", sector: "Energy & Utilities", description: "Oil & gas, renewables, electric utilities, and power generation" },
+      { name: "Manufacturing & Industrials", sector: "Industrials", description: "Heavy machinery, industrial equipment, chemicals, and aerospace" },
+      { name: "Technology & Software", sector: "Technology", description: "Software, IT services, hardware, semiconductors, and data centers" },
+      { name: "Healthcare & Pharmaceuticals", sector: "Healthcare", description: "Pharmaceuticals, biotech, medical devices, and healthcare providers" },
+      { name: "Consumer Goods & Retail", sector: "Consumer Discretionary", description: "Retail, apparel, food & beverage, and consumer products" },
+      { name: "Real Estate & Construction", sector: "Real Estate", description: "Commercial and residential real estate, REITs, and construction" },
+      { name: "Transportation & Logistics", sector: "Industrials", description: "Airlines, shipping, rail, trucking, and logistics providers" },
+      { name: "Agriculture & Food", sector: "Consumer Staples", description: "Agribusiness, farming, food processing, and fisheries" },
+      { name: "Mining & Metals", sector: "Materials", description: "Mining, metals extraction, and mineral processing" },
+      { name: "Telecommunications", sector: "Communication Services", description: "Telecom operators, ISPs, and satellite communications" },
+      { name: "Media & Entertainment", sector: "Communication Services", description: "Publishing, broadcasting, streaming, and gaming" },
+    ];
+
+    const text = [
+      "# ESG Hub Industry Taxonomy",
+      `\n${industries.length} industries across ${[...new Set(industries.map((i) => i.sector))].length} sectors:\n`,
+      ...industries.map((ind) => `- **${ind.name}** (${ind.sector})\n  ${ind.description}`),
+    ].join("\n");
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: {
+        count: industries.length,
+        industries,
+      },
+    };
+  }
+);
+
+// ── Tool: propose_term ──────────────────────────────────────────────────
+
+server.tool(
+  "propose_term",
+  "Submit a new glossary term proposal to the ESG Hub. The proposal is reviewed before being published. Requires a valid write token in ESG_HUB_WRITE_TOKEN.",
+  {
+    name: z.string().min(1).max(200).describe("The glossary term name (e.g., 'Materiality Assessment')"),
+    definition: z.string().min(10).max(5000).describe("Full definition of the term (min 10 characters)"),
+    facets: z
+      .object({
+        topic: z.string().optional().describe("Topic area"),
+        industry: z.array(z.string()).optional().describe("Relevant industries"),
+        framework: z.array(z.string()).optional().describe("Related frameworks/standards"),
+        jurisdiction: z.array(z.string()).optional().describe("Relevant jurisdictions"),
+        stakeholder: z.array(z.string()).optional().describe("Affected stakeholder groups"),
+        content_type: z.string().optional().describe("Content classification"),
+      })
+      .optional()
+      .describe("Optional metadata facets for the term"),
+  },
+  { readOnlyHint: false, destructiveHint: false },
+  async ({ name, definition, facets }) => {
+    try {
+      const body: Record<string, unknown> = { name, definition };
+      if (facets) body.facets = facets;
+
+      const result = await apiPost<{
+        data: {
+          id: string;
+          proposal_id: string;
+          status: string;
+        };
+      }>("/terms", body);
+
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: `Term proposal submitted: **${name}**\n\nProposal ID: ${result.data.proposal_id}\nStatus: ${result.data.status}\n\nYour proposal will be reviewed before publication.`,
+          },
+        ],
+        structuredContent: {
+          proposal_id: result.data.proposal_id,
+          status: result.data.status,
+          term_id: result.data.id,
+        },
+      };
+    } catch (err) {
+      return mapWriteError(err, "Ensure name and definition are provided and the term doesn't already exist.");
+    }
+  }
+);
+
+// ── Tool: tag_content ────────────────────────────────────────────────────
+
+server.tool(
+  "tag_content",
+  "Update the facet tags on an existing ESG Hub page. Facets are used for filtering, discoverability, and graph navigation. Requires a valid write token in ESG_HUB_WRITE_TOKEN.",
+  {
+    page_id: z
+      .string()
+      .min(1)
+      .describe("Page identifier — permalink path, slug, or SurrealDB record ID (e.g., 'page:abc123')"),
+    facets: z
+      .object({
+        topic: z.string().optional().describe("Primary topic classification"),
+        industry: z.array(z.string()).optional().describe("Relevant industry sectors"),
+        framework: z.array(z.string()).optional().describe("Related ESG frameworks/standards"),
+        jurisdiction: z.array(z.string()).optional().describe("Applicable jurisdictions"),
+        stakeholder: z.array(z.string()).optional().describe("Stakeholder groups affected"),
+        content_type: z.string().optional().describe("Content type (e.g., 'guide', 'analysis', 'reference')"),
+      })
+      .describe("Facet tags to apply to the page"),
+  },
+  { readOnlyHint: false, destructiveHint: false },
+  async ({ page_id, facets }) => {
+    try {
+      const result = await apiPatch<{
+        data: {
+          id: string;
+          title: string;
+          facets: unknown;
+          updated_at?: string;
+        };
+      }>(`/pages/${encodeURIComponent(page_id)}/facets`, { facets });
+
+      const page = result.data;
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: [
+              `Facets updated for **${page.title}** (${page.id})`,
+              page.updated_at ? `Updated at: ${page.updated_at}` : "",
+              `\nNew facets:\n\`\`\`json\n${JSON.stringify(page.facets, null, 2)}\n\`\`\``,
+            ].join("\n"),
+          },
+        ],
+        structuredContent: {
+          page_id: page.id,
+          title: page.title,
+          facets: page.facets,
+          updated_at: page.updated_at || null,
+        },
+      };
+    } catch (err) {
+      return mapWriteError(err, "Verify the page_id exists and the facets object is valid.");
     }
   }
 );
