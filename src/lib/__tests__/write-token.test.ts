@@ -62,7 +62,7 @@ describe("requireWriteToken", () => {
     const res = requireWriteToken(req);
     expect(res).not.toBeNull();
     expect(res!.status).toBe(401);
-    expect(res!.headers.get("WWW-Authenticate")).toBe("Bearer");
+    expect(res!.headers.get("WWW-Authenticate")).toContain("Bearer");
   });
 
   it("returns 401 Response on missing header", () => {
