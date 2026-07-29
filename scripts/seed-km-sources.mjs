@@ -83,7 +83,7 @@ async function main() {
 
   await q("DEFINE INDEX IF NOT EXISTS idx_source_domain ON source FIELDS domain UNIQUE;");
 
-  const domains = await q("SELECT DISTINCT domain FROM external_resource WHERE domain != NONE;");
+  const domains = await q("SELECT domain FROM external_resource WHERE domain IS NOT NONE GROUP BY domain;");
 
   console.log(`Found ${domains.length} distinct domains in external_resource\n`);
 
