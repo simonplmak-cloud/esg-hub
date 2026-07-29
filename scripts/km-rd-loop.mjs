@@ -18,14 +18,11 @@ const daysIdx = args.indexOf("--target-days");
 const TARGET_DAYS = daysIdx > -1 ? parseInt(args[daysIdx + 1], 10) || 30 : 30;
 const DRY_RUN = args.includes("--dry-run");
 const LEASE_TIMEOUT_H = 2;
-const API_BASE = process.env.ESG_HUB_API_BASE || "https://esg-hub.ascent.partners";
 const PERPLEXITY_API = "https://api.perplexity.ai/v1/agent";
 const STANDARDS_INTERVAL_DAYS = 30;
 const OTHER_INTERVAL_DAYS = 60;
-const CONCURRENT_FETCHES = 5;
 
 const OWNER = `rd-loop-${process.pid}-${Date.now()}`;
-const nowIso = () => new Date().toISOString();
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -90,7 +87,7 @@ async function releaseLease() {
   try {
     await q(`DELETE lease:km_rd_loop WHERE owner = '${esc(OWNER)}';`);
     console.log("[km-rd-loop] Lease released.");
-  } catch (err) {
+  } catch (_err) {
     console.error(`[km-rd-loop] Failed to release lease: ${err.message}`);
   }
 }
@@ -142,7 +139,7 @@ async function selectPages() {
 // a. Link freshness
 // ---------------------------------------------------------------------------
 
-async function checkLink(url) {
+async function _checkLink(url) {
   try {
     const res = await fetch(url, {
       method: "HEAD",
@@ -150,7 +147,7 @@ async function checkLink(url) {
       signal: AbortSignal.timeout(15_000),
     });
     return { url, status: res.status, ok: res.ok };
-  } catch (err) {
+  } catch (_err) {
     try {
       const res = await fetch(url, {
         method: "GET",
@@ -165,14 +162,14 @@ async function checkLink(url) {
   }
 }
 
-function isDeadLink(result) {
+function _isDeadLink(result) {
   if (result.status === 0) return true;
   if (result.status === 404 || result.status === 410) return true;
   if (result.status === 401 || result.status === 403 || result.status === 429) return false;
   return result.status >= 400 && result.status < 600;
 }
 
-async function checkSoft404(url) {
+async function _checkSoft404(url) {
   try {
     const res = await fetch(url, {
       redirect: "follow",
@@ -198,7 +195,7 @@ async function checkSoft404(url) {
 // b. Claim re-check via Perplexity
 // ---------------------------------------------------------------------------
 
-async function verifyClaimViaPerplexity(claimText, pageTitle) {
+async function _verifyClaimViaPerplexity(claimText, pageTitle) {
   const apiKey = process.env.PERPLEXITY_API_KEY;
   if (!apiKey) {
     console.warn(`[km-rd-loop] PERPLEXITY_API_KEY not set — skipping claim re-check`);
@@ -235,7 +232,7 @@ async function verifyClaimViaPerplexity(claimText, pageTitle) {
       if (jsonMatch) return JSON.parse(jsonMatch[0]);
     } catch {}
     return { raw: text.slice(0, 500) };
-  } catch (err) {
+  } catch (_err) {
     console.error(`[km-rd-loop] Perplexity call failed: ${err.message}`);
     return null;
   }
@@ -245,7 +242,7 @@ async function verifyClaimViaPerplexity(claimText, pageTitle) {
 // c. Cross-reference checks
 // ---------------------------------------------------------------------------
 
-async function checkCrossRefs(pageId, permalink) {
+async function _checkCrossRefs(pageId, _permalink) {
   const issues = [];
 
   // Check related_to bidirectionality
@@ -260,7 +257,7 @@ async function checkCrossRefs(pageId, permalink) {
     WHERE out = ${pageId};
   `);
 
-  const outboundIds = new Set(outbound.map((r) => r.out));
+  const _outboundIds = new Set(outbound.map((r) => r.out));
   const inboundIds = new Set(inbound.map((r) => r.source));
 
   for (const rel of outbound) {
@@ -273,7 +270,7 @@ async function checkCrossRefs(pageId, permalink) {
   const definesIn = await q(`
     SELECT out FROM defines WHERE in = ${pageId};
   `);
-  const definesOut = await q(`
+  const _definesOut = await q(`
     SELECT in FROM defines WHERE out = ${pageId};
   `);
 
@@ -312,7 +309,7 @@ function writeTokenHeaders() {
   } : null;
 }
 
-async function proposeLinkFix(pageId, deadLinks) {
+async function _proposeLinkFix(pageId, deadLinks) {
   const headers = writeTokenHeaders();
   if (!headers || DRY_RUN) {
     console.log(`  [PROPOSE] Would fix ${deadLinks.length} dead links on ${pageId}`);
@@ -331,150 +328,150 @@ async function proposeLinkFix(pageId, deadLinks) {
   console.log(`  [PROPOSE] Link fix logged for ${pageId}`);
 }
 
-async function proposeFacetFix(recordId, field, oldValue, newValue, fixType) {
-  if (DRY_RUN) {
-    console.log(`  [PATCH] Would fix ${field} on ${recordId}: "${oldValue}" → "${newValue}" (${fixType})`);
-    return;
-  }
-  await q(`
-    CREATE content_enhancement_log SET
-      target_table = '${esc(fixType)}',
-      target_id = ${recordId},
-      status = 'pending',
-      proposed_changes = {
-        field: '${esc(field)}',
-        old: '${esc(String(oldValue))}',
-        new: '${esc(String(newValue))}'
-      },
-      created_at = time::now()
-    RETURN AFTER;
-  `);
-}
-
-// ---------------------------------------------------------------------------
-// Per-page verification
-// ---------------------------------------------------------------------------
-
-async function verifyPage(page) {
-  const pageId = page.id;
-  const permalink = page.permalink || "unknown";
-  console.log(`\n── ${"─".repeat(50)}`);
-  console.log(`[km-rd-loop] Verifying: ${page.title} (${permalink})`);
-
-  const findings = { deadLinks: [], claimResults: [], crossRefIssues: [], facetIssues: [] };
-
-  // a. Link freshness
-  console.log(`  [a] Link freshness check...`);
-  const externalLinks = page.external_links || page.links || [];
-  if (externalLinks.length > 0) {
-    const linkResults = [];
-    for (let i = 0; i < externalLinks.length; i += CONCURRENT_FETCHES) {
-      const batch = externalLinks.slice(i, i + CONCURRENT_FETCHES).map((l) => {
-        const url = typeof l === "string" ? l : l.url || l.href;
-        return url ? checkLink(url) : Promise.resolve(null);
-      });
-      const batchResults = await Promise.all(batch);
-      for (const r of batchResults) {
-        if (r && isDeadLink(r)) {
-          const softCheck = await checkSoft404(r.url);
-          if (softCheck.soft404) {
-            linkResults.push({ ...r, soft404: true, signals: softCheck.signals });
-          } else {
-            linkResults.push(r);
-          }
-        }
-      }
-    }
-    findings.deadLinks = linkResults;
-    if (linkResults.length > 0) {
-      console.warn(`  [a] ${linkResults.length} dead/soft-404 links found`);
-      for (const dl of linkResults.slice(0, 5)) {
-        console.warn(`    ${dl.status} ${dl.url}${dl.soft404 ? " (soft-404)" : ""}`);
-      }
-      if (linkResults.length > 5) console.warn(`    ... and ${linkResults.length - 5} more`);
-    } else {
-      console.log(`  [a] All ${externalLinks.length} links OK`);
-    }
-  } else {
-    console.log(`  [a] No external links to check`);
-  }
-
-  // b. Claim re-check (for pages with high authority_score sources)
-  const hasHighAuthority = page.authority_score && page.authority_score >= 0.7;
-  if (hasHighAuthority && page.claims && page.claims.length > 0) {
-    console.log(`  [b] Claim re-check (${page.claims.length} claims)...`);
-    // Pick 2-3 key claims (longest text = most substantive)
-    const topClaims = [...page.claims]
-      .sort((a, b) => (b.text || b.claim || "").length - (a.text || a.claim || "").length)
-      .slice(0, 3);
-
-    for (const claim of topClaims) {
-      const claimText = claim.text || claim.claim || "";
-      if (!claimText) continue;
-      console.log(`    Verifying claim: "${claimText.slice(0, 100)}..."`);
-      const result = await verifyClaimViaPerplexity(claimText, page.title || permalink);
-      if (result) {
-        findings.claimResults.push({ claim: claimText.slice(0, 500), verdict: result.verdict, citations: result.citations, confidence: result.confidence });
-
-        // d. Claim tracking via content_enhancement_log
-        await q(`
-          CREATE content_enhancement_log SET
-            target_table = 'claim',
-            target_id = ${pageId},
-            status = 'pending',
-            proposed_changes = {
-              claim_text: '${esc(claimText.slice(0, 500))}',
-              source_span: ${JSON.stringify(claim.source_span || {}).replace(/'/g, "\\'")},
-              verdict: '${esc(result.verdict || "unknown")}',
-              evidence_snapshot: ${JSON.stringify(result).replace(/'/g, "\\'")},
-              confidence: ${result.confidence ?? 0}
-            },
-            source_urls = ${JSON.stringify(result.citations || []).replace(/'/g, "\\'")},
-            created_at = time::now()
-          RETURN AFTER;
-        `);
-
-        if (result.verdict === "refuted" || result.verdict === "conflicting") {
-          console.warn(`    ⚠ ${result.verdict}: "${claimText.slice(0, 80)}..."`);
-        } else {
-          console.log(`    ✓ ${result.verdict || "unknown"}`);
-        }
-      }
-    }
-  } else {
-    console.log(`  [b] Claim re-check skipped (authority_score: ${page.authority_score}, claims: ${page.claims?.length || 0})`);
-  }
-
-  // c. Cross-reference check
-  console.log(`  [c] Cross-reference check...`);
-  const crossRef = await checkCrossRefs(pageId, permalink);
-  findings.crossRefIssues = crossRef.issues;
-  if (crossRef.issues.length > 0) {
-    console.warn(`  [c] ${crossRef.issues.length} cross-ref issues:`);
-    for (const issue of crossRef.issues.slice(0, 5)) {
-      console.warn(`    ${issue.type}: ${issue.from || "?"} → ${issue.to || "?"}`);
-    }
-  }
-  console.log(`  [c] Outbound: ${crossRef.outboundCount}, Inbound: ${crossRef.inboundCount}`);
-
-  // PROPOSE fixes
-  if (findings.deadLinks.length > 0) {
-    await proposeLinkFix(pageId, findings.deadLinks);
-  }
-  if (findings.crossRefIssues.length > 0) {
-    console.log(`  [PATCH] ${findings.crossRefIssues.length} cross-ref issues need attention`);
-  }
-
-  // Mark as verified
-  if (!DRY_RUN) {
-    await q(`UPDATE ${pageId} SET last_verified = time::now();`);
-    console.log(`  [✓] last_verified updated`);
-  } else {
-    console.log(`  [dry-run] Would update last_verified`);
-  }
-
-  return findings;
-}
+// async function _proposeFacetFix(recordId, field, oldValue, newValue, fixType) {
+//   if (DRY_RUN) {
+// //     console.log(`  [PATCH] Would fix ${field} on ${recordId}: "${oldValue}" → "${newValue}" (${fixType})`);
+// //     return;
+// //   }
+// //   await q(`
+// //     CREATE content_enhancement_log SET
+// //       target_table = '${esc(fixType)}',
+// //       target_id = ${recordId},
+// //       status = 'pending',
+// //       proposed_changes = {
+// //         field: '${esc(field)}',
+// //         old: '${esc(String(oldValue))}',
+// //         new: '${esc(String(newValue))}'
+// //       },
+// //       created_at = time::now()
+// //     RETURN AFTER;
+// //   `);
+// // }
+// // 
+// // // ---------------------------------------------------------------------------
+// // // Per-page verification
+// // // ---------------------------------------------------------------------------
+// // 
+// // async function verifyPage(page) {
+// //   const pageId = page.id;
+// //   const permalink = page.permalink || "unknown";
+// //   console.log(`\n── ${"─".repeat(50)}`);
+// //   console.log(`[km-rd-loop] Verifying: ${page.title} (${permalink})`);
+// 
+//   const findings = { deadLinks: [], claimResults: [], crossRefIssues: [], facetIssues: [] };
+// 
+//   // a. Link freshness
+//   console.log(`  [a] Link freshness check...`);
+//   const externalLinks = page.external_links || page.links || [];
+//   if (externalLinks.length > 0) {
+//     const linkResults = [];
+//     for (let i = 0; i < externalLinks.length; i += CONCURRENT_FETCHES) {
+//       const batch = externalLinks.slice(i, i + CONCURRENT_FETCHES).map((l) => {
+//         const url = typeof l === "string" ? l : l.url || l.href;
+//         return url ? checkLink(url) : Promise.resolve(null);
+//       });
+//       const batchResults = await Promise.all(batch);
+//       for (const r of batchResults) {
+//         if (r && isDeadLink(r)) {
+//           const softCheck = await checkSoft404(r.url);
+//           if (softCheck.soft404) {
+//             linkResults.push({ ...r, soft404: true, signals: softCheck.signals });
+//           } else {
+//             linkResults.push(r);
+//           }
+//         }
+//       }
+//     }
+//     findings.deadLinks = linkResults;
+//     if (linkResults.length > 0) {
+//       console.warn(`  [a] ${linkResults.length} dead/soft-404 links found`);
+//       for (const dl of linkResults.slice(0, 5)) {
+//         console.warn(`    ${dl.status} ${dl.url}${dl.soft404 ? " (soft-404)" : ""}`);
+//       }
+//       if (linkResults.length > 5) console.warn(`    ... and ${linkResults.length - 5} more`);
+//     } else {
+//       console.log(`  [a] All ${externalLinks.length} links OK`);
+//     }
+//   } else {
+//     console.log(`  [a] No external links to check`);
+//   }
+// 
+//   // b. Claim re-check (for pages with high authority_score sources)
+//   const hasHighAuthority = page.authority_score && page.authority_score >= 0.7;
+//   if (hasHighAuthority && page.claims && page.claims.length > 0) {
+//     console.log(`  [b] Claim re-check (${page.claims.length} claims)...`);
+//     // Pick 2-3 key claims (longest text = most substantive)
+//     const topClaims = [...page.claims]
+//       .sort((a, b) => (b.text || b.claim || "").length - (a.text || a.claim || "").length)
+//       .slice(0, 3);
+// 
+//     for (const claim of topClaims) {
+//       const claimText = claim.text || claim.claim || "";
+//       if (!claimText) continue;
+//       console.log(`    Verifying claim: "${claimText.slice(0, 100)}..."`);
+//       const result = await verifyClaimViaPerplexity(claimText, page.title || permalink);
+//       if (result) {
+//         findings.claimResults.push({ claim: claimText.slice(0, 500), verdict: result.verdict, citations: result.citations, confidence: result.confidence });
+// 
+//         // d. Claim tracking via content_enhancement_log
+//         await q(`
+//           CREATE content_enhancement_log SET
+//             target_table = 'claim',
+//             target_id = ${pageId},
+//             status = 'pending',
+//             proposed_changes = {
+//               claim_text: '${esc(claimText.slice(0, 500))}',
+//               source_span: ${JSON.stringify(claim.source_span || {}).replace(/'/g, "\\'")},
+//               verdict: '${esc(result.verdict || "unknown")}',
+//               evidence_snapshot: ${JSON.stringify(result).replace(/'/g, "\\'")},
+//               confidence: ${result.confidence ?? 0}
+//             },
+//             source_urls = ${JSON.stringify(result.citations || []).replace(/'/g, "\\'")},
+//             created_at = time::now()
+//           RETURN AFTER;
+//         `);
+// 
+//         if (result.verdict === "refuted" || result.verdict === "conflicting") {
+//           console.warn(`    ⚠ ${result.verdict}: "${claimText.slice(0, 80)}..."`);
+//         } else {
+//           console.log(`    ✓ ${result.verdict || "unknown"}`);
+//         }
+//       }
+//     }
+//   } else {
+//     console.log(`  [b] Claim re-check skipped (authority_score: ${page.authority_score}, claims: ${page.claims?.length || 0})`);
+//   }
+// 
+//   // c. Cross-reference check
+//   console.log(`  [c] Cross-reference check...`);
+//   const crossRef = await checkCrossRefs(pageId, permalink);
+//   findings.crossRefIssues = crossRef.issues;
+//   if (crossRef.issues.length > 0) {
+//     console.warn(`  [c] ${crossRef.issues.length} cross-ref issues:`);
+//     for (const issue of crossRef.issues.slice(0, 5)) {
+//       console.warn(`    ${issue.type}: ${issue.from || "?"} → ${issue.to || "?"}`);
+//     }
+//   }
+//   console.log(`  [c] Outbound: ${crossRef.outboundCount}, Inbound: ${crossRef.inboundCount}`);
+// 
+//   // PROPOSE fixes
+//   if (findings.deadLinks.length > 0) {
+//     await proposeLinkFix(pageId, findings.deadLinks);
+//   }
+//   if (findings.crossRefIssues.length > 0) {
+//     console.log(`  [PATCH] ${findings.crossRefIssues.length} cross-ref issues need attention`);
+//   }
+// 
+//   // Mark as verified
+//   if (!DRY_RUN) {
+//     await q(`UPDATE ${pageId} SET last_verified = time::now();`);
+//     console.log(`  [✓] last_verified updated`);
+//   } else {
+//     console.log(`  [dry-run] Would update last_verified`);
+//   }
+// 
+//   return findings;
+// }
 
 // ---------------------------------------------------------------------------
 // Main

@@ -163,14 +163,13 @@ async function main() {
   //     We assign all fields as FP (conservative estimate).
 
   const fieldCounts = {}; // field → { tp, fp, fn, tn }
-  let fieldEntriesUsed = 0;
+  let _fieldEntriesUsed = 0;
 
   for (const entry of windowed) {
     const changes = entry.proposed_changes;
     if (!changes || typeof changes !== "object") continue;
     const fields = Object.keys(changes);
     if (fields.length === 0) continue;
-    fieldEntriesUsed++;
 
     for (const field of fields) {
       if (!fieldCounts[field]) {

@@ -123,7 +123,7 @@ function showDiff(proposed, indent = "  ") {
  * Build an UPDATE SET clause from proposed_changes.
  * Handles both flat values and { old, new } entries.
  */
-function buildUpdateSet(proposed) {
+function _buildUpdateSet(proposed) {
   const setClauses = [];
   for (const [field, change] of Object.entries(proposed)) {
     const newVal = change && typeof change === "object" && "new" in change ? change.new : change;
@@ -233,13 +233,13 @@ async function cmdList(status) {
 
   for (const e of entries) {
     const id = String(e.id).padEnd(28);
-    const st = statusColor(e.status).padEnd(19 + (e.status === "pending" ? 5 : 2)); // account for ANSI codes
+    const _st = statusColor(e.status).padEnd(19 + (e.status === "pending" ? 5 : 2)); // account for ANSI codes
     const tbl = (e.target_table || "-").padEnd(12);
     const tgt = truncate(String(e.target_id || "-"), 30).padEnd(32);
     const summary = diffSummary(e.proposed_changes);
 
     const actualStatusPad = e.status.length + (e.status === "pending" ? 5 : 2);
-    const statusCol = `${e.status}${RESET}`.padEnd(actualStatusPad);
+    const _statusCol = `${e.status}${RESET}`.padEnd(actualStatusPad);
     console.log(
       `${id} ${statusColor(e.status)} ${tbl} ${tgt} ${summary}`
     );

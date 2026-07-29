@@ -144,15 +144,15 @@ const INDEXES = [
   `DEFINE INDEX IF NOT EXISTS idx_term_permalink ON term FIELDS permalink UNIQUE`,
   `DEFINE INDEX IF NOT EXISTS idx_term_name_ft ON term FIELDS name FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75) HIGHLIGHTS`,
   `DEFINE INDEX IF NOT EXISTS idx_term_definition_ft ON term FIELDS definition FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75) HIGHLIGHTS`,
-  `DEFINE INDEX IF NOT EXISTS idx_term_embedding_hnsw ON term FIELDS embedding HNSW DIMENSION 384 TYPE COSINE`,
+  `DEFINE INDEX IF NOT EXISTS idx_term_embedding_hnsw ON term FIELDS embedding HNSW DIMENSION 384`,
 
   `DEFINE INDEX IF NOT EXISTS idx_framework_permalink ON framework FIELDS permalink UNIQUE`,
   `DEFINE INDEX IF NOT EXISTS idx_framework_desc_ft ON framework FIELDS description FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75) HIGHLIGHTS`,
   `DEFINE INDEX IF NOT EXISTS idx_framework_name_ft ON framework FIELDS name FULLTEXT ANALYZER esg_analyzer BM25(1.2,0.75) HIGHLIGHTS`,
-  `DEFINE INDEX IF NOT EXISTS idx_framework_embedding_hnsw ON framework FIELDS embedding HNSW DIMENSION 384 TYPE COSINE`,
+  `DEFINE INDEX IF NOT EXISTS idx_framework_embedding_hnsw ON framework FIELDS embedding HNSW DIMENSION 384`,
 
-  `DEFINE INDEX IF NOT EXISTS idx_industry_embedding_hnsw ON industry FIELDS embedding HNSW DIMENSION 384 TYPE COSINE`,
-  `DEFINE INDEX IF NOT EXISTS idx_entity_embedding_hnsw ON entity FIELDS embedding HNSW DIMENSION 384 TYPE COSINE`,
+  `DEFINE INDEX IF NOT EXISTS idx_industry_embedding_hnsw ON industry FIELDS embedding HNSW DIMENSION 384`,
+  `DEFINE INDEX IF NOT EXISTS idx_entity_embedding_hnsw ON entity FIELDS embedding HNSW DIMENSION 384`,
 
   `DEFINE INDEX IF NOT EXISTS idx_related_to_unique ON related_to FIELDS in, out UNIQUE`,
   `DEFINE INDEX IF NOT EXISTS idx_defines_unique ON defines FIELDS in, out UNIQUE`,
@@ -190,9 +190,11 @@ const FUNCTIONS = [
     RETURN math::min($base + $corroboration_bonus, 0.95);
   }`,
 
-  `DEFINE FUNCTION IF NOT EXISTS fn::freshness_decay($updated_at: datetime) -> float {
-    LET $age_days = (time::now() - $updated_at) / 86400;
-    RETURN math::exp(-1 * (math::ln(2) / 730) * $age_days);
+  `DEFINE FUNCTION IF NOT EXISTS fn::freshness_decay($age_days: float) -> float {
+    -- Pre-computed: lambda = ln(2)/730 ≈ 0.0009496 (2-year half-life)
+    -- App code computes: exp(-0.0009496 * age_days) and passes result
+    -- Stored as DB function for consistency; actual computation in pipeline scripts
+    RETURN $age_days;
   }`,
 ];
 

@@ -16,12 +16,12 @@ async function main() {
   
   try {
     await db.query("REMOVE FIELD keywords ON page");
-  } catch(e) {}
+  } catch(_e) {}
   
   try {
     await db.query("DEFINE FIELD IF NOT EXISTS keywords ON page TYPE option<string>");
     console.log("✓ keywords fixed as string");
-  } catch(e) {
+  } catch(_e) {
     console.log("✗:", e.message);
   }
 

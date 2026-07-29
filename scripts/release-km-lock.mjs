@@ -46,7 +46,7 @@ async function q(body) {
   return (await res.json())[0]?.result;
 }
 
-const esc = (s) => String(s ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+const _esc = (s) => String(s ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 
 // ---------------------------------------------------------------------------
 // Audit log

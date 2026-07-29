@@ -130,7 +130,7 @@ async function main() {
     for (let i = 0; i < pageList.length; i++) {
       const page = pageList[i];
       const pageId = page.id;
-      const updates = {};
+      const _updates = {};
       
       const needsZh = !page.title_zh || page.title_zh === "";
       const needsHi = !page.title_hi || page.title_hi === "";

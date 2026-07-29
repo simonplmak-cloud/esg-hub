@@ -8,7 +8,6 @@
  * Usage: node scripts/km-ingestion.mjs [--schedule "0 6,18 * * *"] [--pipeline-version "1.0.0"]
  */
 
-import crypto from "node:crypto";
 import { getDbEnv } from "./lib/db-env.mjs";
 import { fetchSource, computeChecksum } from "./lib/pipeline-fetcher.mjs";
 import { normalizeHTML, normalizeJSON, canonicalizeText } from "./lib/pipeline-normalizer.mjs";
