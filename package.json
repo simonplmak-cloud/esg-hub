@@ -45,11 +45,5 @@
   },
   "engines": {
     "node": ">=18.0.0 <24.0.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "@swc/core"
-    ]
   }
 }
