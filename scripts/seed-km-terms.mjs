@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { getDbEnv } from "./lib/db-env.mjs";
+import { isJunkKeyword } from "./lib/term-quality.mjs";
 
 const env = getDbEnv();
 const BASE = `${env.endpoint}/sql`;
@@ -37,7 +38,7 @@ async function main() {
     const parts = typeof raw === "string" ? raw.split(/[,;]+/) : Array.isArray(raw) ? raw : [];
     for (const k of parts) {
       const term = String(k).trim();
-      if (term.length > 2 && term.length < 80) keywordSet.add(term);
+      if (!isJunkKeyword(term)) keywordSet.add(term);
     }
   }
 
