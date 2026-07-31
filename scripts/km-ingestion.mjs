@@ -9,6 +9,7 @@
  */
 
 import { getDbEnv } from "./lib/db-env.mjs";
+import { preflightDbWriteAccess } from "./lib/preflight-iam.mjs";
 import { fetchSource, computeChecksum } from "./lib/pipeline-fetcher.mjs";
 import { normalizeHTML, normalizeJSON, canonicalizeText } from "./lib/pipeline-normalizer.mjs";
 import { extractEntities, verifyExtraction } from "./lib/pipeline-llm.mjs";
@@ -474,6 +475,13 @@ async function processSource(source) {
 async function main() {
   console.log(`[km-ingestion] Starting (version: ${PIPELINE_VERSION}, owner: ${OWNER})`);
   console.log(`[km-ingestion] Schedule filter: ${FETCH_SCHEDULE || "(all)"}`);
+
+  const preflight = await preflightDbWriteAccess(q);
+  if (!preflight.ok) {
+    console.error(`[km-ingestion] PREFLIGHT FAIL: ${preflight.error}`);
+    process.exit(1);
+  }
+  console.log(`[km-ingestion] DB write-access preflight OK (${preflight.tables.join(", ")})`);
 
   // ACQUIRE
   const locked = await acquireLease();

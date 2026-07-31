@@ -9,6 +9,7 @@
  */
 
 import { getDbEnv } from "./lib/db-env.mjs";
+import { preflightDbWriteAccess } from "./lib/preflight-iam.mjs";
 
 const env = getDbEnv();
 const SQL_BASE = `${env.endpoint}/sql`;
@@ -480,6 +481,13 @@ async function _proposeLinkFix(pageId, deadLinks) {
 async function main() {
   console.log(`[km-rd-loop] Daily R&D verification (target=${TARGET_DAYS}d, dry-run=${DRY_RUN})`);
   console.log(`[km-rd-loop] Owner: ${OWNER}`);
+
+  const preflight = await preflightDbWriteAccess(q);
+  if (!preflight.ok) {
+    console.error(`[km-rd-loop] PREFLIGHT FAIL: ${preflight.error}`);
+    process.exit(1);
+  }
+  console.log(`[km-rd-loop] DB write-access preflight OK (${preflight.tables.join(", ")})`);
 
   const locked = await acquireLease();
   if (!locked) process.exit(1);
