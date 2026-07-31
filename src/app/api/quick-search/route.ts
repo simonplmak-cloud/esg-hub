@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
+const logger = createLogger("api/quick-search");
 
 export const runtime = "nodejs";
 import { queryHttpAll, sanitize } from "@/lib/surrealdb";
@@ -105,7 +107,7 @@ export async function GET(request: NextRequest) {
       count: results.length,
     });
   } catch (err) {
-    console.error("[Quick Search] Error:", err);
+    logger.error("[Quick Search] Error:", err);
     return NextResponse.json(
       { error: "Search failed", results: [] },
       { status: 500 }

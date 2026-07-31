@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
+const logger = createLogger("api/v1/v1");
 
 export const runtime = "nodejs";
 import { queryHttp, sanitize, sanitizeInt, isAlphanumericDash } from "@/lib/surrealdb";
@@ -100,7 +102,7 @@ export async function GET(request: NextRequest) {
       },
     }, { headers: CORS_HEADERS });
   } catch (err) {
-    console.error("[API /v1/pages] Error:", err);
+    logger.error("[API /v1/pages] Error:", err);
     return NextResponse.json(
       { error: "An internal error occurred. Please try again later." },
       { status: 500, headers: CORS_HEADERS }

@@ -6,6 +6,9 @@ import { queryHttp } from "@/lib/surrealdb";
 import { requireWriteToken } from "@/lib/auth/write-token";
 import { checkRateLimit } from "@/lib/middleware/rate-limit";
 import { FacetUpdateSchema } from "@/lib/validators/facets";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("api/v1/pages/:id/facets");
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -140,7 +143,7 @@ export async function PATCH(
       { headers: CORS_HEADERS }
     );
   } catch (err) {
-    console.error("[API /v1/pages/:id/facets PATCH] Error:", err);
+    logger.error("[API /v1/pages/:id/facets PATCH] Error:", err);
     return NextResponse.json(
       { error: "Internal error" },
       { status: 500, headers: CORS_HEADERS }

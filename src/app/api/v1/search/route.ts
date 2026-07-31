@@ -5,6 +5,9 @@ import { keywordSearch } from "@/lib/search";
 import { queryHttp, queryHttpAll, sanitize } from "@/lib/surrealdb";
 import { fuseRerankAndRespond, type RrfInput } from "@/lib/search/hybrid";
 import { SearchParamsSchema } from "@/lib/validators/search";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("api/v1/search");
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -282,7 +285,7 @@ export async function GET(request: NextRequest) {
       ...response,
     }, { headers: CORS_HEADERS });
   } catch (err) {
-    console.error("[API /v1/search GET] Error:", err);
+    logger.error("[API /v1/search GET] Error:", err);
     return NextResponse.json(
       { error: "An internal error occurred. Please try again later." },
       { status: 500, headers: CORS_HEADERS }
@@ -431,7 +434,7 @@ export async function POST(request: NextRequest) {
       total: results.length,
     }, { headers: CORS_HEADERS });
   } catch (err) {
-    console.error("[API /v1/search POST] Error:", err);
+    logger.error("[API /v1/search POST] Error:", err);
     return NextResponse.json(
       { error: "An internal error occurred. Please try again later." },
       { status: 500, headers: CORS_HEADERS }

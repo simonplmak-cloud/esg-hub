@@ -1,4 +1,6 @@
 import { NextRequest } from "next/server";
+import { createLogger } from "@/lib/logger";
+const logger = createLogger("api/ai-search");
 
 export const runtime = "nodejs";
 import { queryHttpAll, sanitize } from "@/lib/surrealdb";
@@ -134,7 +136,7 @@ async function bm25Search(query: string, limit: number = 8): Promise<RAGSource[]
       }
     }
   } catch (err) {
-    console.error("[AI Search] BM25 search error:", err);
+    logger.error("[AI Search] BM25 search error:", err);
   }
 
   return results;
@@ -222,7 +224,7 @@ async function vectorSearch(
       }
     }
   } catch (err) {
-    console.error("[AI Search] Vector search error:", err);
+    logger.error("[AI Search] Vector search error:", err);
   }
 
   return results;
@@ -336,7 +338,7 @@ async function braveSearch(query: string, limit: number = 5): Promise<RAGSource[
       }
     );
     if (!resp.ok) {
-      console.error("[AI Search] Brave error:", resp.status, await resp.text());
+      logger.error("[AI Search] Brave error:", resp.status, await resp.text());
       return [];
     }
     const data = await resp.json();
@@ -357,7 +359,7 @@ async function braveSearch(query: string, limit: number = 5): Promise<RAGSource[
       }
     }
   } catch (err) {
-    console.error("[AI Search] Brave fetch error:", err);
+    logger.error("[AI Search] Brave fetch error:", err);
   }
   return results;
 }
@@ -562,7 +564,7 @@ export async function POST(req: NextRequest) {
 
           if (!response.ok) {
             const errorText = await response.text();
-            console.error("[AI Search] LLM API error:", response.status, errorText);
+            logger.error("[AI Search] LLM API error:", response.status, errorText);
             controller.enqueue(
               encoder.encode(
                 `data: ${JSON.stringify({ type: "error", data: "AI service temporarily unavailable" })}\n\n`
@@ -622,7 +624,7 @@ export async function POST(req: NextRequest) {
             )
           );
         } catch (err) {
-          console.error("[AI Search] Stream error:", err);
+          logger.error("[AI Search] Stream error:", err);
           controller.enqueue(
             encoder.encode(
               `data: ${JSON.stringify({ type: "error", data: "An error occurred while generating the answer" })}\n\n`
@@ -642,7 +644,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("[AI Search] Unexpected error:", error);
+    logger.error("[AI Search] Unexpected error:", error);
     return new Response(
       JSON.stringify({ error: "An unexpected error occurred" }),
       { status: 500, headers: { "Content-Type": "application/json" } }

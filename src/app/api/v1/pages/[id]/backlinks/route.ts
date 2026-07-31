@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
+const logger = createLogger("api/v1/[id]");
 import { getPageByPermalink, isDbConfigured, DB_ERROR } from "@/lib/pages";
 import { queryHttp } from "@/lib/surrealdb";
 import { formatPermalink } from "@/lib/utils";
@@ -73,7 +75,7 @@ export async function GET(
 
     return NextResponse.json({ data: backlinks });
   } catch (error) {
-    console.error("[api] Backlinks error:", error);
+    logger.error("[api] Backlinks error:", error);
     return NextResponse.json(
       { error: "Failed to load backlinks" },
       { status: 500 }

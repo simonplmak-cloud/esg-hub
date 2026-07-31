@@ -8,6 +8,9 @@ import { queryHttp, sanitize, sanitizeInt } from "@/lib/surrealdb";
 import { requireWriteToken } from "@/lib/auth/write-token";
 import { checkRateLimit } from "@/lib/middleware/rate-limit";
 import { TermProposalSchema } from "@/lib/validators/terms";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("api/v1/terms");
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -90,7 +93,7 @@ export async function POST(request: NextRequest) {
       { status: 201, headers: CORS_HEADERS }
     );
   } catch (err) {
-    console.error("[API /v1/terms POST] Error:", err);
+    logger.error("[API /v1/terms POST] Error:", err);
     return NextResponse.json(
       { error: "Internal error" },
       { status: 500, headers: CORS_HEADERS }
@@ -147,7 +150,7 @@ export async function GET(request: NextRequest) {
       { headers: CORS_HEADERS }
     );
   } catch (err) {
-    console.error("[API /v1/terms GET] Error:", err);
+    logger.error("[API /v1/terms GET] Error:", err);
     return NextResponse.json(
       { error: "Internal error" },
       { status: 500, headers: CORS_HEADERS }

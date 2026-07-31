@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
+const logger = createLogger("api/semantic-search");
 
 export const runtime = "nodejs";
 import { queryHttp } from "@/lib/surrealdb";
@@ -81,7 +83,7 @@ async function vectorSearch(
         });
       }
     } catch (err) {
-      console.error("Page vector search error:", err);
+      logger.error("Page vector search error:", err);
     }
   }
 
@@ -113,7 +115,7 @@ async function vectorSearch(
         });
       }
     } catch (err) {
-      console.error("External vector search error:", err);
+      logger.error("External vector search error:", err);
     }
   }
 
@@ -149,7 +151,7 @@ export async function POST(request: NextRequest) {
     const results = await vectorSearch(embedding, k, source, locale);
     return NextResponse.json({ results, count: results.length });
   } catch (err) {
-    console.error("Semantic search error:", err);
+    logger.error("Semantic search error:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

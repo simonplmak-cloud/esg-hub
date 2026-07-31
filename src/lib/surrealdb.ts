@@ -1,4 +1,7 @@
 import { Surreal } from "surrealdb";
+import { createLogger, redact } from "@/lib/logger";
+
+const logger = createLogger("surrealdb");
 
 // Credentials are sourced exclusively from environment variables.
 // Set SURREAL_ENDPOINT, SURREAL_USERNAME, SURREAL_PASSWORD,
@@ -109,7 +112,7 @@ export async function queryHttp<T = unknown>(
 
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
-    console.error(`[SurrealDB] HTTP ${res.status} — ns=${env.namespace} db=${env.database} endpoint=${env.endpoint.substring(0, 40)}: ${errorText}`);
+    logger.error("Database query failed", { status: res.status, ns: env.namespace, db: env.database });
     throw new Error(`Database query failed (HTTP ${res.status})`);
   }
 
@@ -117,21 +120,21 @@ export async function queryHttp<T = unknown>(
   
   // Handle JSON-RPC response format
   if (resBody.error) {
-    console.error("[SurrealDB] RPC error:", JSON.stringify(resBody.error), `— ns=${env.namespace} db=${env.database}`);
+    logger.error("SurrealDB RPC error", { rpcError: resBody.error });
     throw new Error(`Database query returned an error: ${resBody.error.message}`);
   }
 
   // RPC response: { result: [...], status: "OK", time: "..." }
   const rpcResult = resBody.result;
   if (!Array.isArray(rpcResult) || rpcResult.length === 0) {
-    console.error("[SurrealDB] Unexpected response format:", JSON.stringify(resBody).slice(0, 500));
+    logger.error("SurrealDB unexpected response format", { resultType: typeof rpcResult });
     throw new Error("Database returned an unexpected response format");
   }
 
   // Return the result from the last statement
   const last = rpcResult[rpcResult.length - 1];
   if (last?.status !== "OK") {
-    console.error("[SurrealDB] Query error:", JSON.stringify(last));
+    logger.error("SurrealDB query error", { queryStatus: last?.status });
     throw new Error("Database query returned an error");
   }
 
@@ -174,7 +177,7 @@ export async function queryHttpAll<T = unknown>(
 
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
-    console.error(`[SurrealDB] HTTP ${res.status}: ${errorText}`);
+    logger.error("Database query failed (all)", { status: res.status });
     throw new Error(`Database query failed (HTTP ${res.status})`);
   }
 
@@ -182,7 +185,7 @@ export async function queryHttpAll<T = unknown>(
   
   // Handle JSON-RPC response format
   if (resBody.error) {
-    console.error("[SurrealDB] RPC error:", JSON.stringify(resBody.error));
+    logger.error("SurrealDB RPC error (all)", { rpcError: resBody.error });
     throw new Error(`Database query returned an error: ${resBody.error.message}`);
   }
 

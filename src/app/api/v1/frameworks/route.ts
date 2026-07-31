@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
+const logger = createLogger("api/v1/v1");
 
 export const runtime = "nodejs";
 export const dynamic = "force-static";
@@ -65,7 +67,7 @@ export async function GET(request: NextRequest) {
       { headers: CORS_HEADERS }
     );
   } catch (err) {
-    console.error("[API /v1/frameworks GET] Error:", err);
+    logger.error("[API /v1/frameworks GET] Error:", err);
     return NextResponse.json(
       { error: "Internal error" },
       { status: 500, headers: CORS_HEADERS }
