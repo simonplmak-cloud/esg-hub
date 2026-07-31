@@ -53,6 +53,48 @@ jobs:
       - name: Run unit tests
         run: npx vitest run
 
+  a11y:
+    name: "Accessibility Audit"
+    runs-on: ubuntu-latest
+    needs: validate
+    if: always()
+    continue-on-error: true
+    timeout-minutes: 20
+    env:
+      BASE_URL: ${{ vars.VERCEL_DEPLOYMENT_URL || 'http://localhost:3001' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout tool_packages
+        uses: actions/checkout@v4
+        with:
+          repository: simonplmak-cloud/tool_packages
+          path: tool_packages_repo
+          ref: master
+          token: ${{ secrets.TOOL_PACKAGES_PAT }}
+
+      - name: Link tool_packages
+        run: ln -s "$GITHUB_WORKSPACE/tool_packages_repo" "${GITHUB_WORKSPACE}/../tool_package"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+
+      - name: Run accessibility tests
+        run: pnpm test -- a11y
+
   eval-search:
     name: "Search Evaluation"
     runs-on: ubuntu-latest
