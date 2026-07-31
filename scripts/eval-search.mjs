@@ -11,11 +11,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { fetchPageIndex, buildSlugMap, expandLabels, isRelevant } from "./lib/eval-resolver.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
 const API_BASE = process.env.API_BASE || "http://localhost:3000";
+const EVAL_MODE = process.env.EVAL_MODE || "keyword";
 const QUERIES_PATH = path.join(ROOT, "specs/esg-hub-km-transformation/eval-queries.json");
 const LIMIT = 10;
 
@@ -41,7 +43,7 @@ function loadQueries(filePath) {
 
 /**
  * Search the API via GET /api/v1/search.
- * Accepts a mode param so the same script works when hybrid is wired up.
+ * Mode-aware: keyword mode returns `body.data`, hybrid mode returns `body.results`.
  */
 async function search(query, mode = "keyword") {
   const url = new URL(`${API_BASE}/api/v1/search`);
@@ -52,31 +54,15 @@ async function search(query, mode = "keyword") {
   const res = await fetch(url.href, { signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error(`Search API returned ${res.status}: ${await res.text().catch(() => "")}`);
   const body = await res.json();
-  return body.data || [];
+  const items = mode === "hybrid" ? (body.results ?? []) : (body.data ?? []);
+  return Array.isArray(items) ? items : [];
 }
 
 /**
- * Normalize a result ID for matching.
- * Handles SurrealDB record IDs (page:xxx), permalink paths, and full URLs.
+ * Check if a result matches any relevant label (resolved via the page index).
  */
-function normalizeId(id) {
-  if (!id) return null;
-  if (id.startsWith("page:") || id.startsWith("term:") || id.startsWith("framework:")) {
-    return id;
-  }
-  return null;
-}
-
-/**
- * Check if a result ID matches any relevant ID.
- */
-function isRelevant(resultId, relevantSet) {
-  const norm = normalizeId(resultId);
-  if (!norm) return false;
-  for (const rel of relevantSet) {
-    if (norm === rel) return 1;
-  }
-  return 0;
+function isRelevantResult(resultId, permalink, relevantSet) {
+  return isRelevant({ id: resultId, permalink }, relevantSet);
 }
 
 /**
@@ -85,7 +71,7 @@ function isRelevant(resultId, relevantSet) {
 function dcg(results, relevantSet, k) {
   let score = 0;
   for (let i = 0; i < Math.min(results.length, k); i++) {
-    const rel = isRelevant(results[i].id, relevantSet);
+    const rel = isRelevantResult(results[i].id, results[i].permalink, relevantSet);
     if (rel) {
       score += rel / Math.log2(i + 2);
     }
@@ -111,7 +97,7 @@ function idcg(relevantSet, k) {
  */
 function mrr(results, relevantSet) {
   for (let i = 0; i < results.length; i++) {
-    if (isRelevant(results[i].id, relevantSet)) {
+    if (isRelevantResult(results[i].id, results[i].permalink, relevantSet)) {
       return 1 / (i + 1);
     }
   }
@@ -121,6 +107,7 @@ function mrr(results, relevantSet) {
 async function main() {
   console.log(`ESG Hub Search Evaluation\n`);
   console.log(`  API base : ${API_BASE}`);
+  console.log(`  Mode     : ${EVAL_MODE}`);
   console.log(`  Queries  : ${QUERIES_PATH}`);
   console.log(`  Limit    : ${LIMIT}\n`);
 
@@ -138,14 +125,27 @@ async function main() {
   let sumMrr = 0;
   let failures = 0;
 
+  // Resolve slug-style labels (page:climate-change) to real record IDs + permalinks.
+  let slugMap;
+  try {
+    console.log(`  Resolving page labels via ${API_BASE}/api/v1/pages ...`);
+    const pageIndex = await fetchPageIndex(API_BASE);
+    slugMap = buildSlugMap(pageIndex);
+    console.log(`  Indexed ${pageIndex.length} pages\n`);
+  } catch (err) {
+    console.error(`${YELLOW}WARN${RESET} label resolution failed (${err.message}); falling back to exact-ID matching`);
+    slugMap = new Map();
+  }
+
   for (let idx = 0; idx < queries.length; idx++) {
     const { query, relevant } = queries[idx];
+    const relevantSet = expandLabels(relevant, slugMap);
     const label = `[${String(idx + 1).padStart(2, "0")}/${queries.length}]`;
     process.stdout.write(`${label} "${query}" ... `);
 
     let results;
     try {
-      results = await search(query);
+      results = await search(query, EVAL_MODE);
     } catch (err) {
       console.log(`${RED}ERROR${RESET} (${err.message})`);
       details.push({ query, relevant, ndcg: 0, mrr: 0, resultsFound: 0, error: err.message });
