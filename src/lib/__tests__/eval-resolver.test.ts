@@ -68,7 +68,10 @@ describe("fetchPageIndex", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => body }));
     const index = await fetchPageIndex("https://example.com");
     expect(index).toEqual([{ id: "page:abc", permalink: "/about", slug: "about" }]);
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining("/api/v1/pages?limit=100&offset=0"));
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/v1/pages?limit=100&offset=0"),
+      expect.any(Object),
+    );
   });
 
   it("paginates while pagination.has_more is true", async () => {
