@@ -5,6 +5,7 @@ export const runtime = "nodejs";
 import { queryHttp } from "@/lib/surrealdb";
 import { requireWriteToken } from "@/lib/auth/write-token";
 import { checkRateLimit } from "@/lib/middleware/rate-limit";
+import { FacetUpdateSchema } from "@/lib/validators/facets";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -111,50 +112,16 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { facets } = body;
+    const validated = FacetUpdateSchema.safeParse(body);
 
-    if (!facets || typeof facets !== "object" || facets === null || Array.isArray(facets)) {
+    if (!validated.success) {
       return NextResponse.json(
-        { error: "Field 'facets' is required and must be a non-null object" },
+        { error: "Validation failed", details: validated.error.flatten().fieldErrors },
         { status: 400, headers: CORS_HEADERS }
       );
     }
 
-    for (const key of Object.keys(facets)) {
-      if (!ALLOWED_FACET_KEYS.has(key)) {
-        return NextResponse.json(
-          { error: `Unknown facet key: '${key}'. Allowed keys: ${[...ALLOWED_FACET_KEYS].join(", ")}` },
-          { status: 400, headers: CORS_HEADERS }
-        );
-      }
-
-      const vocab = VOCAB_MAP[key];
-      if (key === "content_type") {
-        const val = facets[key];
-        if (typeof val !== "string" || !vocab.has(val)) {
-          return NextResponse.json(
-            { error: `Invalid value for content_type: '${val}'. Allowed: ${[...vocab].join(", ")}` },
-            { status: 400, headers: CORS_HEADERS }
-          );
-        }
-      } else {
-        const vals = facets[key];
-        if (!Array.isArray(vals)) {
-          return NextResponse.json(
-            { error: `Facet '${key}' must be an array of strings` },
-            { status: 400, headers: CORS_HEADERS }
-          );
-        }
-        for (let i = 0; i < vals.length; i++) {
-          if (typeof vals[i] !== "string" || !vocab.has(vals[i])) {
-            return NextResponse.json(
-              { error: `Invalid value '${vals[i]}' for facet '${key}'. Allowed values: ${[...vocab].join(", ")}` },
-              { status: 400, headers: CORS_HEADERS }
-            );
-          }
-        }
-      }
-    }
+    const { facets } = validated.data;
 
     const results = await queryHttp(
       `UPDATE ${pageId} MERGE { facets: $facets, updated_at: time::now() } RETURN id, title, permalink, description, section, subsection, pillar, keywords, slug, facets, created_at, updated_at;`,

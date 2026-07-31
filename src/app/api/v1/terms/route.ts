@@ -7,6 +7,7 @@ export const revalidate = 3600;
 import { queryHttp, sanitize, sanitizeInt } from "@/lib/surrealdb";
 import { requireWriteToken } from "@/lib/auth/write-token";
 import { checkRateLimit } from "@/lib/middleware/rate-limit";
+import { TermProposalSchema } from "@/lib/validators/terms";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -48,59 +49,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, definition, facets, source_urls } = body;
+    const validated = TermProposalSchema.safeParse(body);
 
-    if (!name || typeof name !== "string" || name.trim().length === 0) {
+    if (!validated.success) {
       return NextResponse.json(
-        { error: "Field 'name' is required and must be a non-empty string" },
+        { error: "Validation failed", details: validated.error.flatten().fieldErrors },
         { status: 400, headers: CORS_HEADERS }
       );
     }
 
-    if (name.length > 500) {
-      return NextResponse.json(
-        { error: "Field 'name' must be 500 characters or fewer" },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
-
-    if (!definition || typeof definition !== "string" || definition.trim().length === 0) {
-      return NextResponse.json(
-        { error: "Field 'definition' is required and must be a non-empty string" },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
-
-    if (definition.length > 10000) {
-      return NextResponse.json(
-        { error: "Field 'definition' must be 10,000 characters or fewer" },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
-
-    if (facets !== undefined && (typeof facets !== "object" || facets === null || Array.isArray(facets))) {
-      return NextResponse.json(
-        { error: "Field 'facets' must be an object if provided" },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
-
-    if (source_urls !== undefined) {
-      if (!Array.isArray(source_urls)) {
-        return NextResponse.json(
-          { error: "Field 'source_urls' must be an array of strings if provided" },
-          { status: 400, headers: CORS_HEADERS }
-        );
-      }
-      for (let i = 0; i < source_urls.length; i++) {
-        if (typeof source_urls[i] !== "string") {
-          return NextResponse.json(
-            { error: `source_urls[${i}] must be a string` },
-            { status: 400, headers: CORS_HEADERS }
-          );
-        }
-      }
-    }
+    const { name, definition, facets, source_urls } = validated.data;
 
     const safeName = sanitize(name.trim());
     const safeDefinition = sanitize(definition.trim());

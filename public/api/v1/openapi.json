@@ -1,0 +1,622 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ESG Hub API",
+    "version": "1.0.0",
+    "description": "Public API for the Ascent Partners Foundation ESG Knowledge Hub. Access 354 ESG articles and 244 curated external resources covering Environmental, Social, and Governance topics.",
+    "contact": {
+      "name": "ESG Hub Developers",
+      "url": "https://esg-hub.ascent.partners/developers"
+    },
+    "license": {
+      "name": "CC BY-SA 4.0",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://esg-hub.ascent.partners",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/api/v1": {
+      "get": {
+        "summary": "API root documentation",
+        "description": "Returns available endpoints and usage examples.",
+        "operationId": "getApiRoot",
+        "responses": {
+          "200": {
+            "description": "API documentation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "version": { "type": "string" },
+                    "endpoints": { "type": "object" },
+                    "examples": { "type": "object" },
+                    "openapi": { "type": "string", "format": "uri-reference" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/meta": {
+      "get": {
+        "summary": "Database metadata",
+        "description": "Returns sections, pillars, source domains, and statistics about the knowledge base.",
+        "operationId": "getMeta",
+        "responses": {
+          "200": {
+            "description": "Metadata with sections, pillars, domains, and stats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sections": { "type": "array", "items": { "type": "object" } },
+                    "pillars": { "type": "array", "items": { "type": "object" } },
+                    "domains": { "type": "array", "items": { "type": "object" } },
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "totalPages": { "type": "integer" },
+                        "totalResources": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pages": {
+      "get": {
+        "summary": "List pages",
+        "description": "List and filter pages by section, pillar, or title substring.",
+        "operationId": "listPages",
+        "parameters": [
+          {
+            "name": "section",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by section (e.g. environmental, social, governance)"
+          },
+          {
+            "name": "pillar",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by pillar (e.g. Environmental, Social, Governance)"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Search within page titles"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 100 }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0, "minimum": 0 }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Comma-separated list of fields to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of pages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "type": "object" } },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer" },
+                        "limit": { "type": "integer" },
+                        "offset": { "type": "integer" },
+                        "has_more": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pages/{id}": {
+      "get": {
+        "summary": "Get a single page",
+        "description": "Retrieve a page by ID, permalink path, or slug.",
+        "operationId": "getPage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Page identifier (record ID, permalink, or slug)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Page data",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        }
+      }
+    },
+    "/api/v1/pages/{id}/related": {
+      "get": {
+        "summary": "Get related pages",
+        "description": "Returns pages related to the given page via RELATION edges.",
+        "operationId": "getRelatedPages",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of related pages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pages/{id}/backlinks": {
+      "get": {
+        "summary": "Get backlinks",
+        "description": "Returns pages that link to (reference) the given page.",
+        "operationId": "getBacklinks",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of backlinking pages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pages/{id}/facets": {
+      "patch": {
+        "summary": "Update page facets",
+        "description": "Update taxonomy facets on an existing page. Requires Bearer token authorization.",
+        "operationId": "updateFacets",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Page record ID (e.g. page:abc123)"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "facets": {
+                    "type": "object",
+                    "properties": {
+                      "topic": { "type": "array", "items": { "type": "string" } },
+                      "industry": { "type": "array", "items": { "type": "string" } },
+                      "framework": { "type": "array", "items": { "type": "string" } },
+                      "jurisdiction": { "type": "array", "items": { "type": "string" } },
+                      "stakeholder": { "type": "array", "items": { "type": "string" } },
+                      "content_type": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated page with facets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "object" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Page not found" }
+        }
+      }
+    },
+    "/api/v1/resources": {
+      "get": {
+        "summary": "List external resources",
+        "description": "List and filter curated external ESG resources by domain or title substring.",
+        "operationId": "listResources",
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by source domain (e.g. ghgprotocol.org)"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by title substring"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 100 }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0, "minimum": 0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of external resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "type": "object" } },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer" },
+                        "limit": { "type": "integer" },
+                        "offset": { "type": "integer" },
+                        "has_more": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "summary": "Keyword or hybrid search",
+        "description": "Full-text keyword search (BM25) or hybrid search (BM25 + HNSW with ESG re-ranking).",
+        "operationId": "search",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "maxLength": 500 },
+            "description": "Search query"
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["keyword", "hybrid"], "default": "keyword" }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["all", "pages", "external"], "default": "all" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 50 }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results with ranking",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "query": { "type": "string" },
+                    "mode": { "type": "string" },
+                    "results": { "type": "array", "items": { "type": "object" } },
+                    "total": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Semantic vector search",
+        "description": "Search using a pre-computed embedding vector (384-dim, BGE-small).",
+        "operationId": "semanticSearch",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["embedding"],
+                "properties": {
+                  "embedding": {
+                    "type": "array",
+                    "items": { "type": "number" },
+                    "minItems": 384,
+                    "maxItems": 384
+                  },
+                  "k": { "type": "integer", "default": 10, "minimum": 1, "maximum": 50 },
+                  "source": { "type": "string", "enum": ["all", "pages", "external"], "default": "all" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Semantic search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mode": { "type": "string" },
+                    "model": { "type": "string" },
+                    "dimensions": { "type": "integer" },
+                    "data": { "type": "array", "items": { "type": "object" } },
+                    "total": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/terms": {
+      "get": {
+        "summary": "List glossary terms",
+        "description": "List terms from the ESG glossary with pagination and optional search.",
+        "operationId": "listTerms",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 200 },
+            "description": "Search within term names"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 100 }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of terms",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": { "type": "array", "items": { "type": "object" } },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer" },
+                        "offset": { "type": "integer" },
+                        "limit": { "type": "integer" },
+                        "has_more": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Propose a new glossary term",
+        "description": "Submit a glossary term proposal for human review. Requires Bearer token authorization.",
+        "operationId": "proposeTerm",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "definition"],
+                "properties": {
+                  "name": { "type": "string", "maxLength": 500, "description": "Term name" },
+                  "definition": { "type": "string", "maxLength": 10000, "description": "Term definition" },
+                  "facets": { "type": "object" },
+                  "source_urls": { "type": "array", "items": { "type": "string", "format": "uri" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Proposal created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proposal_id": { "type": "string" },
+                    "status": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized" },
+          "429": { "description": "Rate limited" }
+        }
+      }
+    },
+    "/api/v1/frameworks": {
+      "get": {
+        "summary": "List frameworks",
+        "description": "List ESG reporting frameworks and standards.",
+        "operationId": "listFrameworks",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 100 }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of frameworks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "type": "object" } },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer" },
+                        "limit": { "type": "integer" },
+                        "offset": { "type": "integer" },
+                        "has_more": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/openapi.json": {
+      "get": {
+        "summary": "OpenAPI specification",
+        "description": "Returns this OpenAPI 3.1 specification document.",
+        "operationId": "getOpenApiSpec",
+        "responses": {
+          "200": {
+            "description": "OpenAPI 3.1 specification",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "ESG Hub Write Token (required for POST/PATCH endpoints)"
+      }
+    }
+  },
+  "tags": [
+    { "name": "Pages", "description": "Content page operations" },
+    { "name": "Search", "description": "Full-text, vector, and hybrid search" },
+    { "name": "Resources", "description": "External ESG resources" },
+    { "name": "Terms", "description": "Glossary term management" },
+    { "name": "Frameworks", "description": "ESG reporting frameworks" },
+    { "name": "Metadata", "description": "Knowledge base statistics" }
+  ]
+}

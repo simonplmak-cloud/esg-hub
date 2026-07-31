@@ -23,6 +23,7 @@ export async function GET() {
     version: "1.0",
     description: "Public API for the Ascent Partners Foundation ESG Knowledge Hub. Access 307 ESG articles and 244 curated external resources covering Environmental, Social, and Governance topics.",
     base_url: "/api/v1",
+    openapi: "/api/v1/openapi.json",
     endpoints: {
       "GET /api/v1": "This documentation",
       "GET /api/v1/meta": "Database metadata (sections, pillars, domains, stats)",
