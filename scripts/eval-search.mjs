@@ -11,7 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { fetchPageIndex, buildSlugMap, expandLabels, isRelevant } from "./lib/eval-resolver.mjs";
+import { fetchPageIndex, buildSlugMap, expandLabels, isRelevant, dcg, idcg, mrr } from "./lib/eval-resolver.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -56,52 +56,6 @@ async function search(query, mode = "keyword") {
   const body = await res.json();
   const items = mode === "hybrid" ? (body.results ?? []) : (body.data ?? []);
   return Array.isArray(items) ? items : [];
-}
-
-/**
- * Check if a result matches any relevant label (resolved via the page index).
- */
-function isRelevantResult(resultId, permalink, relevantSet) {
-  return isRelevant({ id: resultId, permalink }, relevantSet);
-}
-
-/**
- * DCG@k = sum(reli / log2(i+2))  where i is 0-indexed.
- */
-function dcg(results, relevantSet, k) {
-  let score = 0;
-  for (let i = 0; i < Math.min(results.length, k); i++) {
-    const rel = isRelevantResult(results[i].id, results[i].permalink, relevantSet);
-    if (rel) {
-      score += rel / Math.log2(i + 2);
-    }
-  }
-  return score;
-}
-
-/**
- * IDCG@k: ideal DCG — sort relevants by gain descending, take top k.
- * All gains are 1 (binary relevance), so IDCG = sum_{j=0}^{min(k, |relevant|)-1} 1/log2(j+2)
- */
-function idcg(relevantSet, k) {
-  const n = Math.min(relevantSet.length, k);
-  let score = 0;
-  for (let j = 0; j < n; j++) {
-    score += 1 / Math.log2(j + 2);
-  }
-  return score;
-}
-
-/**
- * MRR: 1 / (rank of first relevant result + 1). Returns 0 if none found.
- */
-function mrr(results, relevantSet) {
-  for (let i = 0; i < results.length; i++) {
-    if (isRelevantResult(results[i].id, results[i].permalink, relevantSet)) {
-      return 1 / (i + 1);
-    }
-  }
-  return 0;
 }
 
 async function main() {
@@ -153,10 +107,10 @@ async function main() {
       continue;
     }
 
-    const dcgScore = dcg(results, relevant, LIMIT);
-    const idcgScore = idcg(relevant, LIMIT);
+    const dcgScore = dcg(results, relevantSet, LIMIT);
+    const idcgScore = idcg(relevant.length, LIMIT);
     const ndcgScore = idcgScore > 0 ? dcgScore / idcgScore : 0;
-    const mrrScore = mrr(results, relevant);
+    const mrrScore = mrr(results, relevantSet);
 
     sumNdcg += ndcgScore;
     sumMrr += mrrScore;
