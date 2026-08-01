@@ -6,7 +6,7 @@ Total tasks: 26 (REQ-001: 3, REQ-002: 3, REQ-003: 3, REQ-004: 3, REQ-005: 2, REQ
 
 ### Phase 1 — Security Foundation (MW-GUARD)
 
-- [ ] T-001 (REQ-001) [MW-GUARD] — Add security headers function to next.config.mjs | files: next.config.mjs | test: e2e/security-headers.spec.ts
+- [x] T-001 (REQ-001) [MW-GUARD] — Add security headers function to next.config.mjs | files: next.config.mjs | test: e2e/security-headers.spec.ts
 - [ ] T-002 (REQ-001) [MW-GUARD] — Add CSP with nonce script-src for production | files: next.config.mjs | test: e2e/security-headers.spec.ts
 - [ ] T-003 (REQ-001) [MW-GUARD] — Write E2E test verifying security headers on GET / and GET /api/v1 | files: e2e/security-headers.spec.ts | test: e2e/security-headers.spec.ts
 
