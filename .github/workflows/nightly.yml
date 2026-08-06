@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Verify database schema
         id: verify_db
@@ -98,10 +98,10 @@ jobs:
       SURREAL_DATABASE: ${{ secrets.SURREAL_DATABASE }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout tool_packages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: simonplmak-cloud/tool_packages
           path: tool_packages_repo
