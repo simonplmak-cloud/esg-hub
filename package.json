@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
-    "@simonplmak-cloud/utils": "file:../tool_package/packages/utils",
-    "@simonplmak-cloud/validation": "file:../tool_package/packages/validation",
+    "@simonplmak-cloud/utils": "1.1.0",
+    "@simonplmak-cloud/validation": "1.1.0",
     "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.574.0",

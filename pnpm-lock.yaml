@@ -22,11 +22,11 @@ importers:
         specifier: ^3.8.1
         version: 3.8.1(@types/node@20.19.43)
       '@simonplmak-cloud/utils':
-        specifier: file:../tool_package/packages/utils
-        version: file:../tool_package/packages/utils(clsx@2.1.1)(react@19.2.8)
+        specifier: 1.1.0
+        version: 1.1.0(clsx@2.1.1)(react@19.2.8)
       '@simonplmak-cloud/validation':
-        specifier: file:../tool_package/packages/validation
-        version: file:../tool_package/packages/validation(zod@4.4.3)
+        specifier: 1.1.0
+        version: 1.1.0(zod@4.4.3)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -756,14 +756,14 @@ packages:
   '@schummar/icu-type-parser@1.21.5':
     resolution: {integrity: sha512-bXHSaW5jRTmke9Vd0h5P7BtWZG9Znqb8gSDxZnxaGSJnGwPLDPfS+3g0BKzeWqzgZPsIVZkM7m2tbo18cm5HBw==}
 
-  '@simonplmak-cloud/utils@file:../tool_package/packages/utils':
-    resolution: {directory: ../tool_package/packages/utils, type: directory}
+  '@simonplmak-cloud/utils@1.1.0':
+    resolution: {integrity: sha512-9DBtbNduG5NPhRKzdkkUwvyZMuPN+IhH+/CqNuxb+/E5D9AcM7IRDGBv2ORj/WoHCStXz0l8mM08pVIkMPSVSw==, tarball: https://npm.pkg.github.com/download/@simonplmak-cloud/utils/1.1.0/718289f1cde8298404bacbdb263e0c0a28925687}
     peerDependencies:
       clsx: '>=2.0.0'
       react: '>=18'
 
-  '@simonplmak-cloud/validation@file:../tool_package/packages/validation':
-    resolution: {directory: ../tool_package/packages/validation, type: directory}
+  '@simonplmak-cloud/validation@1.1.0':
+    resolution: {integrity: sha512-A58PisSrQeDZ4idsXr9px9CTeF4uHhlwhGjA2MVDxPtiaxPI/Tmwwy4/rEyo4y4/Jt2tJbxt4karjs8rwZHbTQ==, tarball: https://npm.pkg.github.com/download/@simonplmak-cloud/validation/1.1.0/2c38e29d3b91c338b77d6adf69c19edd4054715e}
     peerDependencies:
       zod: '>=3.0.0'
 
@@ -3769,12 +3769,12 @@ snapshots:
 
   '@schummar/icu-type-parser@1.21.5': {}
 
-  '@simonplmak-cloud/utils@file:../tool_package/packages/utils(clsx@2.1.1)(react@19.2.8)':
+  '@simonplmak-cloud/utils@1.1.0(clsx@2.1.1)(react@19.2.8)':
     dependencies:
       clsx: 2.1.1
       react: 19.2.8
 
-  '@simonplmak-cloud/validation@file:../tool_package/packages/validation(zod@4.4.3)':
+  '@simonplmak-cloud/validation@1.1.0(zod@4.4.3)':
     dependencies:
       zod: 4.4.3
 

@@ -9,23 +9,15 @@ permissions:
   issues: write
   pull-requests: write
 
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.SIMONPLMAK_CLOUD_PAT }}
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Checkout tool_packages
-        uses: actions/checkout@v4
-        with:
-          repository: simonplmak-cloud/tool_packages
-          path: tool_packages_repo
-          ref: master
-          token: ${{ secrets.TOOL_PACKAGES_PAT }}
-
-      - name: Link tool_packages
-        run: ln -s "$GITHUB_WORKSPACE/tool_packages_repo" "${GITHUB_WORKSPACE}/../tool_package"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -35,6 +27,8 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
+          registry-url: https://npm.pkg.github.com
+          scope: '@simonplmak-cloud'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -66,17 +60,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Checkout tool_packages
-        uses: actions/checkout@v4
-        with:
-          repository: simonplmak-cloud/tool_packages
-          path: tool_packages_repo
-          ref: master
-          token: ${{ secrets.TOOL_PACKAGES_PAT }}
-
-      - name: Link tool_packages
-        run: ln -s "$GITHUB_WORKSPACE/tool_packages_repo" "${GITHUB_WORKSPACE}/../tool_package"
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
 
@@ -85,6 +68,8 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
+          registry-url: https://npm.pkg.github.com
+          scope: '@simonplmak-cloud'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
