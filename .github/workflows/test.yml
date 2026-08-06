@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout tool_packages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: simonplmak-cloud/tool_packages
           path: tool_packages_repo
@@ -60,10 +60,10 @@ jobs:
     if: ${{ !inputs.skip_e2e }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout tool_packages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: simonplmak-cloud/tool_packages
           path: tool_packages_repo
