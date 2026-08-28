@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
+const logger = createLogger("api/keyword-search");
 
 export const runtime = "nodejs";
 import { keywordSearch } from "@/lib/search";
@@ -36,7 +38,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ results });
   } catch (err) {
-    console.error("Keyword search error:", err);
+    logger.error("Keyword search error:", err);
     return NextResponse.json(
       { error: "Search failed", results: [] },
       { status: 500 }

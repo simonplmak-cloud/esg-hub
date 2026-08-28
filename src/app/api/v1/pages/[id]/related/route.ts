@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
+const logger = createLogger("api/v1/[id]");
 import { getPageByPermalink, isDbConfigured, DB_ERROR } from "@/lib/pages";
 import { queryHttp } from "@/lib/surrealdb";
 import { formatPermalink } from "@/lib/utils";
@@ -111,7 +113,7 @@ export async function GET(
 
     return NextResponse.json({ data: relatedPages });
   } catch (error) {
-    console.error("[api] Related pages error:", error);
+    logger.error("[api] Related pages error:", error);
     return NextResponse.json(
       { error: "Failed to load related content" },
       { status: 500 }

@@ -170,3 +170,37 @@ This project includes 4 ESG-specific agent skills under `.opencode/skills/`:
 - `esg-source-authority-review` — Score source credibility across 5 dimensions
 
 Load a skill with: skill(name="esg-taxonomy-tagging")
+
+## Security Headers
+
+Production responses include OWASP-recommended security headers (configured in `next.config.mjs`):
+- Content-Security-Policy (CSP), Strict-Transport-Security (HSTS), X-Frame-Options: DENY
+- X-Content-Type-Options: nosniff, Referrer-Policy, Permissions-Policy, COOP, CORP
+- Verify with `grep -r "Content-Security-Policy" next.config.mjs`
+
+## Source Registry
+
+`scripts/lib/source-registry.json` documents all registered source domains with metadata (name, url, license, crawl_cadence, last_validated, access_method). Referenced by pipeline scripts for refresh scheduling. Update when adding new sources.
+
+## Pipeline Idempotency
+
+KM pipeline scripts (`km-ingestion.mjs`, `km-rd-loop.mjs`) use SurrealDB lease-based concurrency control with a fencing token. Each pipeline step is idempotent:
+- **Lease acquisition**: `CREATE lease` with unique lease_key returns existing lease on re-run — safe.
+- **Content ingestion**: `content_enhancement_log` entries use `proposed_changes` with deduplication (same name+definition → skip).
+- **R&D loop**: Link freshness checks (HEAD→GET fallback) are read-only and re-entrant. Cross-ref validation writes `content_enhancement_log` with batch dedup.
+- Re-run safety: dry-run mode (`--dry-run`) asserts idempotency before production runs.
+
+## Database Audit Scripts
+
+- `scripts/verify-db-schema.mjs` — Schema verification + drift detection (wired to `pnpm verify:db`)
+- `scripts/audit-term-quality.mjs` — Read-only suspicious term auditor
+- `scripts/audit-ingest-coverage.mjs` — Cross-reference source registry vs live DB tables (read-only)
+
+## Figma / Design Source Gap
+
+**Status: PENDING-FIGMA.** No Figma design source is currently connected. All UI components are code-first (CSS variables in `src/app/globals.css` serve as the design token source). To connect:
+1. Create a Figma project with the component library and design tokens.
+2. Obtain a Figma personal access token with file read/write scopes.
+3. Configure the `figma` MCP server with the token and file key.
+4. Probe write capability at T0 of the next improve cycle.
+5. Once connected, all new UI features must be designed in Figma first per I10.

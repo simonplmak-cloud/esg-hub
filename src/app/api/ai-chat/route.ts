@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
+const logger = createLogger("api/ai-chat");
 
 export const runtime = "nodejs";
 
@@ -99,7 +101,7 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("[AI Chat] DeepSeek API error:", response.status, errorText);
+      logger.error("[AI Chat] DeepSeek API error:", response.status, errorText);
       return NextResponse.json(
         { error: "AI service temporarily unavailable" },
         { status: 502 }
@@ -115,7 +117,7 @@ export async function POST(req: NextRequest) {
       reasoning,
     });
   } catch (error) {
-    console.error("[AI Chat] Unexpected error:", error);
+    logger.error("[AI Chat] Unexpected error:", error);
     return NextResponse.json(
       { error: "An unexpected error occurred" },
       { status: 500 }

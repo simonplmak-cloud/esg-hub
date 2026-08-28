@@ -19,6 +19,17 @@ interface LayoutParams {
 export async function generateMetadata({ params }: LayoutParams): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
+
+  const localeUrl = `${SITE_URL}/${locale}`;
+  const alternates: Metadata["alternates"] = {
+    canonical: localeUrl,
+    languages: {
+      en: `${SITE_URL}/en`,
+      zh: `${SITE_URL}/zh`,
+      hi: `${SITE_URL}/hi`,
+      "x-default": `${SITE_URL}/en`,
+    },
+  };
   
   return {
     metadataBase: new URL(SITE_URL),
@@ -27,6 +38,7 @@ export async function generateMetadata({ params }: LayoutParams): Promise<Metada
       template: t("templateTitle"),
     },
     description: t("defaultDesc"),
+    alternates,
     keywords: [
       "ESG",
       "Environmental",
@@ -54,7 +66,7 @@ export async function generateMetadata({ params }: LayoutParams): Promise<Metada
       siteName: "ESG Hub",
       title: t("defaultTitle"),
       description: t("defaultDesc") + " " + t("articlesCount"),
-      url: SITE_URL,
+      url: localeUrl,
       images: [
         {
           url: "/og-image.png",
@@ -68,6 +80,9 @@ export async function generateMetadata({ params }: LayoutParams): Promise<Metada
       card: "summary_large_image",
       title: t("defaultTitle"),
       description: t("defaultDesc") + " " + t("articlesCount"),
+    },
+    other: {
+      "content-language": locale,
     },
   };
 }

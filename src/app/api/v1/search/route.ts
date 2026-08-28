@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 import { keywordSearch } from "@/lib/search";
-import { queryHttp, queryHttpAll, sanitize, sanitizeInt } from "@/lib/surrealdb";
+import { queryHttp, queryHttpAll, sanitize } from "@/lib/surrealdb";
 import { fuseRerankAndRespond, type RrfInput } from "@/lib/search/hybrid";
+import { SearchParamsSchema } from "@/lib/validators/search";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("api/v1/search");
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -27,39 +31,17 @@ export async function OPTIONS() {
  */
 export async function GET(request: NextRequest) {
   try {
-    const params = request.nextUrl.searchParams;
-    const q = params.get("q");
-    const limit = sanitizeInt(params.get("limit"), 20, 1, 50);
-    const source = params.get("source") || "all";
-    const mode = params.get("mode") || "keyword";
+    const params = Object.fromEntries(request.nextUrl.searchParams);
+    const parsed = SearchParamsSchema.safeParse(params);
 
-    if (!q) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Query parameter 'q' is required" },
+        { error: "Invalid parameters", details: parsed.error.flatten().fieldErrors },
         { status: 400, headers: CORS_HEADERS }
       );
     }
 
-    if (q.length > 500) {
-      return NextResponse.json(
-        { error: "Query must be 500 characters or fewer." },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
-
-    if (!VALID_SOURCES.has(source)) {
-      return NextResponse.json(
-        { error: "Invalid source parameter. Must be 'all', 'pages', or 'external'." },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
-
-    if (!VALID_MODES.has(mode)) {
-      return NextResponse.json(
-        { error: "Invalid mode. Must be 'keyword' or 'hybrid'." },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
+    const { q, limit, source, mode, offset } = parsed.data;
 
     // =========================================================================
     // mode=keyword — existing behaviour preserved unchanged
@@ -86,14 +68,12 @@ export async function GET(request: NextRequest) {
     // mode=hybrid — RRF fusion (BM25 + HNSW) with ESG re-ranking
     // =========================================================================
 
-    const offset = sanitizeInt(params.get("offset"), 0, 0, 10000);
     const hybridLimit = Math.max(1, Math.min(limit, 100));
 
     // Parse optional embedding for HNSW (omit to use BM25-only RRF)
     let embedding: number[] | undefined;
-    const embParam = params.get("embedding");
-    if (embParam) {
-      embedding = embParam.split(",").map(Number);
+    if (parsed.data.embedding) {
+      embedding = parsed.data.embedding.split(",").map(Number);
       if (embedding.length !== 384 || embedding.some(v => !isFinite(v))) {
         return NextResponse.json(
           { error: "embedding must be 384 comma-separated finite numbers" },
@@ -305,7 +285,7 @@ export async function GET(request: NextRequest) {
       ...response,
     }, { headers: CORS_HEADERS });
   } catch (err) {
-    console.error("[API /v1/search GET] Error:", err);
+    logger.error("[API /v1/search GET] Error:", err);
     return NextResponse.json(
       { error: "An internal error occurred. Please try again later." },
       { status: 500, headers: CORS_HEADERS }
@@ -454,7 +434,7 @@ export async function POST(request: NextRequest) {
       total: results.length,
     }, { headers: CORS_HEADERS });
   } catch (err) {
-    console.error("[API /v1/search POST] Error:", err);
+    logger.error("[API /v1/search POST] Error:", err);
     return NextResponse.json(
       { error: "An internal error occurred. Please try again later." },
       { status: 500, headers: CORS_HEADERS }
