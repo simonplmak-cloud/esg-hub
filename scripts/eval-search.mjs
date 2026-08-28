@@ -11,11 +11,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { fetchPageIndex, buildSlugMap, expandLabels, isRelevant, dcg, idcg, mrr } from "./lib/eval-resolver.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
 const API_BASE = process.env.API_BASE || "http://localhost:3000";
+const EVAL_MODE = process.env.EVAL_MODE || "keyword";
 const QUERIES_PATH = path.join(ROOT, "specs/esg-hub-km-transformation/eval-queries.json");
 const LIMIT = 10;
 
@@ -41,7 +43,7 @@ function loadQueries(filePath) {
 
 /**
  * Search the API via GET /api/v1/search.
- * Accepts a mode param so the same script works when hybrid is wired up.
+ * Mode-aware: keyword mode returns `body.data`, hybrid mode returns `body.results`.
  */
 async function search(query, mode = "keyword") {
   const url = new URL(`${API_BASE}/api/v1/search`);
@@ -52,75 +54,14 @@ async function search(query, mode = "keyword") {
   const res = await fetch(url.href, { signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error(`Search API returned ${res.status}: ${await res.text().catch(() => "")}`);
   const body = await res.json();
-  return body.data || [];
-}
-
-/**
- * Normalize a result ID for matching.
- * Handles SurrealDB record IDs (page:xxx), permalink paths, and full URLs.
- */
-function normalizeId(id) {
-  if (!id) return null;
-  if (id.startsWith("page:") || id.startsWith("term:") || id.startsWith("framework:")) {
-    return id;
-  }
-  return null;
-}
-
-/**
- * Check if a result ID matches any relevant ID.
- */
-function isRelevant(resultId, relevantSet) {
-  const norm = normalizeId(resultId);
-  if (!norm) return false;
-  for (const rel of relevantSet) {
-    if (norm === rel) return 1;
-  }
-  return 0;
-}
-
-/**
- * DCG@k = sum(reli / log2(i+2))  where i is 0-indexed.
- */
-function dcg(results, relevantSet, k) {
-  let score = 0;
-  for (let i = 0; i < Math.min(results.length, k); i++) {
-    const rel = isRelevant(results[i].id, relevantSet);
-    if (rel) {
-      score += rel / Math.log2(i + 2);
-    }
-  }
-  return score;
-}
-
-/**
- * IDCG@k: ideal DCG — sort relevants by gain descending, take top k.
- * All gains are 1 (binary relevance), so IDCG = sum_{j=0}^{min(k, |relevant|)-1} 1/log2(j+2)
- */
-function idcg(relevantSet, k) {
-  const n = Math.min(relevantSet.length, k);
-  let score = 0;
-  for (let j = 0; j < n; j++) {
-    score += 1 / Math.log2(j + 2);
-  }
-  return score;
-}
-
-/**
- * MRR: 1 / (rank of first relevant result + 1). Returns 0 if none found.
- */
-function mrr(results, relevantSet) {
-  for (let i = 0; i < results.length; i++) {
-    if (isRelevant(results[i].id, relevantSet)) {
-      return 1 / (i + 1);
-    }
-  }
-  return 0;
+  const items = mode === "hybrid" ? (body.results ?? []) : (body.data ?? []);
+  return Array.isArray(items) ? items : [];
 }
 
 async function main() {
   console.log(`ESG Hub Search Evaluation\n`);
   console.log(`  API base : ${API_BASE}`);
+  console.log(`  Mode     : ${EVAL_MODE}`);
   console.log(`  Queries  : ${QUERIES_PATH}`);
   console.log(`  Limit    : ${LIMIT}\n`);
 
@@ -138,14 +79,27 @@ async function main() {
   let sumMrr = 0;
   let failures = 0;
 
+  // Resolve slug-style labels (page:climate-change) to real record IDs + permalinks.
+  let slugMap;
+  try {
+    console.log(`  Resolving page labels via ${API_BASE}/api/v1/pages ...`);
+    const pageIndex = await fetchPageIndex(API_BASE);
+    slugMap = buildSlugMap(pageIndex);
+    console.log(`  Indexed ${pageIndex.length} pages\n`);
+  } catch (err) {
+    console.error(`${YELLOW}WARN${RESET} label resolution failed (${err.message}); falling back to exact-ID matching`);
+    slugMap = new Map();
+  }
+
   for (let idx = 0; idx < queries.length; idx++) {
     const { query, relevant } = queries[idx];
+    const relevantSet = expandLabels(relevant, slugMap);
     const label = `[${String(idx + 1).padStart(2, "0")}/${queries.length}]`;
     process.stdout.write(`${label} "${query}" ... `);
 
     let results;
     try {
-      results = await search(query);
+      results = await search(query, EVAL_MODE);
     } catch (err) {
       console.log(`${RED}ERROR${RESET} (${err.message})`);
       details.push({ query, relevant, ndcg: 0, mrr: 0, resultsFound: 0, error: err.message });
@@ -153,10 +107,10 @@ async function main() {
       continue;
     }
 
-    const dcgScore = dcg(results, relevant, LIMIT);
-    const idcgScore = idcg(relevant, LIMIT);
+    const dcgScore = dcg(results, relevantSet, LIMIT);
+    const idcgScore = idcg(relevant.length, LIMIT);
     const ndcgScore = idcgScore > 0 ? dcgScore / idcgScore : 0;
-    const mrrScore = mrr(results, relevant);
+    const mrrScore = mrr(results, relevantSet);
 
     sumNdcg += ndcgScore;
     sumMrr += mrrScore;

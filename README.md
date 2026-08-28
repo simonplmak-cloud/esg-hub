@@ -17,7 +17,7 @@
 
 ## Tech stack
 
-Next.js 15 (App Router, React 19) · SurrealDB Cloud · Tailwind CSS v4 · next-intl · Vitest + Playwright · Vercel
+Next.js 16 (App Router, React 19) · SurrealDB Cloud · Tailwind CSS v4 · next-intl · Vitest + Playwright · Vercel
 
 ## Quick start
 

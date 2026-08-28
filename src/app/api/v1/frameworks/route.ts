@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = "force-static";
-export const revalidate = 3600;
 
-import { queryHttp, sanitize, sanitizeInt } from "@/lib/surrealdb";
+import { queryHttp } from "@/lib/surrealdb";
+import { parseListParams } from "@/lib/list-params";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+const CACHE_HEADERS = {
+  ...CORS_HEADERS,
+  "Cache-Control": "public, max-age=60",
 };
 
 export async function OPTIONS() {
@@ -27,10 +31,7 @@ export async function OPTIONS() {
  */
 export async function GET(request: NextRequest) {
   try {
-    const params = request.nextUrl.searchParams;
-    const limit = sanitizeInt(params.get("limit"), 20, 1, 100);
-    const offset = sanitizeInt(params.get("offset"), 0, 0, 100000);
-    const q = params.get("q");
+    const { limit, offset, q } = parseListParams(request.nextUrl.searchParams);
 
     const conditions: string[] = [];
     if (q) {
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
           { status: 400, headers: CORS_HEADERS }
         );
       }
-      conditions.push(`string::lowercase(name) CONTAINS string::lowercase('${sanitize(q)}')`);
+      conditions.push(`string::lowercase(name) CONTAINS string::lowercase('${q}')`);
     }
 
     const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
           has_more: offset + limit < total,
         },
       },
-      { headers: CORS_HEADERS }
+      { headers: CACHE_HEADERS }
     );
   } catch (err) {
     console.error("[API /v1/frameworks GET] Error:", err);

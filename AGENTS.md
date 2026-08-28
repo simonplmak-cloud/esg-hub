@@ -25,6 +25,8 @@ node scripts/review-enhancements.mjs    # Human gate: --list, --show, --approve,
 node scripts/release-km-lock.mjs       # Break-glass lock recovery
 ```
 
+`km-ingestion.mjs` and `km-rd-loop.mjs` write to SurrealDB directly (DEFINE/CREATE lease, CREATE scrape_job/content_enhancement_log) and run a read-only preflight IAM check at startup. They require an Editor/Owner DB credential in `SURREAL_USERNAME`/`SURREAL_PASSWORD` (use `opencode_admin`) — a Viewer-only `root` fails the preflight and exits non-zero before any write.
+
 CI gate order (`.github/workflows/deploy.yml` check job): lint → tsc → vitest → verify:db (continue-on-error) → build. `ci.yml` runs the same gates on every PR/push. Run all four before pushing; Playwright runs only in CI against deployed URLs.
 
 ### Local install prerequisite

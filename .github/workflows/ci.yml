@@ -79,3 +79,6 @@ jobs:
 
       - name: Run search evaluation
         run: pnpm eval-search
+        env:
+          API_BASE: https://esg-hub.ascent.partners
+          EVAL_MODE: hybrid
